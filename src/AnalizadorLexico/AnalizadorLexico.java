@@ -9,7 +9,7 @@ public class AnalizadorLexico {
 
     private char caracterActual;
     private String lexema;
-    private int nro_linea;
+//    private int nro_linea;
     private Map<String, String> mapeoDePalabrasClave;
     private ManejadorDeArchivo manejadorDeArchivo;
 
@@ -24,7 +24,7 @@ public class AnalizadorLexico {
     }
 
     private void actualizarCaracterActual () throws IOException {
-        this.manejadorDeArchivo.proximoCaracter();
+        this.manejadorDeArchivo.leerProximoCaracter();
         this.caracterActual = manejadorDeArchivo.obtenerCaracterActual();
     }
 

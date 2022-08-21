@@ -15,19 +15,11 @@ public class ManejadorDeArchivo {
         this.caracterActual = ((char) reader.read());
     }
 
-    public char proximoCaracter() throws IOException {
+    public char leerProximoCaracter() throws IOException {
         if (this.caracterActual == '\r') {
             this.nroLineaActual += 1;
         }
-
-
         this.caracterActual = ((char) this.reader.read());
-//        if (caracterActual == EOF)
-
-//        if (caracterActual == '\r') {
-//            System.out.print("fin de archivo");
-//        }
-
         return this.caracterActual;
     }
 
@@ -51,8 +43,8 @@ public class ManejadorDeArchivo {
     public void comentarioMultiLinea() throws IOException {
         boolean encontreCierreDeComentario = false;
         while (!encontreCierreDeComentario) {
-            if (this.proximoCaracter() == '*')
-                if (this.proximoCaracter() == '/')
+            if (this.leerProximoCaracter() == '*')
+                if (this.leerProximoCaracter() == '/')
                     encontreCierreDeComentario = true;
         }
     }

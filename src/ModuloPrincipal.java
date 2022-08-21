@@ -15,8 +15,8 @@ public class ModuloPrincipal {
         File file;
         ManejadorDeArchivo manejadorDeArchivo = null;
 
-        if (args.length > 0) {
-            file = new File(args[0]);
+//        if (args.length > 0) {
+//            file = new File(args[0]);
 //            ManejadorDeArchivo manejadorDeArchivo = null;
 //            try {
 //                manejadorDeArchivo = new ManejadorDeArchivo(file);
@@ -26,7 +26,7 @@ public class ModuloPrincipal {
 //            AnalizadorLexico analizadorLexico = new AnalizadorLexico(manejadorDeArchivo);
 //        }
 
-//        file = new File("src/ArchivoPrueba");
+        file = new File("src/ArchivoPrueba");
             try {
                 manejadorDeArchivo = new ManejadorDeArchivo(file);
             } catch (FileNotFoundException e) {
@@ -55,5 +55,5 @@ public class ModuloPrincipal {
 
             }
         }
-    }
+//    }
 }
