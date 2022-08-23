@@ -10,7 +10,8 @@ public class ExcepcionLexica extends Throwable {
         this.nroLinea = nroLinea;
     }
 
-    public String getMessage(){
-        return "Error léxico en la linea "+this.nroLinea + ": " +this.lexema+ " no es un símbolo válido \n\n[Error:"+this.lexema+"|"+this.nroLinea+"]";
+    public String getMessage() {
+
+        return "Error Léxico en linea "+this.nroLinea + ": " +this.lexema+ " no es un símbolo válido \n\n[Error:"+this.lexema+"|"+this.nroLinea+"]";
     }
 }

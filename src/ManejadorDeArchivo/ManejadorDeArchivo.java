@@ -6,20 +6,28 @@ public class ManejadorDeArchivo {
 
     private File file;
     private int nroLineaActual = 1;
-    private char caracterActual;
+    private int caracterActual;
     BufferedReader reader;
 
     public ManejadorDeArchivo(File file) throws IOException {
         this.file = file;
         reader = new BufferedReader(new FileReader(file));
-        this.caracterActual = ((char) reader.read());
+        this.caracterActual = reader.read();
     }
 
-    public char leerProximoCaracter() throws IOException {
-        if (this.caracterActual == '\r') {
+    public int leerProximoCaracter() throws IOException {
+        if (this.caracterActual == '\r' || this.caracterActual == '\n')
             this.nroLineaActual += 1;
-        }
-        this.caracterActual = ((char) this.reader.read());
+
+        this.caracterActual =  this.reader.read();
+
+        if (this.caracterActual == '\r')
+            this.caracterActual = this.reader.read();
+
+
+
+
+
         return this.caracterActual;
     }
 
@@ -27,12 +35,12 @@ public class ManejadorDeArchivo {
         return this.nroLineaActual;
     }
 
-    public char obtenerCaracterActual() {
+    public int obtenerCaracterActual() {
         return this.caracterActual;
     }
 
     public boolean endOfFile() {
-        return (Object)this.caracterActual == null;
+        return this.caracterActual != -1;
     }
 
     public void comentarioSimple() throws IOException {

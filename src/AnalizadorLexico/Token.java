@@ -12,6 +12,10 @@ public class Token {
         this.nro_linea = nro_linea;
     }
 
+    public String getTokenId() {
+        return this.token_id;
+    }
+
     public String toString() {
         return "("+this.token_id+","+this.lexema+","+this.nro_linea+")";
     }

@@ -12,6 +12,7 @@ import java.util.Map;
 public class ModuloPrincipal {
 
     public static void main (String [] args) {
+//        File file = new File(args[0]);
         File file;
         ManejadorDeArchivo manejadorDeArchivo = null;
 
@@ -44,15 +45,20 @@ public class ModuloPrincipal {
             ArrayList<Token> listaTokens = new ArrayList<>();
 
             try {
-                while (analizadorLexico.quedanTokens()) {
+                boolean recorrer = true;
+                while (recorrer) {
                     Token token = analizadorLexico.proximoToken();
                     listaTokens.add(token);
                     System.out.println(token.toString());
+                    if (token.getTokenId() == "EOF") {
+                        System.out.println();
+                        System.out.println("[SinErrores]");
+                        recorrer = false;
+                    }
                 }
 
             } catch (IOException | ExcepcionLexica e) {
                 System.out.println(e.getMessage());
-
             }
         }
 //    }
