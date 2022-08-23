@@ -182,7 +182,7 @@ public class AnalizadorLexico {
                                                                                                     }
                                                                                                     else {
                                                                                                         this.actualizarLexema();
-                                                                                                        throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
+                                                                                                        throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());
                                                                                                     }
     }
 
@@ -309,9 +309,9 @@ public class AnalizadorLexico {
             return this.estado18();
         }
         else {
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());        }
         }
-    }
+
 
     private Token estado18() {
         return new Token("op_logico_and", this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
@@ -324,8 +324,7 @@ public class AnalizadorLexico {
             return this.estado20();
         }
         else {
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-        }
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());        }
     }
 
     private Token estado20() {
@@ -401,10 +400,8 @@ public class AnalizadorLexico {
         else
             if (this.caracterActual == -1) {
 //                System.out.println("lexema: "+this.lexema);
-                throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-//                return this.estado40();
+                throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());//                return this.estado40();
             }
-
             else {
                 //todo revisar que pasa si viene /* y nunca */
                 this.actualizarLexema();
@@ -429,8 +426,7 @@ public class AnalizadorLexico {
             else
                 if (this.caracterActual == -1) {
                     System.out.println("lexema: " + this.lexema);
-                    throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-                }
+                    throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());                }
                 else {
                     this.actualizarLexema();
                     this.actualizarCaracterActual();
@@ -446,10 +442,10 @@ public class AnalizadorLexico {
         }
         else
             if (this.caracterActual == '\n' || this.caracterActual == -1) {
-                throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-            }
+                throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());            }
             else
-                if (this.caracterActual == '/') {
+                if (this.caracterActual == '\\') {
+                    this.actualizarLexema();
                     this.actualizarCaracterActual();
                     return this.estado34();
                 }
@@ -462,7 +458,8 @@ public class AnalizadorLexico {
 
     private Token estado33()  {
         //todo preguntar este replace
-        return new Token("String", this.lexema.replaceAll("\"", ""), this.manejadorDeArchivo.obtenerNumeroLinea());
+//        return new Token("String", this.lexema.replaceAll("\"", ""), this.manejadorDeArchivo.obtenerNumeroLinea());
+        return new Token("String", this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
     }
 
     private Token estado34() throws IOException, ExcepcionLexica {
@@ -471,8 +468,9 @@ public class AnalizadorLexico {
             this.actualizarCaracterActual();
             return this.estado32();
         }
-        else
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
+        else {
+            this.actualizarLexema();
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());        }
     }
 
     private Token estado35() throws IOException, ExcepcionLexica {
@@ -483,8 +481,7 @@ public class AnalizadorLexico {
         }
         else
             if (this.caracterActual == '\n' || this.caracterActual == -1)
-                throw new ExcepcionLexica("'", this.manejadorDeArchivo.obtenerNumeroLinea());
-            else {
+                throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());            else {
                 this.actualizarLexema();
                 this.actualizarCaracterActual();
                 return this.estado36();
@@ -498,8 +495,7 @@ public class AnalizadorLexico {
         }
         else {
             this.actualizarLexema();
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-        }
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());        }
 
     }
 
@@ -517,8 +513,7 @@ public class AnalizadorLexico {
         }
         else {
             this.actualizarLexema();
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
-        }
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());        }
     }
 
     private Token estado39() throws IOException, ExcepcionLexica {
@@ -527,7 +522,7 @@ public class AnalizadorLexico {
             return this.estado37();
         }
         else
-            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea());
+            throw new ExcepcionLexica(this.lexema, this.manejadorDeArchivo.obtenerNumeroLinea(), this.manejadorDeArchivo.obtenerNumeroColumna(), this.manejadorDeArchivo.obtenerLineaConError());
     }
 
     private Token estado40() throws IOException, ExcepcionLexica {

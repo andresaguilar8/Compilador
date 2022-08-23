@@ -40,6 +40,26 @@ public class ModuloPrincipal {
             Map<String, String> mapeoDePalabrasClave = new HashMap<>();
             mapeoDePalabrasClave.put("else", "pr_else");
             mapeoDePalabrasClave.put("if", "pr_if");
+            mapeoDePalabrasClave.put("class", "pr_class");
+            mapeoDePalabrasClave.put("interface", "pr_interface");
+            mapeoDePalabrasClave.put("extends", "pr_extends");
+            mapeoDePalabrasClave.put("implements", "pr_implements");
+            mapeoDePalabrasClave.put("public", "pr_public");
+            mapeoDePalabrasClave.put("private", "pr_private");
+            mapeoDePalabrasClave.put("static", "pr_static");
+            mapeoDePalabrasClave.put("boolean", "pr_boolean");
+            mapeoDePalabrasClave.put("void", "pr_void");
+            mapeoDePalabrasClave.put("char", "pr_char");
+            mapeoDePalabrasClave.put("int", "pr_int");
+            mapeoDePalabrasClave.put("while", "pr_while");
+            mapeoDePalabrasClave.put("return", "pr_return");
+            mapeoDePalabrasClave.put("var", "pr_var");
+            mapeoDePalabrasClave.put("this", "pr_this");
+            mapeoDePalabrasClave.put("new", "pr_new");
+            mapeoDePalabrasClave.put("null", "pr_null");
+            mapeoDePalabrasClave.put("true", "pr_true");
+            mapeoDePalabrasClave.put("false", "pr_false");
+            mapeoDePalabrasClave.put("dynamic", "pr_dynamic");
 
             AnalizadorLexico analizadorLexico = new AnalizadorLexico(manejadorDeArchivo, mapeoDePalabrasClave);
             ArrayList<Token> listaTokens = new ArrayList<>();
