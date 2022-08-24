@@ -9,6 +9,8 @@ public class LexicalAnalyzer {
 
     private int currentCharacter;
     private String lexeme;
+    private int lineNumberForCommentError;
+    private int columnNumberForCommentError;
     private Map<String, String> mapeoDePalabrasClave;
     private FileHandler fileHandler;
 
@@ -307,7 +309,7 @@ public class LexicalAnalyzer {
             this.updateCurrentCharacter();
             return this.estado18();
         } else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber() - 1, this.lexeme + " no es un símbolo válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido", this.fileHandler.getRowWithError());
     }
 
     private Token estado18() {
@@ -321,7 +323,7 @@ public class LexicalAnalyzer {
             return this.estado20();
         }
         else {
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber() - 1, " no es un símbolo válido", this.fileHandler.getRowWithError());        }
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), " no es un símbolo válido", this.fileHandler.getRowWithError());        }
     }
 
     private Token estado20() {
@@ -393,15 +395,57 @@ public class LexicalAnalyzer {
             return this.estado31();
         }
         else
-            if (this.currentCharacter == -1)
+            if (this.currentCharacter == -1) {
+                System.out.println("wewaa");
                 throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "es un comentario multilinea sin cerrar ", this.fileHandler.getRowWithError());
-            else {
-                //todo revisar que pasa si viene /* y nunca */ ya anda, ver el lexema resultante
-                if (this.currentCharacter != '\n')
-                    this.updateLexeme();
-                this.updateCurrentCharacter();
-                return this.estado30();
             }
+                else {
+                //todo revisar que pasa si viene /* y nunca */ ya anda, ver el lexema resultante
+                if (this.currentCharacter == '\n') {
+                    this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
+                    this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
+                    this.updateCurrentCharacter();
+                    return this.estado50();
+                }
+                else {
+                    this.updateLexeme();
+                    this.updateCurrentCharacter();
+                    return this.estado30();
+                }
+            }
+    }
+
+    private Token estado50() throws IOException, LexicalException {
+        if (this.currentCharacter == '*') {
+            this.updateCurrentCharacter();
+            return this.estado51();
+        }
+        else
+            if (this.currentCharacter == -1) {
+                throw new LexicalException(this.lexeme, this.lineNumberForCommentError, this.columnNumberForCommentError, "comentario multilinea sin cerrar", this.lexeme);
+
+            }
+            else {
+                this.updateCurrentCharacter();
+                return this.estado50();
+            }
+    }
+
+    private Token estado51() throws IOException, LexicalException {
+        if (this.currentCharacter == '/') {
+            this.updateCurrentCharacter();
+            return this.estado0();
+        }
+        else
+            if (this.currentCharacter == '*') {
+                this.updateCurrentCharacter();
+                return this.estado51();
+            }
+            else {
+                this.updateCurrentCharacter();
+                return this.estado50();
+            }
+
     }
 
     private Token estado31() throws IOException, LexicalException {
@@ -417,15 +461,20 @@ public class LexicalAnalyzer {
                 return this.estado31();
             }
             else
-                if (this.currentCharacter == -1) {
-                    System.out.println("lexema: " + this.lexeme);
+                if (this.currentCharacter == -1)
                     throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "comentario multilinea sin cerrar", this.fileHandler.getRowWithError());
-                }
                 else {
-                    if (this.currentCharacter != '\n')
+                    if (this.currentCharacter == '\n') {
+                        this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
+                        this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
+                        this.updateCurrentCharacter();
+                        return this.estado50();
+                    }
+                    else {
                         this.updateLexeme();
-                    this.updateCurrentCharacter();
-                    return this.estado30();
+                        this.updateCurrentCharacter();
+                        return this.estado30();
+                    }
                 }
     }
 
