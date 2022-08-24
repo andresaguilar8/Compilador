@@ -21,7 +21,7 @@ public class TesterDeCasosSinErrores {
     private static final String msgExito = "[SinErrores]";
     private static final String testFilesDirectoryPath = "resources/sinErrores/";
 
-    private static final ModuloPrincipal init = null;
+    private static final Main init = null;
    
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
