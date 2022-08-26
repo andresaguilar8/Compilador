@@ -1,7 +1,6 @@
 package LexicalAnalyzer;
 
 import FileHandler.FileHandler;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -185,7 +184,7 @@ public class LexicalAnalyzer {
                                                                                                         }
                                                                                                         else {
                                                                                                             this.updateLexeme();
-                                                                                                            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido", this.fileHandler.getRowWithError());
+                                                                                                            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido", this.fileHandler.getLineWithError());
                                                                                                         }
     }
 
@@ -223,7 +222,7 @@ public class LexicalAnalyzer {
         return new Token("mayor_igual", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
-    private Token estado5() throws IOException, LexicalException {
+    private Token estado5() throws IOException {
         if (this.currentCharacter == '=') {
             this.updateLexeme();
             this.updateCurrentCharacter();
@@ -307,7 +306,7 @@ public class LexicalAnalyzer {
             this.updateCurrentCharacter();
             return this.estado18();
         } else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getLineWithError());
     }
 
     private Token estado18() {
@@ -321,7 +320,7 @@ public class LexicalAnalyzer {
             return this.estado20();
         }
         else {
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getRowWithError());        }
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getLineWithError());        }
     }
 
     private Token estado20() {
@@ -366,7 +365,7 @@ public class LexicalAnalyzer {
             if (this.currentCharacter == '*') {
                 this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
                 this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
-                this.lineError = this.fileHandler.getRowWithError();
+                this.lineError = this.fileHandler.getLineWithError();
                 this.updateLexeme();
                 this.updateCurrentCharacter();
                 return this.estado30();
@@ -452,7 +451,7 @@ public class LexicalAnalyzer {
         }
         else
             if (this.currentCharacter == '\n' || this.currentCharacter == -1)
-                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un String válido", this.fileHandler.getRowWithError());
+                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un String válido", this.fileHandler.getLineWithError());
             else
                 if (this.currentCharacter == '\\') {
                     this.updateLexeme();
@@ -476,10 +475,14 @@ public class LexicalAnalyzer {
             this.updateCurrentCharacter();
             return this.estado32();
         }
-        else {
-            if (this.currentCharacter != '\n' && this.currentCharacter != -1)
+        else
+            if (this.currentCharacter == '\n' || this.currentCharacter == -1)
+                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un String válido", this.fileHandler.getLineWithError());
+            else {
                 this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un String válido. Sólo se permite \" después del caracter '\\'", this.fileHandler.getRowWithError());        }
+                this.updateCurrentCharacter();
+                return this.estado32();
+            }
     }
 
     private Token estado35() throws IOException, LexicalException {
@@ -492,7 +495,7 @@ public class LexicalAnalyzer {
             if (Character.isWhitespace(this.currentCharacter) || this.currentCharacter == '\n' || this.currentCharacter == '\'' || this.currentCharacter == -1) {
 //                if (this.currentCharacter != -1 && this.currentCharacter != '\n')
 //                    this.updateLexeme();
-                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());
+                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
             }
             else {
                 this.updateLexeme();
@@ -508,8 +511,9 @@ public class LexicalAnalyzer {
             return this.estado37();
         }
         else {
-            this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());        }
+            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
+                this.updateLexeme();
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());        }
 
     }
 
@@ -529,10 +533,8 @@ public class LexicalAnalyzer {
                 this.updateCurrentCharacter();
                 return this.estado39();
             }
-            else {
-                this.updateLexeme();
-                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());
-            }
+            else
+                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
     }
 
     private Token estado39() throws IOException, LexicalException {
@@ -542,8 +544,9 @@ public class LexicalAnalyzer {
             return this.estado37();
         }
         else {
-            this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());
+            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
+                this.updateLexeme();
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
         }
     }
 
@@ -620,7 +623,7 @@ public class LexicalAnalyzer {
     private Token estado47() throws IOException, LexicalException {
         if (Character.isDigit(this.currentCharacter)) {
             this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme+ " tiene más de 9 dígitos", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme+ " tiene más de 9 dígitos", this.fileHandler.getLineWithError());
         }
         else
             return new Token("entero", this.lexeme, this.fileHandler.getCurrentRowNumber());
@@ -646,7 +649,7 @@ public class LexicalAnalyzer {
             return this.estado50();
         }
         else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getLineWithError());
     }
 
     private Token estado50() throws IOException, LexicalException {
@@ -656,7 +659,7 @@ public class LexicalAnalyzer {
             return this.estado51();
         }
         else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getLineWithError());
     }
     private Token estado51() throws IOException, LexicalException {
         if (isHexadecimalChar(this.currentCharacter)) {
@@ -665,7 +668,7 @@ public class LexicalAnalyzer {
             return this.estado52();
         }
         else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getLineWithError());
     }
 
     private Token estado52() throws IOException, LexicalException {
@@ -675,19 +678,18 @@ public class LexicalAnalyzer {
             return this.estado53();
         }
         else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getLineWithError());
     }
 
     private Token estado53() throws IOException, LexicalException {
         if (this.currentCharacter == '\'') {
             this.updateLexeme();
             this.updateCurrentCharacter();
-            //todo voy a un nuevo estado cuando encuentro un char unicode???
             return this.estado37();
         } else {
             if (this.currentCharacter != -1 && this.currentCharacter != '\n')
                 this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getLineWithError());
         }
     }
 

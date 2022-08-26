@@ -36,5 +36,4 @@ public class LexicalException extends Throwable {
         return errorToShow + "\n" + errorPointer;
     }
 
-
 }

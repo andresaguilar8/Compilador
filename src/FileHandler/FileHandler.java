@@ -21,8 +21,7 @@ public class FileHandler {
         this.previousCharacter = this.currentCharacter;
         this.currentCharacter =  this.fileReader.read();
 
-//        if (this.currentCharacter != -1)
-            this.currentColumnNumber += 1;
+        this.currentColumnNumber += 1;
 
         if (this.previousCharacter == '\n') {
             this.currentRowNumber += 1;
@@ -40,9 +39,8 @@ public class FileHandler {
         return this.currentRowNumber;
     }
 
-    public String getRowWithError() throws IOException {
+    public String getLineWithError() throws IOException {
         BufferedReader fileReaderForLineError = new BufferedReader(new FileReader(file));
-
         int rowNumber = 1;
 
         while (rowNumber < this.currentRowNumber) {
@@ -61,6 +59,7 @@ public class FileHandler {
     public int getCurrentColumnNumber() {
         return this.currentColumnNumber;
     }
+
     public int getCurrentCharacter() {
         return this.currentCharacter;
     }
