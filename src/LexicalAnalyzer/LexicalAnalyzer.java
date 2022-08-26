@@ -9,15 +9,17 @@ public class LexicalAnalyzer {
 
     private int currentCharacter;
     private String lexeme;
+    private int foundEOL = 0;
     private int lineNumberForCommentError;
     private int columnNumberForCommentError;
-    private Map<String, String> mapeoDePalabrasClave;
+    private String lineError;
+    private Map<String, String> keywordDictionary;
     private FileHandler fileHandler;
 
-    public LexicalAnalyzer(FileHandler fileHandler, Map<String, String> mapeoDePalabrasClave) throws IOException {
+    public LexicalAnalyzer(FileHandler fileHandler, Map<String, String> keywordDictionary) throws IOException {
         this.fileHandler = fileHandler;
         this.updateCurrentCharacter();
-        this.mapeoDePalabrasClave = mapeoDePalabrasClave;
+        this.keywordDictionary = keywordDictionary;
     }
 
     private void updateLexeme() {
@@ -179,7 +181,7 @@ public class LexicalAnalyzer {
                                                                                                     }
                                                                                                     else
                                                                                                         if (this.currentCharacter == -1) {
-                                                                                                            return this.estado49();
+                                                                                                            return this.estado54();
                                                                                                         }
                                                                                                         else {
                                                                                                             this.updateLexeme();
@@ -204,11 +206,7 @@ public class LexicalAnalyzer {
             return this.estado2();
         }
         else
-//            if (this.mapeoDePalabrasClave.containsKey(this.lexeme)) {
-//                return new Token(this.mapeoDePalabrasClave.get(this.lexeme), this.lexeme, this.fileHandler.getCurrentRowNumber());
-//            }
-//            else
-                return new Token("idClase", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("idClase", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado3() throws IOException {
@@ -246,11 +244,11 @@ public class LexicalAnalyzer {
             return this.estado8();
         }
         else
-            return new Token("negacion", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("op!", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado8() {
-        return new Token("distinto", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op!=", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado9() throws IOException {
@@ -260,15 +258,15 @@ public class LexicalAnalyzer {
             return this.estado10();
         }
         else
-            return new Token("igual", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("op=", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado10() {
-        return new Token("comparacion", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op==", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado11() {
-        return new Token("op_multiplicar", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op*", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado12() throws IOException {
@@ -278,11 +276,11 @@ public class LexicalAnalyzer {
             return this.estado13();
         }
         else
-            return new Token("op_resta", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("op-", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
-    private Token estado13() { //todo que ponerle al -=
-        return new Token("-=", this.lexeme, this.fileHandler.getCurrentRowNumber());
+    private Token estado13() {
+        return new Token("op-=", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado14() throws IOException {
@@ -292,15 +290,15 @@ public class LexicalAnalyzer {
             return this.estado15();
         }
         else
-            return new Token("op_suma", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("op+", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
-    private Token estado15() { //todo que ponerle al +=
-        return new Token("+=", this.lexeme, this.fileHandler.getCurrentRowNumber());
+    private Token estado15() {
+        return new Token("op+=", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado16() {
-        return new Token("op_modulo", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op%", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado17() throws IOException, LexicalException {
@@ -309,11 +307,11 @@ public class LexicalAnalyzer {
             this.updateCurrentCharacter();
             return this.estado18();
         } else
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido", this.fileHandler.getRowWithError());
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getRowWithError());
     }
 
     private Token estado18() {
-        return new Token("op_AND", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op&&", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado19() throws IOException, LexicalException {
@@ -323,11 +321,11 @@ public class LexicalAnalyzer {
             return this.estado20();
         }
         else {
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), " no es un símbolo válido", this.fileHandler.getRowWithError());        }
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un operador válido", this.fileHandler.getRowWithError());        }
     }
 
     private Token estado20() {
-        return new Token("op_OR", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("op||", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado21() {
@@ -366,12 +364,15 @@ public class LexicalAnalyzer {
         }
         else
             if (this.currentCharacter == '*') {
+                this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
+                this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
+                this.lineError = this.fileHandler.getRowWithError();
                 this.updateLexeme();
                 this.updateCurrentCharacter();
                 return this.estado30();
             }
         else
-            return new Token("division", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("op/", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado29() throws IOException, LexicalException {
@@ -381,7 +382,7 @@ public class LexicalAnalyzer {
         }
         else {
             if (this.currentCharacter == -1)
-                return this.estado49();
+                return this.estado54();
             else
                 this.updateCurrentCharacter();
                 return this.estado0();
@@ -390,62 +391,27 @@ public class LexicalAnalyzer {
 
     private Token estado30() throws IOException, LexicalException {
         if (this.currentCharacter == '*') {
-            this.updateLexeme();
+            if (this.foundEOL == 0)
+                this.updateLexeme();
             this.updateCurrentCharacter();
             return this.estado31();
         }
         else
             if (this.currentCharacter == -1) {
-                System.out.println("wewaa");
-                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "es un comentario multilinea sin cerrar ", this.fileHandler.getRowWithError());
+                throw new LexicalException(this.lexeme, this.lineNumberForCommentError, this.columnNumberForCommentError, "comentario multilinea sin cerrar ", this.lineError);
             }
-                else {
-                //todo revisar que pasa si viene /* y nunca */ ya anda, ver el lexema resultante
-                if (this.currentCharacter == '\n') {
-                    this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
-                    this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
-                    this.updateCurrentCharacter();
-                    return this.estado50();
-                }
-                else {
-                    this.updateLexeme();
+            else
+                if (this.foundEOL == 0 && this.currentCharacter == '\n') {
+                    this.foundEOL = 1;
                     this.updateCurrentCharacter();
                     return this.estado30();
                 }
-            }
-    }
-
-    private Token estado50() throws IOException, LexicalException {
-        if (this.currentCharacter == '*') {
-            this.updateCurrentCharacter();
-            return this.estado51();
-        }
-        else
-            if (this.currentCharacter == -1) {
-                throw new LexicalException(this.lexeme, this.lineNumberForCommentError, this.columnNumberForCommentError, "comentario multilinea sin cerrar", this.lexeme);
-
-            }
-            else {
-                this.updateCurrentCharacter();
-                return this.estado50();
-            }
-    }
-
-    private Token estado51() throws IOException, LexicalException {
-        if (this.currentCharacter == '/') {
-            this.updateCurrentCharacter();
-            return this.estado0();
-        }
-        else
-            if (this.currentCharacter == '*') {
-                this.updateCurrentCharacter();
-                return this.estado51();
-            }
-            else {
-                this.updateCurrentCharacter();
-                return this.estado50();
-            }
-
+                else {
+                    if (this.foundEOL == 0)
+                        this.updateLexeme();
+                    this.updateCurrentCharacter();
+                    return this.estado30();
+                }
     }
 
     private Token estado31() throws IOException, LexicalException {
@@ -456,26 +422,26 @@ public class LexicalAnalyzer {
         }
         else
             if (this.currentCharacter == '*') {
-                this.updateLexeme();
+                if (this.foundEOL == 0)
+                    this.updateLexeme();
                 this.updateCurrentCharacter();
                 return this.estado31();
             }
             else
                 if (this.currentCharacter == -1)
-                    throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "comentario multilinea sin cerrar", this.fileHandler.getRowWithError());
-                else {
-                    if (this.currentCharacter == '\n') {
-                        this.lineNumberForCommentError = this.fileHandler.getCurrentRowNumber();
-                        this.columnNumberForCommentError = this.fileHandler.getCurrentColumnNumber();
-                        this.updateCurrentCharacter();
-                        return this.estado50();
-                    }
-                    else {
-                        this.updateLexeme();
+                    throw new LexicalException(this.lexeme, this.lineNumberForCommentError, this.columnNumberForCommentError, "comentario multilinea sin cerrar", this.lineError);
+                else
+                    if (this.foundEOL == 0 && this.currentCharacter == '\n') {
+                        this.foundEOL = 1;
                         this.updateCurrentCharacter();
                         return this.estado30();
                     }
-                }
+                    else {
+                        if (this.foundEOL == 0)
+                            this.updateLexeme();
+                        this.updateCurrentCharacter();
+                        return this.estado30();
+                    }
     }
 
     private Token estado32() throws IOException, LexicalException {
@@ -511,9 +477,9 @@ public class LexicalAnalyzer {
             return this.estado32();
         }
         else {
-            if (this.currentCharacter != '\n')
+            if (this.currentCharacter != '\n' && this.currentCharacter != -1)
                 this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido dentro de un String", this.fileHandler.getRowWithError());        }
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un String válido. Sólo se permite \" después del caracter '\\'", this.fileHandler.getRowWithError());        }
     }
 
     private Token estado35() throws IOException, LexicalException {
@@ -523,8 +489,11 @@ public class LexicalAnalyzer {
             return this.estado38();
         }
         else
-            if (this.currentCharacter == '\n' || this.currentCharacter == -1)
+            if (Character.isWhitespace(this.currentCharacter) || this.currentCharacter == '\n' || this.currentCharacter == '\'' || this.currentCharacter == -1) {
+//                if (this.currentCharacter != -1 && this.currentCharacter != '\n')
+//                    this.updateLexeme();
                 throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());
+            }
             else {
                 this.updateLexeme();
                 this.updateCurrentCharacter();
@@ -549,14 +518,21 @@ public class LexicalAnalyzer {
     }
 
     private Token estado38() throws IOException, LexicalException {
-        if (this.currentCharacter != -1 || this.currentCharacter != '\n') {
+        if (this.currentCharacter == 'u') {
             this.updateLexeme();
             this.updateCurrentCharacter();
-            return this.estado39();
+            return this.estado49();
         }
-        else {
-            this.updateLexeme();
-            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());        }
+        else
+            if (this.currentCharacter != -1  && this.currentCharacter != '\n' && this.currentCharacter != '\'') {
+                this.updateLexeme();
+                this.updateCurrentCharacter();
+                return this.estado39();
+            }
+            else {
+                this.updateLexeme();
+                throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getRowWithError());
+            }
     }
 
     private Token estado39() throws IOException, LexicalException {
@@ -657,11 +633,70 @@ public class LexicalAnalyzer {
             return this.estado48();
         }
         else
-            return new Token("idMV", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            if (this.keywordDictionary.containsKey(this.lexeme))
+                return new Token(this.keywordDictionary.get(this.lexeme), this.lexeme, this.fileHandler.getCurrentRowNumber());
+            else
+                return new Token("idMV", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
-    private Token estado49() {
+    private Token estado49() throws IOException, LexicalException {
+        if (isHexadecimalChar(this.currentCharacter)) {
+            this.updateLexeme();
+            this.updateCurrentCharacter();
+            return this.estado50();
+        }
+        else
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+    }
+
+    private Token estado50() throws IOException, LexicalException {
+        if (isHexadecimalChar(this.currentCharacter)) {
+            this.updateLexeme();
+            this.updateCurrentCharacter();
+            return this.estado51();
+        }
+        else
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+    }
+    private Token estado51() throws IOException, LexicalException {
+        if (isHexadecimalChar(this.currentCharacter)) {
+            this.updateLexeme();
+            this.updateCurrentCharacter();
+            return this.estado52();
+        }
+        else
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+    }
+
+    private Token estado52() throws IOException, LexicalException {
+        if (isHexadecimalChar(this.currentCharacter)) {
+            this.updateLexeme();
+            this.updateCurrentCharacter();
+            return this.estado53();
+        }
+        else
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+    }
+
+    private Token estado53() throws IOException, LexicalException {
+        if (this.currentCharacter == '\'') {
+            this.updateLexeme();
+            this.updateCurrentCharacter();
+            //todo voy a un nuevo estado cuando encuentro un char unicode???
+            return this.estado37();
+        } else {
+            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
+                this.updateLexeme();
+            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un caracter unicode válido", this.fileHandler.getRowWithError());
+        }
+    }
+
+    private Token estado54() {
         return new Token("EOF", this.lexeme, this.fileHandler.getCurrentRowNumber());
+    }
+
+    private boolean isHexadecimalChar(int currentCharacter) {
+        return Character.isDigit(currentCharacter) || (this.currentCharacter >= 65 && this.currentCharacter <= 70) || (this.currentCharacter >= 97 && this.currentCharacter <= 102);
     }
 
 }

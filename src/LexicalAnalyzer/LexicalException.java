@@ -2,38 +2,38 @@ package LexicalAnalyzer;
 
 public class LexicalException extends Throwable {
 
-    private String lexema;
-    private int nroLinea;
-    private int nroColumna;
+    private String lexemeWithError;
+    private int lineNumber;
+    private int columnNumber;
     private String lexicalErrorLine;
     private String errorType;
 
-    public LexicalException(String lexemeWithError, int nroLinea, int nroColumna, String errorDetail, String lexicalErrorLine) {
-        this.lexema = lexemeWithError;
-        this.nroLinea = nroLinea;
-        this.nroColumna = nroColumna;
+    public LexicalException(String lexemeWithError, int lineNumber, int columnNumber, String errorDetail, String lexicalErrorLine) {
+        this.lexemeWithError = lexemeWithError;
+        this.lineNumber = lineNumber;
+        this.columnNumber = columnNumber;
         this.errorType = errorDetail;
         this.lexicalErrorLine = lexicalErrorLine;
     }
 
     public String getMessage() {
-        return this.formarString();
+        return this.generateStringError();
     }
 
-    public String formarString() {
-        return "Error Léxico en línea " +this.nroLinea+ ", columna " +this.nroColumna+ ": " /*+this.lexema */ +this.errorType+ "\n"
-                + this.generarDetalleDeError() + "\n[Error:"+this.lexema+"|"+this.nroLinea + "]\n\n";
+    public String generateStringError() {
+        return "Error Léxico en línea " +this.lineNumber + ", columna " +this.columnNumber + ": " /*+this.lexema */ +this.errorType+ "\n"
+                + this.generateErrorDetail() + "\n[Error:"+this.lexemeWithError +"|"+this.lineNumber + "]\n\n";
     }
 
-    public String generarDetalleDeError() {
-        String errorAMostrar = "Detalle: ";
-        int longitudMensajeDeInicio = errorAMostrar.length();
-        errorAMostrar += this.lexicalErrorLine;
-        String punteroQueSeñalaError = "";
-        for (int totalDesplazamientoDePuntero = 1; totalDesplazamientoDePuntero < (this.nroColumna + longitudMensajeDeInicio); totalDesplazamientoDePuntero++)
-            punteroQueSeñalaError+= " ";
-        punteroQueSeñalaError += "^";
-        return errorAMostrar + "\n" + punteroQueSeñalaError;
+    public String generateErrorDetail() {
+        String errorToShow = "Detalle: ";
+        int initStringLength = errorToShow.length();
+        errorToShow += this.lexicalErrorLine;
+        String errorPointer = "";
+        for (int totalPointerDisplacement = 1; totalPointerDisplacement < (this.columnNumber + initStringLength); totalPointerDisplacement++)
+            errorPointer+= " ";
+        errorPointer += "^";
+        return errorToShow + "\n" + errorPointer;
     }
 
 

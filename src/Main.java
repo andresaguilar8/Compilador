@@ -13,20 +13,13 @@ public class Main {
 
     public static void main (String [] args) {
 //        File file = new File(args[0]);
-        File file;
+        File file = null;
         FileHandler fileHandler = null;
 
 //        if (args.length > 0) {
 //            file = new File(args[0]);
-//            ManejadorDeArchivo manejadorDeArchivo = null;
-//            try {
-//                manejadorDeArchivo = new ManejadorDeArchivo(file);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            AnalizadorLexico analizadorLexico = new AnalizadorLexico(manejadorDeArchivo);
 //        }
-
+//
         file = new File("src/ArchivoPrueba");
             try {
                 fileHandler = new FileHandler(file);
