@@ -468,6 +468,7 @@ public class LexicalAnalyzer {
     private Token estado33()  {
         return new Token("String", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
+
     private Token estado34() throws IOException, LexicalException {
         if (this.currentCharacter == '"') {
             this.updateLexeme();
@@ -524,7 +525,7 @@ public class LexicalAnalyzer {
             return this.estado49();
         }
         else
-            if (this.currentCharacter != -1  && this.currentCharacter != '\n' && this.currentCharacter != '\'') {
+            if (!Character.isWhitespace(this.currentCharacter) && this.currentCharacter != -1  && this.currentCharacter != '\n' && this.currentCharacter != '\'') {
                 this.updateLexeme();
                 this.updateCurrentCharacter();
                 return this.estado39();

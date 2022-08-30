@@ -12,15 +12,15 @@ import java.util.Map;
 public class Main {
 
     public static void main (String [] args) {
-//        File file = new File(args[0]);
-        File file = null;
+        File file = new File(args[0]);
+//        File file = null;
         FileHandler fileHandler = null;
-//
-//        if (args.length > 0) {
-//            file = new File(args[0]);
-//        }
-//
-        file = new File("src/ArchivoPrueba");
+
+        if (args.length > 0) {
+            file = new File(args[0]);
+        }
+
+//        file = new File("src/ArchivoPrueba");
         try {
             fileHandler = new FileHandler(file);
         } catch (FileNotFoundException e) {
