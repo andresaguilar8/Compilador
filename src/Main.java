@@ -15,11 +15,11 @@ public class Main {
 //        File file = new File(args[0]);
         File file = null;
         FileHandler fileHandler = null;
-
+//
 //        if (args.length > 0) {
 //            file = new File(args[0]);
 //        }
-
+//
         file = new File("src/ArchivoPrueba");
         try {
             fileHandler = new FileHandler(file);

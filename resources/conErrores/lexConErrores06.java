@@ -1,7 +1,8 @@
-///[Error:"\h|5]
+///[Error:"\h +|5]
       za
 < ! !
 
-        ./ "\hola\"sd"
+        ./ "\h +
+        ola\"sd"
 
         .

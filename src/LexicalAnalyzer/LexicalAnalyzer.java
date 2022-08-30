@@ -468,7 +468,6 @@ public class LexicalAnalyzer {
     private Token estado33()  {
         return new Token("String", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
-
     private Token estado34() throws IOException, LexicalException {
         if (this.currentCharacter == '"') {
             this.updateLexeme();
@@ -492,9 +491,7 @@ public class LexicalAnalyzer {
             return this.estado38();
         }
         else
-            if (Character.isWhitespace(this.currentCharacter) || this.currentCharacter == '\n' || this.currentCharacter == '\'' || this.currentCharacter == -1) {
-//                if (this.currentCharacter != -1 && this.currentCharacter != '\n')
-//                    this.updateLexeme();
+            if (this.currentCharacter == '\n' || this.currentCharacter == '\'' || this.currentCharacter == -1) {
                 throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
             }
             else {
@@ -514,7 +511,6 @@ public class LexicalAnalyzer {
             if (this.currentCharacter != -1 && this.currentCharacter != '\n')
                 this.updateLexeme();
             throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());        }
-
     }
 
     private Token estado37()  {
@@ -544,8 +540,8 @@ public class LexicalAnalyzer {
             return this.estado37();
         }
         else {
-            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
-                this.updateLexeme();
+//            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
+//                this.updateLexeme();
             throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
         }
     }
