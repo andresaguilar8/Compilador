@@ -541,8 +541,6 @@ public class LexicalAnalyzer {
             return this.estado37();
         }
         else {
-//            if (this.currentCharacter != -1 && this.currentCharacter != '\n')
-//                this.updateLexeme();
             throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
         }
     }

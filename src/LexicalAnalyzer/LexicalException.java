@@ -1,6 +1,6 @@
 package LexicalAnalyzer;
 
-public class LexicalException extends Throwable {
+public class LexicalException extends Exception {
 
     private String lexemeWithError;
     private int lineNumber;

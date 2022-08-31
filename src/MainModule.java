@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main {
+public class MainModule {
 
     public static void main (String [] args) {
         File file = new File(args[0]);
-//        File file = null;
         FileHandler fileHandler = null;
 
-        if (args.length > 0) {
+        try {
             file = new File(args[0]);
+        }catch (ArrayIndexOutOfBoundsException exception) {
+            exception.printStackTrace();
         }
 
-//        file = new File("src/ArchivoPrueba");
         try {
             fileHandler = new FileHandler(file);
         } catch (FileNotFoundException e) {
@@ -61,15 +61,15 @@ public class Main {
         ArrayList<Token> tokensList = new ArrayList<>();
 
         try {
-            boolean quedanTokens = true;
-            while (quedanTokens) {
+            boolean tokensLeft = true;
+            while (tokensLeft) {
                 Token token = lexicalAnalyzer.nextToken();
                 tokensList.add(token);
                 if (token.getTokenId() == "EOF") {
-                    for (Token tokenAImprimir: tokensList)
-                        System.out.println(tokenAImprimir.toString());
+                    for (Token tokenToPrint: tokensList)
+                        System.out.println(tokenToPrint.toString());
                     System.out.println("\n[SinErrores]");
-                    quedanTokens = false;
+                    tokensLeft = false;
                 }
             }
 
