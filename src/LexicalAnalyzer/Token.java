@@ -16,6 +16,14 @@ public class Token {
         return this.token_id;
     }
 
+    public String getLexeme() {
+        return this.lexeme;
+    }
+
+    public int getLineNumber() {
+        return this.lineNumber;
+    }
+
     public String toString() {
         return "("+this.token_id+","+this.lexeme +","+this.lineNumber +")";
     }

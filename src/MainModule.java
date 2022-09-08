@@ -2,6 +2,9 @@ import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
 import LexicalAnalyzer.Token;
+import SyntaxAnalyzer.SyntaxAnalyzer;
+import SyntaxAnalyzer.SyntaxException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,14 +15,17 @@ import java.util.Map;
 public class MainModule {
 
     public static void main (String [] args) {
-        File file = new File(args[0]);
+//        File file = new File(args[0]);
+            File file = null;
         FileHandler fileHandler = null;
 
-        try {
-            file = new File(args[0]);
-        }catch (ArrayIndexOutOfBoundsException exception) {
-            exception.printStackTrace();
-        }
+//        try {
+//            file = new File(args[0]);
+//        }catch (ArrayIndexOutOfBoundsException exception) {
+//            exception.printStackTrace();
+//        }
+//
+        file = new File("src/ArchivoPrueba.txt");
 
         try {
             fileHandler = new FileHandler(file);
@@ -53,27 +59,15 @@ public class MainModule {
         keywordDictionary.put("false", "pr_false");
 
         LexicalAnalyzer lexicalAnalyzer = null;
+        SyntaxAnalyzer syntaxAnalyzer = null;
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
+            syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        ArrayList<Token> tokensList = new ArrayList<>();
-
-        try {
-            boolean tokensLeft = true;
-            while (tokensLeft) {
-                Token token = lexicalAnalyzer.nextToken();
-                tokensList.add(token);
-                if (token.getTokenId() == "EOF") {
-                    for (Token tokenToPrint: tokensList)
-                        System.out.println(tokenToPrint.toString());
-                    System.out.println("\n[SinErrores]");
-                    tokensLeft = false;
-                }
-            }
-
-        } catch (IOException | LexicalException e) {
+        } catch (LexicalException e) {
+            e.printStackTrace();
+        } catch (SyntaxException e) {
             System.out.println(e.getMessage());
         }
     }

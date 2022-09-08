@@ -289,15 +289,15 @@ public class LexicalAnalyzer {
             return this.estado15();
         }
         else
-            return new Token("op+", this.lexeme, this.fileHandler.getCurrentRowNumber());
+            return new Token("+", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado15() {
-        return new Token("op+=", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("+=", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado16() {
-        return new Token("op%", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("%", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado17() throws IOException, LexicalException {
@@ -310,7 +310,7 @@ public class LexicalAnalyzer {
     }
 
     private Token estado18() {
-        return new Token("op&&", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("&&", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado19() throws IOException, LexicalException {
@@ -324,35 +324,35 @@ public class LexicalAnalyzer {
     }
 
     private Token estado20() {
-        return new Token("op||", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("||", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado21() {
-        return new Token("parentesis_abre", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("(", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado22() {
-        return new Token("parentesis_cierra", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token(")", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado23() {
-        return new Token("llave_abre", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("{", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado24() {
-        return new Token("llave_cierra", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token("}", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado25() {
-        return new Token("punto_y_coma", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token(";", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado26() {
-        return new Token("punto", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token(".", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado27() {
-        return new Token("coma", this.lexeme, this.fileHandler.getCurrentRowNumber());
+        return new Token(".", this.lexeme, this.fileHandler.getCurrentRowNumber());
     }
 
     private Token estado28() throws IOException, LexicalException {

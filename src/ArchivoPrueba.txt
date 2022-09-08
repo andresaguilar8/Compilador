@@ -1,3 +1,5 @@
-jaja
-"we"
-#
+// Prueba una Clase vacia
+
+class Prueba1 {
+
+}

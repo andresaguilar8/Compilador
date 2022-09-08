@@ -1,5 +1,5 @@
 // Prueba una Clase vacia
 
-class Prueba1 x{
+class Prueba1{
 
 }
