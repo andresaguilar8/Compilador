@@ -1,5 +1,7 @@
-// Prueba una Clase vacia
+class A {
 
-class Prueba1 x{
+    public void metodo() {
+
+    }
 
 }

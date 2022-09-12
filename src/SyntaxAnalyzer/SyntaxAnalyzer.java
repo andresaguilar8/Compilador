@@ -27,6 +27,8 @@ public class SyntaxAnalyzer {
     public void inicial() throws LexicalException, IOException, SyntaxException {
         this.listaClases();
         match("EOF");
+        System.out.println("Compilación Exitosa\n\n");
+        System.out.println("[SinErrores]");
     }
 
     public void listaClases() throws LexicalException, IOException, SyntaxException {
@@ -41,13 +43,10 @@ public class SyntaxAnalyzer {
     public void clase() throws LexicalException, IOException, SyntaxException {
         if (this.currentToken.getTokenId().equals("pr_class")) {
             this.claseConcreta();
-        }
-        else
-            if (this.currentToken.getTokenId().equals("pr_interface")) {
-                this.interface_();
-            }
-            else
-                throw new SyntaxException(this.currentToken, "class o interface");
+        } else if (this.currentToken.getTokenId().equals("pr_interface")) {
+            this.interface_();
+        } else
+            throw new SyntaxException(this.currentToken, "class o interface");
     }
 
     public void claseConcreta() throws LexicalException, IOException, SyntaxException {
@@ -60,7 +59,7 @@ public class SyntaxAnalyzer {
             this.listaMiembros();
             match("}");
         } else
-              throw new SyntaxException(this.currentToken, "class");
+            throw new SyntaxException(this.currentToken, "pr_class");
     }
 
     public void interface_() throws LexicalException, IOException, SyntaxException {
@@ -71,16 +70,16 @@ public class SyntaxAnalyzer {
             match("{");
             this.listaEncabezados();
             match("}");
-        }
-        else
+        } else
             throw new SyntaxException(this.currentToken, "interface");
     }
 
     public void heredaDe() throws LexicalException, IOException, SyntaxException {
         if (this.currentToken.getTokenId().equals("pr_extends")) {
             match("pr_extends");
+            match("idClase");
         } else {
-            //todo epsilon, no hago nada
+            // epsilon, no hago nada
         }
     }
 
@@ -89,7 +88,7 @@ public class SyntaxAnalyzer {
             this.match("pr_implements");
             this.listaTipoReferencia();
         } else {
-            //todo epsilon, no hago nada
+            // epsilon, no hago nada
         }
     }
 
@@ -120,7 +119,7 @@ public class SyntaxAnalyzer {
     }
 
     public void listaMiembros() throws LexicalException, SyntaxException, IOException {
-        if (Arrays.asList("pr_public", "pr_private", "pr_static").contains(this.currentToken.getTokenId())) {
+        if (Arrays.asList("pr_public", "pr_private", "pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.miembro();
             this.listaMiembros();
         } else {
@@ -129,24 +128,24 @@ public class SyntaxAnalyzer {
     }
 
     public void listaEncabezados() throws LexicalException, IOException, SyntaxException {
-        if (this.currentToken.getTokenId().equals("pr_static")) {
+        if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.encabezadoMetodo();
             this.match(";");
             this.listaEncabezados();
-        } else {
-            //epsilon, no hago nada
         }
+        else {
+            //epsilon, no hago nada
+            }
     }
 
     public void miembro() throws LexicalException, IOException, SyntaxException {
-        //todo acomodar y hacer en una sola linea
         if (Arrays.asList("pr_public", "pr_private").contains(this.currentToken.getTokenId()))
             this.atributo();
         else
-            if (this.currentToken.getTokenId().equals("pr_static"))
+            if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId()))
                 this.metodo();
-            else
-                throw new SyntaxException(this.currentToken, "pr_public, pr_private o pr_static");
+        else
+            throw new SyntaxException(this.currentToken, "pr_public, pr_private, pr_static"); //todo terminar
     }
 
     public void atributo() throws LexicalException, IOException, SyntaxException {
@@ -160,22 +159,22 @@ public class SyntaxAnalyzer {
     }
 
     public void metodo() throws LexicalException, IOException, SyntaxException {
-        if (this.currentToken.getTokenId().equals("pr_static")) {
+        if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.encabezadoMetodo();
             this.bloque();
-        } else {
-            //todo epsilon, no hago nada
         }
+         else
+            throw new SyntaxException(this.currentToken, "pr_public"); //todo terminar
     }
 
     private void encabezadoMetodo() throws LexicalException, IOException, SyntaxException {
-        if (this.currentToken.getTokenId().equals("pr_static")) {
+        if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.estaticoOpt();
             this.tipoMetodo();
             this.match("idMV");
             this.argsFormales();
         } else
-            throw new SyntaxException(this.currentToken, "pr_static");
+            throw new SyntaxException(this.currentToken, "pr_static");         //todo acomodar excep
     }
 
     private void visibilidad() throws LexicalException, IOException, SyntaxException {
@@ -184,36 +183,35 @@ public class SyntaxAnalyzer {
         } else if (this.currentToken.getTokenId().equals("pr_private")) {
             this.match("pr_private");
         } else
-            throw new SyntaxException(this.currentToken, "pr_public");
+            throw new SyntaxException(this.currentToken, "pr_public o pr_private");
     }
 
     private void tipo() throws LexicalException, IOException, SyntaxException {
         if (Arrays.asList("pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.tipoPrimitivo();
-            this.match("idClase");
         } else
-            throw new SyntaxException(this.currentToken, "pr_boolean, pr_char o pr_int");
+            if (this.currentToken.getTokenId().equals("idClase"))
+                this.match("idClase");
+            else
+                throw new SyntaxException(this.currentToken, "pr_boolean, pr_char, pr_int o idClase");
     }
 
     private void tipoPrimitivo() throws LexicalException, IOException, SyntaxException {
         if (this.currentToken.getTokenId().equals("pr_boolean"))
             this.match("pr_boolean");
+        else if (this.currentToken.getTokenId().equals("pr_char"))
+            this.match("pr_char");
+        else if (this.currentToken.getTokenId().equals("pr_int"))
+            this.match("pr_int");
         else
-            if (this.currentToken.getTokenId().equals("pr_char"))
-                this.match("pr_char");
-            else
-                if (this.currentToken.getTokenId().equals("pr_int"))
-                    this.match("pr_int");
-                else
-                    throw new SyntaxException(this.currentToken, "pr_boolean, pr_char o pr_int");
+            throw new SyntaxException(this.currentToken, "pr_boolean, pr_char o pr_int");
     }
 
     private void listaDecAtrs() throws LexicalException, IOException, SyntaxException {
         if (this.currentToken.getTokenId().equals("idMV")) {
             this.match("idMV");
             this.listaDecAtrsPrima();
-        }
-        else
+        } else
             throw new SyntaxException(this.currentToken, "idMV");
     }
 
@@ -235,13 +233,12 @@ public class SyntaxAnalyzer {
     }
 
     private void tipoMetodo() throws LexicalException, IOException, SyntaxException {
-        if (Arrays.asList("pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId()))
+        if (Arrays.asList("idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId()))
             this.tipo();
+        else if (this.currentToken.getTokenId().equals("pr_void"))
+            this.match("pr_void");
         else
-            if (this.currentToken.equals("void"))
-                this.match("void");
-            else
-                throw new SyntaxException(this.currentToken, "pr_boolean, pr_char, pr_int o void");
+            throw new SyntaxException(this.currentToken, "pr_boolean, pr_char, pr_int o pr_void"); //todo revisar
     }
 
     private void argsFormales() throws LexicalException, IOException, SyntaxException {
@@ -249,13 +246,12 @@ public class SyntaxAnalyzer {
             this.match("(");
             this.listaArgsFormalesOpt();
             this.match(")");
-        }
-        else
+        } else
             throw new SyntaxException(this.currentToken, "(");
     }
 
     private void listaArgsFormalesOpt() throws LexicalException, IOException, SyntaxException {
-        if (Arrays.asList("pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId()))
+        if (Arrays.asList("pr_boolean", "pr_char", "pr_int", "idClase").contains(this.currentToken.getTokenId()))
             this.listaArgsFormales();
         else {
             // epsilon, no hago nada
@@ -263,11 +259,10 @@ public class SyntaxAnalyzer {
     }
 
     private void listaArgsFormales() throws LexicalException, IOException, SyntaxException {
-        if (Arrays.asList("pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
-            this.argsFormales();
+        if (Arrays.asList("pr_boolean", "pr_char", "pr_int", "idClase").contains(this.currentToken.getTokenId())) {
+            this.argFormal();
             this.listaArgsFormalesPrima();
-        }
-        else
+        } else
             throw new SyntaxException(this.currentToken, "pr_boolean, pr_char o pr_int");
     }
 
@@ -281,17 +276,368 @@ public class SyntaxAnalyzer {
     }
 
     private void argFormal() throws LexicalException, IOException, SyntaxException {
-        if (Arrays.asList("pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
+        if (Arrays.asList("pr_boolean", "pr_char", "pr_int", "idClase").contains(this.currentToken.getTokenId())) {
             this.tipo();
             this.match("idMV");
         } else
-            throw new SyntaxException(this.currentToken, "pr_boolean, pr_char o pr_int");
+            throw new SyntaxException(this.currentToken, "pr_boolean, pr_char, pr_int o idClase");
     }
 
-    private void bloque() {
+    private void bloque() throws LexicalException, SyntaxException, IOException {
         if (this.currentToken.getTokenId().equals("{")) {
             this.match("{");
+            this.listaSentencias();
+            this.match("}");
+        } else
+            throw new SyntaxException(this.currentToken, "{");
+    }
+
+    private void listaSentencias() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList(";", "idMV", "pr_this", "pr_new", "idClase", "(", "pr_return", "pr_if", "pr_while", "{", "pr_var").contains(this.currentToken.getTokenId())) {
+            this.sentencia();
+            this.listaSentencias();
+        } else {
+            // epsilon, no hago nada
         }
+    }
+
+    private void sentencia() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals(";"))
+            this.match(";");
+        else if (Arrays.asList("idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
+            this.acceso();
+            this.sentenciaPrima();
+            this.match(";");
+        } else if (this.currentToken.getTokenId().equals("pr_var")) {
+            this.varLocal();
+            this.match(";");
+        } else if (this.currentToken.getTokenId().equals("pr_return")) {
+            this.noTerminalReturn();
+            this.match(";");
+        } else if (this.currentToken.getTokenId().equals("pr_if"))
+            this.noTerminalIf();
+        else if (this.currentToken.getTokenId().equals("pr_while"))
+            this.noTerminalWhile();
+        else if (this.currentToken.getTokenId().equals("{"))
+            this.bloque();
+        else                                                        //todo poner todos los posibles aca en la excep
+            throw new SyntaxException(this.currentToken, "pr_var, pr_return, pr_if, pr_while o {");
+    }
+
+    private void sentenciaPrima() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList("=", "+=", "-=").contains(this.currentToken.getTokenId())) {
+            this.tipoAsignacion();
+            this.expresion();
+        }
+        else {
+            //epsilon, no hago nada
+        }
+    }
+
+    private void tipoAsignacion() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("="))
+            this.match("=");
+        else if (this.currentToken.getTokenId().equals("+="))
+            this.match("+=");
+        else if (this.currentToken.getTokenId().equals("-="))
+            this.match("-=");
+        else
+            throw new SyntaxException(this.currentToken, "=, += o -=");
+    }
+
+    private void varLocal() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_var")) {
+            this.match("pr_var");
+            this.match("idMV");
+            this.match("=");
+            this.expresion();
+        } else
+            throw new SyntaxException(this.currentToken, "pr_var");
+    }
+
+    private void noTerminalReturn() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_return")) {
+            this.match("pr_return");
+            this.expresionOpt();
+        } else
+            throw new SyntaxException(this.currentToken, "pr_return");
+    }
+
+    private void expresionOpt() throws SyntaxException, LexicalException, IOException {
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+            this.expresion();
+        else {
+            //epsilon, no hago nada
+        }
+    }
+
+    private void noTerminalIf() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_if")) {
+            this.match("pr_if");
+            this.match("(");
+            this.expresion();
+            this.match(")");
+            this.sentencia();
+            this.noTerminalIfPrima();
+        } else
+            throw new SyntaxException(this.currentToken, "pr_if");
+    }
+
+    private void noTerminalIfPrima() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_else")) {
+            this.match("pr_else");
+            this.sentencia();
+        } else {
+            // epsilon, no hago nada
+        }
+    }
+
+    private void noTerminalWhile() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_while")) {
+            this.match("pr_while");
+            this.match("(");
+            this.expresion();
+            this.match(")");
+            this.sentencia();
+        } else
+            throw new SyntaxException(this.currentToken, "pr_while");
+    }
+
+    private void expresion() throws SyntaxException, LexicalException, IOException {
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
+            this.expresionUnaria();
+            this.expresionPrima();
+        }
+        else
+            throw new SyntaxException(this.currentToken, "+, -, !, pr_null, pr_true, pr_false, intLiteral, charLiteral o stringLiteral");
+    }
+
+    private void expresionPrima() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList("||", "&&", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%").contains(this.currentToken.getTokenId())) {
+            this.operadorBinario();
+            this.expresionUnaria();
+            this.expresionPrima();
+        } else {
+            // epsilon, no hago nada
+        }
+    }
+
+    private void operadorBinario() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("||"))
+            this.match("||");
+        else if (this.currentToken.getTokenId().equals("&&"))
+            this.match("&&");
+        else if (this.currentToken.getTokenId().equals("=="))
+            this.match("==");
+        else if (this.currentToken.getTokenId().equals("!="))
+            this.match("!=");
+        else if (this.currentToken.getTokenId().equals("<"))
+            this.match("<");
+        else if (this.currentToken.getTokenId().equals(">"))
+            this.match(">");
+        else if (this.currentToken.getTokenId().equals("<="))
+            this.match("<=");
+        else if (this.currentToken.getTokenId().equals(">="))
+            this.match(">=");
+        else if (this.currentToken.getTokenId().equals("+"))
+            this.match("+");
+        else if (this.currentToken.getTokenId().equals("-"))
+            this.match("-");
+        else if (this.currentToken.getTokenId().equals("*"))
+            this.match("*");
+        else if (this.currentToken.getTokenId().equals("/"))
+            this.match("/");
+        else if (this.currentToken.getTokenId().equals("%"))
+            this.match("%");
+        else
+            throw new SyntaxException(this.currentToken, "+, - o !"); //todo poner todo
+    }
+
+    private void expresionUnaria() throws SyntaxException, LexicalException, IOException {
+        if (Arrays.asList("+", "-", "!").contains(this.currentToken.getTokenId())) {
+            this.operadorUnario();
+            this.operando();
+        } else if (Arrays.asList("pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "pr_this", "idMV", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+            this.operando();
+        else
+            throw new SyntaxException(this.currentToken, "+, - o !"); //todo poner todo
+    }
+
+    private void operadorUnario() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("+"))
+            this.match("+");
+        else if (this.currentToken.getTokenId().equals("-"))
+            this.match("-");
+        else if (this.currentToken.getTokenId().equals("!"))
+            this.match("!");
+        else
+            throw new SyntaxException(this.currentToken, "+, - o !");
+    }
+
+    private void operando() throws SyntaxException, LexicalException, IOException {
+        if (Arrays.asList("pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral").contains(this.currentToken.getTokenId()))
+            this.literal();
+        else if (Arrays.asList("idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+            this.acceso();
+        else
+            throw new SyntaxException(this.currentToken, "+, - o !"); //todo poner todo
+    }
+
+    private void literal() throws SyntaxException, LexicalException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_null"))
+            this.match("pr_null");
+        else if (this.currentToken.getTokenId().equals("pr_true"))
+            this.match("pr_true");
+        else if (this.currentToken.getTokenId().equals("pr_false"))
+            this.match("pr_false");
+        else if (this.currentToken.getTokenId().equals("intLiteral"))
+            this.match("intLiteral");
+        else if (this.currentToken.getTokenId().equals("pr_char"))
+            this.match("pr_char");
+        else if (this.currentToken.getTokenId().equals("stringLiteral"))
+            this.match("stringLiteral");
+        else
+            throw new SyntaxException(this.currentToken, "+, - o !"); //todo poner todo
+    }
+
+    private void acceso() throws SyntaxException, LexicalException, IOException {
+        if (Arrays.asList("pr_this", "idMV", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
+            this.primario();
+            this.encadenadoOpt();
+        } else
+            throw new SyntaxException(this.currentToken, "this, idMV, pr_new, idClase o (");
+    }
+
+    private void primario() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("idMV")) {
+            this.match("idMV");
+            this.primarioPrima();
+        } else if (this.currentToken.getTokenId().equals("pr_this"))
+            this.accesoThis();
+        else if (this.currentToken.getTokenId().equals("pr_new"))
+            this.accesoConstructor();
+        else if (this.currentToken.getTokenId().equals("idClase"))
+            this.accesoMetodoEstatico();
+        else if (this.currentToken.getTokenId().equals("("))
+            this.expresionParentizada();
+        else
+            throw new SyntaxException(this.currentToken, "pr_this, idMV, pr_new, idClase o (");
+    }
+
+    private void primarioPrima() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("("))
+            this.argsActuales();
+        else {
+            // epsilon, no hago nada
+        }
+    }
+
+    private void accesoThis() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_this"))
+            this.match("pr_this");
+        else
+            throw new SyntaxException(this.currentToken, "pr_this");
+    }
+
+    //todo verificar
+//    private void accesoVar() {
+//        if (this.currentToken.getTokenId().equals("pr_this"))
+//            this.match("pr_this");
+//        else
+//            throw new SyntaxException(this.currentToken, "pr_this");
+//    }
+
+    private void accesoConstructor() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("pr_new")) {
+            this.match("pr_new");
+            this.match("idClase");
+            this.match("(");
+            this.match(")");
+        }
+        else
+            throw new SyntaxException(this.currentToken, "pr_new");
+    }
+
+    private void expresionParentizada() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("(")) {
+            this.match("(");
+            this.expresion();
+            this.match(")");
+        } else
+            throw new SyntaxException(this.currentToken, "(");
+    }
+
+    //todo verificar
+//    private void accesoMetodo() {
+//
+//    }
+
+    private void accesoMetodoEstatico() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("idClase")) {
+            this.match("idClase");
+            this.match(".");
+            this.match("idMV");
+            this.argsActuales();
+        } else
+            throw new SyntaxException(this.currentToken, "idClase");
+    }
+
+    private void argsActuales() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("(")) {
+            this.match("(");
+            this.listaExpsOpt();
+            this.match(")");
+        } else
+            throw new SyntaxException(this.currentToken, "(");
+    }
+
+    private void listaExpsOpt() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+            this.listaExps();
+        else {
+            // epsilon, no hago nada
+        }
+    }
+
+    private void listaExps() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
+            this.expresion();
+            this.listaExpsPrima();
+        }
+        else
+            throw new SyntaxException(this.currentToken, "+"); //todo terminar
+    }
+
+    private void listaExpsPrima() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals(",")) {
+            this.match(",");
+            this.listaExps();
+        } else
+            throw new SyntaxException(this.currentToken, ",");
+    }
+
+    private void encadenadoOpt() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals(".")) {
+            this.match(".");
+            this.match("idMV");
+            this.encadenadoOptPrima();
+        }
+        else {
+            // epsilon, no hago nada
+        }
+    }
+
+    private void encadenadoOptPrima() throws LexicalException, SyntaxException, IOException {
+        if (this.currentToken.getTokenId().equals("."))
+            this.encadenadoOpt();
+        else
+            if (this.currentToken.getTokenId().equals("(")) {
+                this.argsActuales();
+                this.encadenadoOpt();
+            }
+            else {
+                // epsilon,  no hago nada
+            }
     }
 
 }

@@ -24,7 +24,7 @@ public class SyntaxException extends Exception {
 
     private String generateStringError() {
         return "\n\n[Error:" +
-                this.currentToken.getTokenId()
+                this.currentToken.getLexeme()
                 + "|"
                 + this.currentToken.getLineNumber()
                 + "]\n\n";
