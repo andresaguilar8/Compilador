@@ -27,8 +27,6 @@ public class SyntaxAnalyzer {
     public void inicial() throws LexicalException, IOException, SyntaxException {
         this.listaClases();
         match("EOF");
-        System.out.println("Compilación Exitosa\n\n");
-        System.out.println("[SinErrores]");
     }
 
     public void listaClases() throws LexicalException, IOException, SyntaxException {
@@ -292,6 +290,16 @@ public class SyntaxAnalyzer {
             throw new SyntaxException(this.currentToken, "{");
     }
 
+    private void sentenciaPrima() throws LexicalException, SyntaxException, IOException {
+        if (Arrays.asList("=", "+=", "-=").contains(this.currentToken.getTokenId())) {
+            this.tipoAsignacion();
+            this.expresion();
+        }
+        else {
+            //epsilon, no hago nada
+        }
+    }
+
     private void listaSentencias() throws LexicalException, SyntaxException, IOException {
         if (Arrays.asList(";", "idMV", "pr_this", "pr_new", "idClase", "(", "pr_return", "pr_if", "pr_while", "{", "pr_var").contains(this.currentToken.getTokenId())) {
             this.sentencia();
@@ -324,16 +332,6 @@ public class SyntaxAnalyzer {
             throw new SyntaxException(this.currentToken, "pr_var, pr_return, pr_if, pr_while o {");
     }
 
-    private void sentenciaPrima() throws LexicalException, SyntaxException, IOException {
-        if (Arrays.asList("=", "+=", "-=").contains(this.currentToken.getTokenId())) {
-            this.tipoAsignacion();
-            this.expresion();
-        }
-        else {
-            //epsilon, no hago nada
-        }
-    }
-
     private void tipoAsignacion() throws LexicalException, SyntaxException, IOException {
         if (this.currentToken.getTokenId().equals("="))
             this.match("=");
@@ -364,7 +362,7 @@ public class SyntaxAnalyzer {
     }
 
     private void expresionOpt() throws SyntaxException, LexicalException, IOException {
-        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
             this.expresion();
         else {
             //epsilon, no hago nada

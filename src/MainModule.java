@@ -15,17 +15,17 @@ import java.util.Map;
 public class MainModule {
 
     public static void main (String [] args) {
-        File file = new File(args[0]);
-//        File file = null;
+//        File file = new File(args[0]);
+        File file = null;
         FileHandler fileHandler = null;
 
-        try {
-            file = new File(args[0]);
-        }catch (ArrayIndexOutOfBoundsException exception) {
-            exception.printStackTrace();
-        }
-
-//        file = new File("src/ArchivoPrueba.txt");
+//        try {
+//            file = new File(args[0]);
+//        }catch (ArrayIndexOutOfBoundsException exception) {
+//            exception.printStackTrace();
+//        }
+//
+        file = new File("src/ArchivoPrueba.txt");
 
         try {
             fileHandler = new FileHandler(file);
@@ -64,6 +64,9 @@ public class MainModule {
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
             syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
+            System.out.println("Compilación Exitosa\n\n");
+            System.out.println("[SinErrores]");
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (LexicalException lexicalException) {
