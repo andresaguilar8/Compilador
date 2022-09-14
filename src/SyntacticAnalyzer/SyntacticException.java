@@ -1,13 +1,13 @@
-package SyntaxAnalyzer;
+package SyntacticAnalyzer;
 
 import LexicalAnalyzer.Token;
 
-public class SyntaxException extends Exception {
+public class SyntacticException extends Exception {
 
     private Token currentToken;
     private String tokenId;
 
-    public SyntaxException(Token currentToken, String tokenId) {
+    public SyntacticException(Token currentToken, String tokenId) {
         this.currentToken = currentToken;
         this.tokenId = tokenId;
     }

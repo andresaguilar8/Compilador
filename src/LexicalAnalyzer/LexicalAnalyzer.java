@@ -14,6 +14,7 @@ public class LexicalAnalyzer {
     private String lineError;
     private Map<String, String> keywordDictionary;
     private FileHandler fileHandler;
+    private boolean lexicalErrors = false;
 
     public LexicalAnalyzer(FileHandler fileHandler, Map<String, String> keywordDictionary) throws IOException {
         this.fileHandler = fileHandler;
@@ -31,8 +32,16 @@ public class LexicalAnalyzer {
     }
 
     public Token nextToken() throws IOException, LexicalException {
-        this.lexeme = "";
-        return estado0();
+        try {
+            this.lexeme = "";
+            return estado0();
+        }
+        catch (IOException | LexicalException exception) {
+            System.out.println(exception.getMessage());
+            this.updateCurrentCharacter();
+            this.lexicalErrors = true;
+            return this.nextToken();
+        }
     }
 
     private Token estado0() throws IOException, LexicalException {
@@ -698,4 +707,7 @@ public class LexicalAnalyzer {
         return Character.isDigit(currentCharacter) || (this.currentCharacter >= 65 && this.currentCharacter <= 70) || (this.currentCharacter >= 97 && this.currentCharacter <= 102);
     }
 
+    public boolean hasLexicalErrors() {
+        return this.lexicalErrors;
+    }
 }

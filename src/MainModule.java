@@ -2,9 +2,8 @@ import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
 import LexicalAnalyzer.Token;
-import SyntaxAnalyzer.SyntaxAnalyzer;
-import SyntaxAnalyzer.SyntaxException;
-
+import SyntacticAnalyzer.SyntacticAnalyzer;
+import SyntacticAnalyzer.SyntacticException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,22 +58,48 @@ public class MainModule {
         keywordDictionary.put("false", "pr_false");
 
         LexicalAnalyzer lexicalAnalyzer = null;
-        SyntaxAnalyzer syntaxAnalyzer = null;
+        SyntacticAnalyzer syntaxAnalyzer = null;
+
+//        try {
+//            lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
+//        } catch (IOException exception) {
+//            exception.printStackTrace();
+//        }
 
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
-            syntaxAnalyzer = new SyntaxAnalyzer(lexicalAnalyzer);
+            syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
 
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");
 
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        } catch (LexicalException lexicalException) {
-            System.out.println(lexicalException.getMessage());
-        } catch (SyntaxException syntaxException) {
-            System.out.println(syntaxException.getMessage());
+        } catch (IOException | LexicalException | SyntacticException exception) {
+            System.out.println(exception.getMessage());
         }
 
+//        try {
+//            getTokens(lexicalAnalyzer);
+//        } catch (IOException | LexicalException exception) {
+//            System.out.println(exception.getMessage());
+//        }
     }
+
+    private static void getTokens(LexicalAnalyzer lexicalAnalyzer) throws LexicalException, IOException {
+        ArrayList<Token> tokensList = new ArrayList<>();
+        boolean tokensLeft = true;
+        while (tokensLeft) {
+            Token token = lexicalAnalyzer.nextToken();
+            tokensList.add(token);
+            if (token.getTokenId() == "EOF" && !lexicalAnalyzer.hasLexicalErrors()) {
+                for (Token tokenToPrint: tokensList)
+                    System.out.println(tokenToPrint.toString());
+                System.out.println("\n[SinErrores]");
+                tokensLeft = false;
+            }
+            else
+                if (token.getTokenId() == "EOF")
+                    tokensLeft = false;
+        }
+    }
+
 }
