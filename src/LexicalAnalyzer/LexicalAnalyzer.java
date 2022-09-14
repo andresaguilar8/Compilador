@@ -32,16 +32,16 @@ public class LexicalAnalyzer {
     }
 
     public Token nextToken() throws IOException, LexicalException {
-        try {
+//        try {
             this.lexeme = "";
             return estado0();
-        }
-        catch (IOException | LexicalException exception) {
-            System.out.println(exception.getMessage());
-            this.updateCurrentCharacter();
-            this.lexicalErrors = true;
-            return this.nextToken();
-        }
+//        }
+//        catch (IOException | LexicalException exception) {
+//            System.out.println(exception.getMessage());
+//            this.updateCurrentCharacter();
+//            this.lexicalErrors = true;
+//            return this.nextToken();
+//        }
     }
 
     private Token estado0() throws IOException, LexicalException {

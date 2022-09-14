@@ -5,5 +5,5 @@ class Prueba {
     void metodo() {
         while (x) extends {
     }
-        
+
 }

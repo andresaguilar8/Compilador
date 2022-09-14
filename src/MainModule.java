@@ -14,17 +14,17 @@ import java.util.Map;
 public class MainModule {
 
     public static void main (String [] args) {
-        File file = new File(args[0]);
-//        File file = null;
+//        File file = new File(args[0]);
+        File file = null;
         FileHandler fileHandler = null;
 
-        try {
-            file = new File(args[0]);
-        }catch (ArrayIndexOutOfBoundsException exception) {
-            exception.printStackTrace();
-        }
-
-//        file = new File("src/ArchivoPrueba.txt");
+//        try {
+//            file = new File(args[0]);
+//        }catch (ArrayIndexOutOfBoundsException exception) {
+//            exception.printStackTrace();
+//        }
+//
+        file = new File("src/ArchivoPrueba.txt");
 
         try {
             fileHandler = new FileHandler(file);
@@ -60,45 +60,53 @@ public class MainModule {
         LexicalAnalyzer lexicalAnalyzer = null;
         SyntacticAnalyzer syntaxAnalyzer = null;
 
-//        try {
-//            lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
-//        } catch (IOException exception) {
-//            exception.printStackTrace();
-//        }
-
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
-            syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
-
-            System.out.println("Compilación Exitosa\n\n");
-            System.out.println("[SinErrores]");
-
-        } catch (IOException | LexicalException | SyntacticException exception) {
-            System.out.println(exception.getMessage());
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
 
 //        try {
-//            getTokens(lexicalAnalyzer);
-//        } catch (IOException | LexicalException exception) {
+//            lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
+//            syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
+//
+//            System.out.println("Compilación Exitosa\n\n");
+//            System.out.println("[SinErrores]");
+//
+//        } catch (IOException | LexicalException | SyntacticException exception) {
 //            System.out.println(exception.getMessage());
 //        }
+
+            getTokens(lexicalAnalyzer);
+
     }
 
-    private static void getTokens(LexicalAnalyzer lexicalAnalyzer) throws LexicalException, IOException {
+
+
+
+    private static void getTokens(LexicalAnalyzer lexicalAnalyzer)  {
         ArrayList<Token> tokensList = new ArrayList<>();
         boolean tokensLeft = true;
+
         while (tokensLeft) {
-            Token token = lexicalAnalyzer.nextToken();
-            tokensList.add(token);
-            if (token.getTokenId() == "EOF" && !lexicalAnalyzer.hasLexicalErrors()) {
-                for (Token tokenToPrint: tokensList)
-                    System.out.println(tokenToPrint.toString());
-                System.out.println("\n[SinErrores]");
-                tokensLeft = false;
+            Token token = null;
+            try {
+                token = lexicalAnalyzer.nextToken();
+            } catch (IOException | LexicalException exception) {
+                System.out.println(exception.getMessage());
+                token = null;
             }
-            else
-                if (token.getTokenId() == "EOF")
+            tokensList.add(token);
+            if (token != null)
+                if (token.getTokenId().equals("EOF") && !lexicalAnalyzer.hasLexicalErrors()) {
+                    for (Token tokenToPrint : tokensList)
+                        System.out.println(tokenToPrint.toString());
+                    System.out.println("\n[SinErrores]");
                     tokensLeft = false;
+                }
+                else
+                    if (token.getTokenId().equals("EOF"))
+                        tokensLeft = false;
         }
     }
 

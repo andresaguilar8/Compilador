@@ -2,7 +2,7 @@ class A {
 
 
     void metodo() {
-
+    #  $
         miMetodo(a).miMetodo(b, 'c');
 
     }
