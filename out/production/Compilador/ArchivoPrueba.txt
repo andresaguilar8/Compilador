@@ -1,9 +1,3 @@
-class A {
 
+'\uAAAA' '
 
-    void metodo() {
-    #  $
-        miMetodo(a).miMetodo(b, 'c');
-
-    }
-}

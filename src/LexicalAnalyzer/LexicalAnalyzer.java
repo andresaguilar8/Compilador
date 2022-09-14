@@ -32,16 +32,8 @@ public class LexicalAnalyzer {
     }
 
     public Token nextToken() throws IOException, LexicalException {
-//        try {
-            this.lexeme = "";
-            return estado0();
-//        }
-//        catch (IOException | LexicalException exception) {
-//            System.out.println(exception.getMessage());
-//            this.updateCurrentCharacter();
-//            this.lexicalErrors = true;
-//            return this.nextToken();
-//        }
+        this.lexeme = "";
+        return estado0();
     }
 
     private Token estado0() throws IOException, LexicalException {
@@ -193,7 +185,8 @@ public class LexicalAnalyzer {
                                                                                                         }
                                                                                                         else {
                                                                                                             this.updateLexeme();
-                                                                                                            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), this.lexeme + " no es un símbolo válido", this.fileHandler.getLineWithError());
+                                                                                                            this.updateCurrentCharacter();
+                                                                                                            throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber() - 1, this.lexeme + " no es un símbolo válido", this.fileHandler.getLineWithError());
                                                                                                         }
     }
 

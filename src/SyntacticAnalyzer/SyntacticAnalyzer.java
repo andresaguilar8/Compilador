@@ -26,7 +26,6 @@ public class SyntacticAnalyzer {
 
     public void inicial() throws LexicalException, IOException, SyntacticException {
         this.listaClases();
-        //todo EOF o $
         match("EOF");
     }
 
