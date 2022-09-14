@@ -491,12 +491,12 @@ public class SyntacticAnalyzer {
             this.match("pr_false");
         else if (this.currentToken.getTokenId().equals("intLiteral"))
             this.match("intLiteral");
-        else if (this.currentToken.getTokenId().equals("pr_char"))
-            this.match("pr_char");
+        else if (this.currentToken.getTokenId().equals("charLiteral"))
+            this.match("charLiteral");
         else if (this.currentToken.getTokenId().equals("stringLiteral"))
             this.match("stringLiteral");
         else
-            throw new SyntacticException(this.currentToken, "pr_null, pr_true, pr_false, intLiteral, pr_char o stringLiteral");
+            throw new SyntacticException(this.currentToken, "pr_null, pr_true, pr_false, intLiteral, charLiteral o stringLiteral");
     }
 
     private void acceso() throws SyntacticException, LexicalException, IOException {
@@ -578,7 +578,7 @@ public class SyntacticAnalyzer {
     }
 
     private void listaExpsOpt() throws LexicalException, SyntacticException, IOException {
-        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
             this.listaExps();
         else {
             // epsilon, no hago nada
@@ -586,12 +586,12 @@ public class SyntacticAnalyzer {
     }
 
     private void listaExps() throws LexicalException, SyntacticException, IOException {
-        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "pr_int", "pr_char", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
+        if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
             this.expresion();
             this.listaExpsPrima();
         }
         else
-            throw new SyntacticException(this.currentToken, "+, -, !, pr_null, pr_true, pr_false, pr_int, pr_char, stringLiteral, idMV, pr_this, pr_new, idClase, (");
+            throw new SyntacticException(this.currentToken, "+, -, !, pr_null, pr_true, pr_false, intLiteral, charLiteral, stringLiteral, idMV, pr_this, pr_new, idClase, (");
     }
 
     private void listaExpsPrima() throws LexicalException, SyntacticException, IOException {
