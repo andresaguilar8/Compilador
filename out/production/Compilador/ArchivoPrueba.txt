@@ -1,17 +1,13 @@
 class A {
 
+
     void metodo() {
-        var z = 2;
-        z = 3;
-        if (z) {
-            z = false;
-        }
-        while (x) {
-            ;
+        if (x == true)
+            var x = 10;
+        x = 30;
+        else {
+            x = 10
         }
 
-        if (this.metodo() > 5)
-            return new Clase();
     }
-
 }

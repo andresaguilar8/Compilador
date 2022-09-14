@@ -1,4 +1,4 @@
-///[Error:}|11]
+///[Error:else|10]
 
 class A {
 
