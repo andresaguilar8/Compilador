@@ -133,7 +133,7 @@ public class SyntacticAnalyzer {
         }
         else {
             //epsilon, no hago nada
-            }
+        }
     }
 
     private void miembro() throws LexicalException, IOException, SyntacticException {

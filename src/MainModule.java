@@ -13,15 +13,13 @@ public class MainModule {
 
     public static void main (String [] args) {
         File file = new File(args[0]);
-//        File file = null;
         FileHandler fileHandler = null;
+
         try {
             file = new File(args[0]);
         }catch (ArrayIndexOutOfBoundsException exception) {
             exception.printStackTrace();
         }
-
-//                file = new File("src/ArchivoPrueba.txt");
 
         try {
             fileHandler = new FileHandler(file);
@@ -67,7 +65,6 @@ public class MainModule {
         } catch (IOException | LexicalException | SyntacticException exception) {
             System.out.println(exception.getMessage());
         }
-
     }
 
 }
