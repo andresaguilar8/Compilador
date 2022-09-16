@@ -1,13 +1,11 @@
 import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
-import LexicalAnalyzer.Token;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +22,6 @@ public class MainModule {
         }
 
 //                file = new File("src/ArchivoPrueba.txt");
-
 
         try {
             fileHandler = new FileHandler(file);
