@@ -1,6 +1,7 @@
 import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
+import SemanticAnalyzer.SemanticException;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
 import java.io.File;
@@ -60,11 +61,12 @@ public class MainModule {
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
             syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
+            
 
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");
 
-        } catch (IOException | LexicalException | SyntacticException exception) {
+        } catch (IOException | LexicalException | SyntacticException | SemanticException exception) {
             System.out.println(exception.getMessage());
         }
 
