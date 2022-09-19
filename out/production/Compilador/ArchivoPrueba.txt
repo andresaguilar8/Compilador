@@ -4,7 +4,10 @@
 
 class A {
 
-    int b(int x, char y) {
+    public B x;
+    public int x;
+
+    void b(int x, char y) {
 
     }
 
@@ -12,7 +15,9 @@ class A {
 
 class B extends A {
 
-    int aa(int x, char z, boolean s) {
+    public int x;
+
+    void b(int x, char z) {
 
     }
 

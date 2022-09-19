@@ -7,7 +7,7 @@ import java.util.Hashtable;
 
 public abstract class Class {
 
-    private Token classToken;
+    protected Token classToken;
     protected Hashtable<String, Method> classMethods;
     private HashSet<String> interfacesOClases;
 

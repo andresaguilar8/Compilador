@@ -285,7 +285,7 @@ public class SyntacticAnalyzer {
         else
             if (this.currentToken.getTokenId().equals("pr_void")) {
                 //todo ver si void es un tipo referencia
-                Type typeToReturn = new ReferenceType(this.currentToken);
+                Type typeToReturn = new PrimitiveType(this.currentToken);
                 this.match("pr_void");
                 return typeToReturn;
             }

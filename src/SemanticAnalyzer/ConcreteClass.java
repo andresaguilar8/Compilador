@@ -27,7 +27,7 @@ public class ConcreteClass extends Class {
         if (!this.atributes.containsKey(atributeToInsert.getAtributeName()))
             this.atributes.put(atributeToInsert.getAtributeName(), atributeToInsert);
         else
-            throw new SemanticException(atributeToInsert.getAtributeToken(), "El atributo " + atributeToInsert.getAtributeToken().getLexeme() + "ya esta declarado");
+            throw new SemanticException(atributeToInsert.getAtributeToken(), "El atributo " + atributeToInsert.getAtributeToken().getLexeme() + " ya esta declarado en la clase " + this.classToken.getLexeme());
     }
 
     public String getAncestorClassName() {
