@@ -10,4 +10,15 @@ public abstract class Type {
         this.tokenType = tokenType;
     }
 
+    public String toString() {
+        return this.tokenType.getLexeme();
+    }
+
+    public String getTypeName() {
+        return this.tokenType.getLexeme();
+    }
+
+    public boolean isPrimitive() {
+        return this.getTypeName().equals("int") || this.getTypeName().equals("char") || this.getTypeName().equals("boolean");
+    }
 }

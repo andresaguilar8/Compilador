@@ -1,35 +1,57 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-
 import java.util.Hashtable;
 
 public class ConcreteClass extends Class {
 
-    private String ancestorName;
+    private Token ancestorToken;
     private Hashtable<String, Atribute> atributes;
 
-    public ConcreteClass(Token classToken, String ancestorName) {
+
+    public ConcreteClass(Token classToken, Token ancestorToken) {
         super(classToken);
-        this.ancestorName = ancestorName;
         this.atributes = new Hashtable<>();
+        this.ancestorToken = ancestorToken;
     }
 
-    public void setAncestor(String ancestorName) {
-        this.ancestorName = ancestorName;
+    public boolean hasExplicitInheritance() {
+        return true;
     }
 
-    public void insertAtribute(Atribute atributeToInsert) {
-        this.atributes.put(atributeToInsert.getAtributeName(), atributeToInsert);
+    public Hashtable<String, Atribute> getAtributes() {
+        return this.atributes;
     }
 
-//    public Method getMethod(String methodName) {
-//        return this.classMethods.get(methodName);
-//    }
+    public void insertAtribute(Atribute atributeToInsert) throws SemanticException {
+        if (!this.atributes.containsKey(atributeToInsert.getAtributeName()))
+            this.atributes.put(atributeToInsert.getAtributeName(), atributeToInsert);
+        else
+            throw new SemanticException(atributeToInsert.getAtributeToken(), "El atributo " + atributeToInsert.getAtributeToken().getLexeme() + "ya esta declarado");
+    }
 
-    //    public void insertMethod(Method methodToInsert) {
-//        this.classMethods.put(methodToInsert.getMethodName(), methodToInsert);
-//    }
+    public String getAncestorClassName() {
+        return this.ancestorToken.getLexeme();
+    }
 
+    public void checkDeclaration() throws SemanticException {
+        //if (hayHerenciaCIrcular)
+        //throw excep
+
+        if (!classIsDeclared(this.getAncestorClassName()))
+            throw new SemanticException(this.ancestorToken, "La clase " + this.getAncestorClassName() + " no esta declarada");
+        for (Atribute atributeToCheck: this.atributes.values())
+            atributeToCheck.checkDeclaration(this.getAncestorClassName());
+        for (Method methodToCheck: this.classMethods.values())
+            methodToCheck.checkDeclaration(this.getAncestorClassName());
+    }
+
+    private boolean classIsDeclared(String className) {
+        return SymbolTable.getInstance().classIsDeclared(className);
+    }
+
+    public boolean methodIsDeclared(String methodName) {
+        return this.classMethods.containsKey(methodName);
+    }
 }
 

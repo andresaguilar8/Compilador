@@ -2,6 +2,7 @@ import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
 import SemanticAnalyzer.SemanticException;
+import SemanticAnalyzer.SymbolTable;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
 import java.io.File;
@@ -13,14 +14,17 @@ import java.util.Map;
 public class MainModule {
 
     public static void main (String [] args) {
-        File file = new File(args[0]);
+//        File file = new File(args[0]);
+        File file;
         FileHandler fileHandler = null;
 
-        try {
-            file = new File(args[0]);
-        }catch (ArrayIndexOutOfBoundsException exception) {
-            exception.printStackTrace();
-        }
+//        try {
+//            file = new File(args[0]);
+//        }catch (ArrayIndexOutOfBoundsException exception) {
+//            exception.printStackTrace();
+//        }
+
+        file = new File("src/ArchivoPrueba.txt");
 
         try {
             fileHandler = new FileHandler(file);
@@ -59,7 +63,9 @@ public class MainModule {
         try {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
             syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
-            
+//            SymbolTable.getInstance().imprimir();
+            SymbolTable.getInstance().checkDeclaration();
+            SymbolTable.getInstance().emptySymbolTable();
 
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");

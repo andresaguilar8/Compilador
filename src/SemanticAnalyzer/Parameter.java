@@ -4,11 +4,19 @@ import LexicalAnalyzer.Token;
 
 public class Parameter {
 
-    private String parameterName;
+    private Token parameterToken;
     private Type parameterType;
 
     public Parameter(Token parameterToken, Type parameterType) {
-
+        this.parameterToken = parameterToken;
+        this.parameterType = parameterType;
     }
 
+    public String getParameterName() {
+        return this.parameterToken.getLexeme();
+    }
+
+    public Type getParameterType() {
+        return this.parameterType;
+    }
 }

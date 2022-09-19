@@ -1,0 +1,22 @@
+
+
+//todo testear metodo void
+
+class A {
+
+    int b(int x, char y) {
+
+    }
+
+}
+
+class B extends A {
+
+    int aa(int x, char z, boolean s) {
+
+    }
+
+    int aaa() {
+
+    }
+}
