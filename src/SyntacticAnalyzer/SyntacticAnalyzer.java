@@ -60,7 +60,7 @@ public class SyntacticAnalyzer {
             Token ancestorToken = this.heredaDe();
             ConcreteClass currentClass = new ConcreteClass(currentTokenClass, ancestorToken);
             SymbolTable.getInstance().setActualClass(currentClass);
-            SymbolTable.getInstance().insertClass(currentClass);
+            SymbolTable.getInstance().insertConcreteClass(currentClass);
             this.implementaA();
             match("{");
             this.listaMiembros();
@@ -73,7 +73,7 @@ public class SyntacticAnalyzer {
         if (this.currentToken.getTokenId().equals("pr_interface")) {
             this.match("pr_interface");
             Interface currentInterface = new Interface(this.currentToken);
-            SymbolTable.getInstance().insertClass(currentInterface);
+            SymbolTable.getInstance().insertInterface(currentInterface);
             SymbolTable.getInstance().setActualClass(currentInterface);
             this.match("idClase");
             this.extiendeA();
@@ -91,15 +91,8 @@ public class SyntacticAnalyzer {
             match("idClase");
             return ancestorToken;
         }
-        else {
-            //todo verificar esto
-//            if (this.currentToken.getTokenId().equals("{"))
-            return SymbolTable.getInstance().getClass("Object").getClassToken();
-        }
-//            else {
-//
-//            }
-//                throw new SyntacticException(this.currentToken, "extends o {");
+        else
+            return SymbolTable.getInstance().getConcreteClass("Object").getToken();
     }
 
     private void implementaA() throws LexicalException, IOException, SyntacticException {
@@ -122,10 +115,11 @@ public class SyntacticAnalyzer {
 
     private void listaTipoReferencia() throws LexicalException, IOException, SyntacticException {
         if (this.currentToken.getTokenId().equals("idClase")) {
-            //classToInsert puede ser clase concreta o interface
-            String classToInsert = this.currentToken.getLexeme();
-            HashSet<String> Classes = SymbolTable.getInstance().getCurrentClass().getLista();
-            Classes.add(classToInsert);
+            Token interfaceToken = this.currentToken;
+            Interface interfaceToAdd = new Interface(interfaceToken);
+            Class currentClass = SymbolTable.getInstance().getCurrentClass();
+            HashSet<Interface> interfaces = currentClass.getInterfaces();
+            interfaces.add(interfaceToAdd);
             this.match("idClase");
             this.listaTipoReferenciaPrima();
         } else
@@ -195,7 +189,7 @@ public class SyntacticAnalyzer {
             String staticMethod = this.estaticoOpt();
             Type methodType = this.tipoMetodo();
             Token methodToken = this.currentToken;
-            Method method = new Method(methodToken, staticMethod, methodType, SymbolTable.getInstance().getCurrentClass().getClassName());
+            Method method = new Method(methodToken, staticMethod, methodType);
             SymbolTable.getInstance().setCurrentMethod(method);
             SymbolTable.getInstance().getCurrentClass().insertMethod(method);
             this.match("idMV");
@@ -252,8 +246,8 @@ public class SyntacticAnalyzer {
         if (this.currentToken.getTokenId().equals("idMV")) {
             Token atributeToken = this.currentToken;
             this.match("idMV");
-            Atribute atribute = new Atribute(atributeToken, type, atributeVisibility);
-            SymbolTable.getInstance().getCurrentClass().insertAtribute(atribute);
+            Attribute atribute = new Attribute(atributeToken, type, atributeVisibility);
+            SymbolTable.getInstance().getCurrentClass().insertAttribute(atribute);
             this.listaDecAtrsPrima(atributeVisibility, type);
         } else
             throw new SyntacticException(this.currentToken, "idMV");
@@ -284,7 +278,6 @@ public class SyntacticAnalyzer {
             return this.tipo();
         else
             if (this.currentToken.getTokenId().equals("pr_void")) {
-                //todo ver si void es un tipo referencia
                 Type typeToReturn = new PrimitiveType(this.currentToken);
                 this.match("pr_void");
                 return typeToReturn;

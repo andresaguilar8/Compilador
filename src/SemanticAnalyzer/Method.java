@@ -1,13 +1,11 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class Method {
 
-    private String baseClassName;
     private String staticMethod;
     private Token methodToken;
     private String methodName;
@@ -15,12 +13,11 @@ public class Method {
     private ArrayList<Parameter> parametersList;
     private Hashtable<String, Parameter> parametersTable;
 
-    public Method(Token methodToken, String staticMethod, Type methodReturnType, String baseClassName) {
+    public Method(Token methodToken, String staticMethod, Type methodReturnType) {
         this.staticMethod = staticMethod;
         this.methodToken = methodToken;
         this.methodName = this.methodToken.getLexeme();
         this.methodReturnType = methodReturnType;
-        this.baseClassName = baseClassName;
         this.parametersList = new ArrayList<>();
         this.parametersTable = new Hashtable<>();
     }
@@ -31,7 +28,7 @@ public class Method {
             this.parametersList.add(parameterToInsert);
         }
         else
-            throw new SemanticException(this.methodToken, "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + this.methodName);
+            throw new SemanticException(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodName + "\"");
     }
 
     public String getMethodName() {
@@ -43,49 +40,54 @@ public class Method {
     }
 
     public String getReturnType() {
-        return this.methodReturnType.getTypeName();
+        return this.methodReturnType.getClassName();
     }
 
     public ArrayList<Parameter> getParametersList() {
         return this.parametersList;
     }
 
-    public void checkDeclaration(String ancestorClassName) throws SemanticException {
-
-        //si clase padre tiene mismo nombre, verificar que toda la declaracion sea igual sino --> ERROR
-
+    public void checkDeclaration() throws SemanticException {
+        this.checkNoPrimitiveParameters();
         if (!this.methodReturnType.isPrimitive())
             if (!this.classIsDeclared())
-                throw new SemanticException(this.methodToken, "El tipo de retorno del metodo " + this.methodName + " no es una clase declarada");
-        if (methodAlreadyExist())
-            if (!this.correctRedefinedMethodHeader())
-                throw new SemanticException(this.methodToken, "El metodo " + this.methodName + " esta incorrectamente redefinido");
+                throw new SemanticException(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + this.methodName + " no es una clase declarada");
     }
 
-    private boolean correctRedefinedMethodHeader() {
-        Class ancestorClass = this.getAncestorClass();
-        System.out.println(ancestorClass.getClassName());
-        Method ancestorMethod = ancestorClass.getMethod(this.methodName);
-        System.out.println("metodo ancestro: "+ancestorMethod.getMethodName());
-        boolean correctHeader = this.compareMethodsHeaders(ancestorMethod);
-        return correctHeader;
+    private void checkNoPrimitiveParameters() throws SemanticException {
+        for (Parameter parameter: this.parametersTable.values()) {
+            if (!parameter.getParameterType().isPrimitive())
+                if (!parameterTypeIsDeclared(parameter)) {
+                    Token parameterTypeToken = parameter.getParameterType().getToken();
+                    throw new SemanticException(parameterTypeToken, "El tipo del parametro " + "\"" + parameter.getParameterName() + "\"" + " del metodo " + "\"" + this.methodName + "\"" + " no esta declarado");
+                }
+        }
     }
 
-    private boolean compareMethodsHeaders(Method ancestorMethod) {
-        boolean correctHeader = true;
-        if (!ancestorMethod.getStaticHeader().equals(this.staticMethod) || !ancestorMethod.getReturnType().equals(this.methodReturnType.getTypeName()) || !this.parametersListAreEquals(ancestorMethod))
-            correctHeader = false;
-        return correctHeader;
+    private boolean parameterTypeIsDeclared(Parameter parameter) {
+        Type parameterType = parameter.getParameterType();
+        String parameterClass = parameterType.getClassName();
+        return SymbolTable.getInstance().classIsDeclared(parameterClass);
     }
 
-    private boolean parametersListAreEquals(Method ancestorMethod) {
+    public boolean correctRedefinedMethodHeader(Method ancestorMethod) {
+        return this.methodsHeadersAreEquals(ancestorMethod);
+    }
+
+    public boolean methodsHeadersAreEquals(Method ancestorMethod) {
+        if (!ancestorMethod.getStaticHeader().equals(this.staticMethod) || !ancestorMethod.getReturnType().equals(this.methodReturnType.getClassName()) || !this.hasEqualsParameters(ancestorMethod))
+            return false;
+        return true;
+    }
+
+    private boolean hasEqualsParameters(Method ancestorMethod) {
         boolean parametersAreEquals;
         if (ancestorMethod.getParametersList().size() == this.parametersList.size()) {
             parametersAreEquals = true;
             int parameterIndex = 0;
             while (parametersAreEquals && (parameterIndex < this.parametersList.size())) {
                 Parameter ancestorParameter = ancestorMethod.getParametersList().get(parameterIndex);
-                if (!parametersAreEquals(ancestorParameter, parameterIndex))
+                if (!hasEqualsParameters(ancestorParameter, parameterIndex))
                     parametersAreEquals = false;
                 parameterIndex = parameterIndex + 1;
             }
@@ -95,28 +97,22 @@ public class Method {
         return parametersAreEquals;
     }
 
-    private boolean parametersAreEquals(Parameter parameterToCompareWith, int parameterIndex) {
+    private boolean hasEqualsParameters(Parameter parameterToCompareWith, int parameterIndex) {
         Parameter parameterOfThisMethod = this.parametersList.get(parameterIndex);
-        if (!parameterToCompareWith.getParameterType().getTypeName().equals(parameterOfThisMethod.getParameterType().getTypeName()))
+        if (!parameterToCompareWith.getParameterType().getClassName().equals(parameterOfThisMethod.getParameterType().getClassName()))
             return false;
         return true;
     }
 
     private boolean classIsDeclared() {
-        return SymbolTable.getInstance().classIsDeclared(this.methodReturnType.getTypeName());
-    }
-
-    private boolean methodAlreadyExist() {
-        Class ancestorClass = this.getAncestorClass();
-        return ancestorClass.methodIsDeclared(this.methodName);
-    }
-
-    private Class getAncestorClass() {
-        String ancestorClassName = SymbolTable.getInstance().getClass(this.baseClassName).getAncestorClassName();
-        return SymbolTable.getInstance().getClass(ancestorClassName);
+        return SymbolTable.getInstance().classIsDeclared(this.methodReturnType.getClassName());
     }
 
     public Token getMethodToken() {
         return this.methodToken;
+    }
+
+    public boolean hasParameters() {
+        return this.parametersList.size() != 0;
     }
 }

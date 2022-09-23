@@ -2,6 +2,7 @@
 import java.io.*;
 import java.util.ArrayList;
 
+import SemanticAnalyzer.SymbolTable;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
@@ -19,8 +20,8 @@ public class TesterDeCasosConErrores {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
     private static final String testFilesDirectoryPath = "resources/conErrores/";
-    
-     
+
+
     @Before
     public  void setUpClass() {
         System.setOut(new PrintStream(outContent));
@@ -59,7 +60,10 @@ public class TesterDeCasosConErrores {
         String errorCode = getErrorCode(testCaseFilePath);
         String[] args = {testCaseFilePath};
         init.main(args);
-      
+        SymbolTable.getInstance().emptySymbolTable();
+
+
+
         assertThat("No se encontro el codigo: " + errorCode,  outContent.toString(), CoreMatchers.containsString(errorCode));
     }
 
@@ -77,13 +81,5 @@ public class TesterDeCasosConErrores {
     }
 
 
-
-
-
-    
-
-    
-    
-    
     
 }

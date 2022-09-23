@@ -19,4 +19,9 @@ public class Parameter {
     public Type getParameterType() {
         return this.parameterType;
     }
+
+    public Token getParameterToken() {
+        return this.parameterToken;
+    }
+
 }

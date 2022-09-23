@@ -14,11 +14,15 @@ public abstract class Type {
         return this.tokenType.getLexeme();
     }
 
-    public String getTypeName() {
+    public String getClassName() {
         return this.tokenType.getLexeme();
     }
 
     public boolean isPrimitive() {
-        return this.getTypeName().equals("int") || this.getTypeName().equals("char") || this.getTypeName().equals("boolean");
+        return this.getClassName().equals("int") || this.getClassName().equals("char") || this.getClassName().equals("boolean");
+    }
+
+    public Token getToken() {
+        return this.tokenType;
     }
 }

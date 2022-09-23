@@ -1,0 +1,23 @@
+
+
+
+
+
+class A{
+
+}
+
+class B extends C implements D, E{
+
+}
+
+class C{}
+interface D{}
+interface E{}
+
+class Init{
+    static void main()
+    { }
+}
+
+

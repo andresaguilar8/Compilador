@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
+import SemanticAnalyzer.SymbolTable;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Test;
@@ -67,8 +68,10 @@ public class TesterDeCasosSinErrores {
             String path = testFilesDirectoryPath+name;
             String[] args = {path};
             init.main(args);
+            SymbolTable.getInstance().emptySymbolTable();
 
-            assertThat("Mensaje Incorrecto en: " + path,  outContent.toString(), CoreMatchers.containsString(msgExito));
+
+        assertThat("Mensaje Incorrecto en: " + path,  outContent.toString(), CoreMatchers.containsString(msgExito));
            
     }
     
