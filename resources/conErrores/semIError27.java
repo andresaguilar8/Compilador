@@ -1,4 +1,4 @@
-///[Error:A|19]
+///[Error:Z|19]
 //test de una una clase  que implementa una interface que extiende a otras dos interfaces
 
 

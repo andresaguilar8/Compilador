@@ -34,7 +34,7 @@ public class Interface extends Class {
                     interfaceToCheck.consolidate();
                 Interface interfaceInTable = SymbolTable.getInstance().getInterface(interfaceToCheck.getClassName());
                 this.consolidateMethods(interfaceInTable);
-                this.checkCyclicInheritance(); //todo preg
+                this.checkCyclicInheritance();
                 this.consolidated = true;
             }
         }
@@ -45,12 +45,13 @@ public class Interface extends Class {
         this.getAncestorsList(ancestorsList, this.getClassName());
     }
 
-    public void getAncestorsList(ArrayList<String> ancestorsList, String thisClassName) throws SemanticException {
-        for (Interface inter: this.interfaces) {
-            if (!ancestorsList.contains(thisClassName)) {
-                if (!ancestorsList.contains(inter.getToken().getLexeme()))
-                    ancestorsList.add(inter.getToken().getLexeme());
-                SymbolTable.getInstance().getInterface(inter.getClassName()).getAncestorsList(ancestorsList, thisClassName);
+    public void getAncestorsList(ArrayList<String> ancestorsList, String interfaceName) throws SemanticException {
+        for (Interface ancestorInterface: this.interfaces) {
+            if (!ancestorsList.contains(interfaceName)) {
+                String ancestorInterfaceName = ancestorInterface.getToken().getLexeme();
+                if (!ancestorsList.contains(ancestorInterfaceName))
+                    ancestorsList.add(ancestorInterfaceName);
+                SymbolTable.getInstance().getInterface(ancestorInterfaceName).getAncestorsList(ancestorsList, interfaceName);
             } else
                   throw new SemanticException(this.classToken, "Herencia circular: la interface " + "\"" + this.getClassName() + "\"" + " posee un ancestro que extiende a la clase " + "\"" + this.getClassName() + "\"");
         }
@@ -73,7 +74,7 @@ public class Interface extends Class {
         return SymbolTable.getInstance().interfaceIsDeclared(concreteClassName);
     }
 
-    public void checkIfClassImplementsAllInterfaceMethods(ConcreteClass concreteClassToCheck) throws SemanticException {
+    public void checkIfClassImplementsAllInterfaceMethods(Token tok, ConcreteClass concreteClassToCheck) throws SemanticException {
         for (Method method : this.methods.values()) {
             if (concreteClassToCheck.getMethods().containsKey(method.getMethodName())) {
                 String methodName = method.getMethodName();
@@ -81,8 +82,9 @@ public class Interface extends Class {
                     throw new SemanticException(concreteClassToCheck.getMethod(method.getMethodName()).getMethodToken(), "El metodo " + "\"" + method.getMethodName() + "\"" + " se encuentra implementado con distintos parametros que el encabezado del metodo en su interface.");
             }
             else
-                throw new SemanticException(concreteClassToCheck.getToken(), "La clase " + concreteClassToCheck.getClassName() + " no implementa todos los metodos de la interface " + this.getClassName());
+                throw new SemanticException(tok, "La clase " + concreteClassToCheck.getClassName() + " no implementa todos los metodos de la interface " + this.getClassName());
         }
+
     }
 
     private boolean isConsolidated() {

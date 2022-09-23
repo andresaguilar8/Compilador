@@ -3,21 +3,14 @@
 
 
 
-class A{
+interface B {
+
+    void metodo_1();
 
 }
 
-class B extends C implements D, E{
+class A implements B {
 
+    static void main() {}
 }
-
-class C{}
-interface D{}
-interface E{}
-
-class Init{
-    static void main()
-    { }
-}
-
 

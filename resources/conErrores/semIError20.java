@@ -1,4 +1,4 @@
-///[Error:A|14]
+///[Error:B|14]
 
 //test de una clase que implementa a una interface pero no implementa todos sus metodos
 

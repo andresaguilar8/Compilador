@@ -1,6 +1,6 @@
 ///[Error:G|9]
 
-//test herencia circular
+//test herencia en interfaces circular
 
 
 interface D extends X {}

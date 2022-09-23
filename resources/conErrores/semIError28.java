@@ -1,4 +1,4 @@
-///[Error:B|17]
+///[Error:Z|17]
 //la clase B no implementa todos los metodos de Z (falta implementar metodoz)
 interface X {
     int metodox();

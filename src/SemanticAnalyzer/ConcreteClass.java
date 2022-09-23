@@ -64,7 +64,7 @@ public class ConcreteClass extends Class {
                     ancestorClass.consolidate();
                 this.consolidateAttributes(ancestorClass);
                 this.consolidateMethods(ancestorClass);
-                this.checkInterfacesDeclaration(); //todo preguntar
+                this.checkInterfacesDeclaration(); //todo chequeo que la clase implemente toodos los metodos dps de consolidar
                 this.checkCyclicInheritance();
                 this.consolidated = true;
             }
@@ -135,8 +135,8 @@ public class ConcreteClass extends Class {
             if (!this.interfaceIsDeclared(interfaceName))
                 throw new SemanticException(interfaceToken, "La interface " + interfaceName + " no esta declarada");
             else {
-                Interface interfaceToCheck = SymbolTable.getInstance().getInterface(interfaceToken.getLexeme());
-                interfaceToCheck.checkIfClassImplementsAllInterfaceMethods(this);
+                Interface interfaceToCheck = SymbolTable.getInstance().getInterface(interfaceName);
+                interfaceToCheck.checkIfClassImplementsAllInterfaceMethods(interfaceToken, this);
             }
         }
     }

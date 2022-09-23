@@ -1,9 +1,7 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-import Pruebas.A;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class SymbolTable {
@@ -94,7 +92,7 @@ public class SymbolTable {
                     this.checkForMainMethod(classToCheck);
         }
 
-        //todo esta excepcion seria semantica?  cual seria la linea de token de error?
+        //todo  cual seria la linea de token de error?
         if (!this.mainMethodIsDeclared)
             throw new SemanticException(new Token("idMV","main", 0), "No se encontro el metodo estatico main sin parametros declarado");
     }
@@ -170,7 +168,7 @@ public class SymbolTable {
         this.initPredefinedClasses();
     }
 
-    public void imprimir() {
+    public void imprimirTablaDeSimbolos() {
         for (Interface interfaceToPrint: this.interfaceTable.values()) {
             System.out.println();
             System.out.println("Interface: "+interfaceToPrint.getClassName());

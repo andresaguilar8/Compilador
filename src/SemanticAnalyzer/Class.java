@@ -46,8 +46,6 @@ public abstract class Class {
         this.consolidated = true;
     }
 
-    //todo preguntar por los metodos dummys
-
     public void insertMethod(Method methodToInsert) throws SemanticException {
 
     }
