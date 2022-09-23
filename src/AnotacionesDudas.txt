@@ -1,0 +1,24 @@
+hacer
+
+	constructor
+
+
+verificar
+
+	test35
+
+preguntar 
+
+
+
+	si una clase no implementa todos los metodos de una interface que implementa, el error esta en el token de la clase?
+	constructor? seria public Clase() {} ??
+	los metodos estaticos se heredan? supongo que si porque sino se podria "redefinir" un metodo estatico incorrectamente
+
+	si un metodo tiene dos parametros con mismo nombre, el error seria el segundo parametro detectado con mismo nombre?
+	si una interface tiene un metodo estatico, el token de error seria el "static" o el nombre del metodo
+
+
+	void metodo(String x, int y, String z, int w, ClaseNoDeclarada x){
+		en este caso detecta que el nombre x esta repetido, deberia indicar que la clase no esta declarada?
+    	}
