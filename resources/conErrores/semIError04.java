@@ -1,6 +1,6 @@
 ///[Error:x|14]
 
-//test nombre atributo de tipo primitivo repetido
+//test nombre atributo de tipo primitivo repetido en clase hija
 
 class A {
 

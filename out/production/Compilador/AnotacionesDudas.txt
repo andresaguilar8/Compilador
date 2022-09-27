@@ -5,20 +5,35 @@ hacer
 
 verificar
 
-    tiene q haber un solo metodo main o si hay mas saber cual es el main
-	test35
 
 preguntar 
 
+    class A {
+        void met(){}
+    }
 
+    class B extends A {
+        static void main() {}
+        ClaseC met() {}   ----------> aca el error me dice q la claseC no esta declarada pero podria ser que el metodo esta mal redefinido
+    }
 
-	si una clase no implementa todos los metodos de una interface que implementa, el error esta en el token de la clase? creo que dijeron
-	que en el implements
+    si chequeo primero clases concretas o primero interfaces, los detalles de erroes pueden cambaiar
+
+    si un metodo retorna un tipo no declarado, el error es en el metodo o en el tipo de retorno?
+    --> tengo que el error es tipo
+
+    metodos estaticos en interface , cual es el token de error
+
+    tiene que haber un solo metodo main estatico y sin parametros.
+    Cuando consolido los metodos de una clase
+    pregunto si el metodo que voy a consolidar es el main, si es el main, no lo agrego.
+    Entonces el chequeo de que solo haya un metodo main esta en ver si hay mas de un metodo main declarado "explicitamente"  --> el error esta en el "main"?
+    Con respecto a si hay dos metodos main, no puedo saber que clase va a ser la que produzca el error cuando este chequeando declaraciones
+
+    Los metodos estaticos de una clase se pueden redefinir?
 
 	los metodos estaticos se heredan? supongo que si porque sino se podria "redefinir" un metodo estatico incorrectamente
 
-
-    herencia circular detectar uno solo (cualquiera) el del extends dijo gotti
 
 
 

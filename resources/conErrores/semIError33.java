@@ -1,4 +1,4 @@
-///[Error:Z|13]
+///[Error:Y|13]
 
 //test herencia circular entre interfaces
 

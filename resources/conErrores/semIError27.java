@@ -1,5 +1,5 @@
 ///[Error:Z|19]
-//test de una una clase  que implementa una interface que extiende a otras dos interfaces
+//test de una una clase  que implementa una interface que extiende a otras dos interfaces y no implementa todos los metodos
 
 
 interface X {

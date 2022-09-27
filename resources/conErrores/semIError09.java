@@ -19,5 +19,5 @@ class B extends A {
     C met() {
 
     }
-
+    static void main() {}
 }

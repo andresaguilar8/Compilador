@@ -6,17 +6,16 @@ import java.util.Hashtable;
 
 public class Method {
 
-    private String staticMethod;
+
     private Token methodToken;
-    private String methodName;
+    private String staticScope;
     private Type methodReturnType;
     private ArrayList<Parameter> parametersList;
     private Hashtable<String, Parameter> parametersTable;
 
-    public Method(Token methodToken, String staticMethod, Type methodReturnType) {
-        this.staticMethod = staticMethod;
+    public Method(Token methodToken, String staticScope, Type methodReturnType) {
+        this.staticScope = staticScope;
         this.methodToken = methodToken;
-        this.methodName = this.methodToken.getLexeme();
         this.methodReturnType = methodReturnType;
         this.parametersList = new ArrayList<>();
         this.parametersTable = new Hashtable<>();
@@ -28,7 +27,7 @@ public class Method {
             this.parametersList.add(parameterToInsert);
         }
         else
-            throw new SemanticException(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodName + "\"");
+            throw new SemanticException(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodToken.getLexeme() + "\"");
     }
 
     public String getMethodName() {
@@ -36,7 +35,7 @@ public class Method {
     }
 
     public String getStaticHeader() {
-        return this.staticMethod;
+        return this.staticScope;
     }
 
     public String getReturnType() {
@@ -49,9 +48,7 @@ public class Method {
 
     public void checkDeclaration() throws SemanticException {
         this.checkNoPrimitiveParameters();
-        if (!this.methodReturnType.isPrimitive())
-            if (!this.classIsDeclared())
-                throw new SemanticException(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + this.methodName + " no es una clase declarada");
+        this.checkNoPrimitiveReturnType();
     }
 
     private void checkNoPrimitiveParameters() throws SemanticException {
@@ -59,15 +56,21 @@ public class Method {
             if (!parameter.getParameterType().isPrimitive())
                 if (!parameterTypeIsDeclared(parameter)) {
                     Token parameterTypeToken = parameter.getParameterType().getToken();
-                    throw new SemanticException(parameterTypeToken, "El tipo del parametro " + "\"" + parameter.getParameterName() + "\"" + " del metodo " + "\"" + this.methodName + "\"" + " no esta declarado");
+                    throw new SemanticException(parameterTypeToken, "El tipo del parametro " + "\"" + parameter.getParameterName() + "\"" + " del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no esta declarado");
                 }
         }
+    }
+
+    private void checkNoPrimitiveReturnType() throws SemanticException {
+        if (!this.methodReturnType.isPrimitive())
+            if (!this.returnTypeClassIsDeclared())
+                throw new SemanticException(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no es una clase declarada");
     }
 
     private boolean parameterTypeIsDeclared(Parameter parameter) {
         Type parameterType = parameter.getParameterType();
         String parameterClass = parameterType.getClassName();
-        return SymbolTable.getInstance().classIsDeclared(parameterClass);
+        return SymbolTable.getInstance().concreteClassIsDeclared(parameterClass);
     }
 
     public boolean correctRedefinedMethodHeader(Method ancestorMethod) {
@@ -75,7 +78,7 @@ public class Method {
     }
 
     public boolean methodsHeadersAreEquals(Method ancestorMethod) {
-        if (!ancestorMethod.getStaticHeader().equals(this.staticMethod) || !ancestorMethod.getReturnType().equals(this.methodReturnType.getClassName()) || !this.hasEqualsParameters(ancestorMethod))
+        if (!ancestorMethod.getStaticHeader().equals(this.staticScope) || !ancestorMethod.getReturnType().equals(this.methodReturnType.getClassName()) || !this.hasEqualsParameters(ancestorMethod))
             return false;
         return true;
     }
@@ -104,8 +107,8 @@ public class Method {
         return true;
     }
 
-    private boolean classIsDeclared() {
-        return SymbolTable.getInstance().classIsDeclared(this.methodReturnType.getClassName());
+    private boolean returnTypeClassIsDeclared() {
+        return SymbolTable.getInstance().concreteClassIsDeclared(this.methodReturnType.getClassName()) || SymbolTable.getInstance().interfaceIsDeclared(this.methodReturnType.getClassName());
     }
 
     public Token getMethodToken() {

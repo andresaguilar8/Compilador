@@ -1,7 +1,7 @@
 package Pruebas;
 
-public interface X extends Y, Z{
+public interface X {
 
-//void metodox();
+        public void metodox();
 }
 

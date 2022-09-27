@@ -31,6 +31,8 @@ public class SyntacticAnalyzer {
 
     private void inicial() throws LexicalException, IOException, SyntacticException, SemanticException {
         this.listaClases();
+        Token EOFToken = this.currentToken;
+        SymbolTable.getInstance().setEOFToken(EOFToken);
         match("EOF");
     }
 
@@ -247,7 +249,8 @@ public class SyntacticAnalyzer {
             Token atributeToken = this.currentToken;
             this.match("idMV");
             Attribute atribute = new Attribute(atributeToken, type, atributeVisibility);
-            SymbolTable.getInstance().getCurrentClass().insertAttribute(atribute);
+            ConcreteClass concreteCurrentClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
+            concreteCurrentClass.insertAttribute(atribute);
             this.listaDecAtrsPrima(atributeVisibility, type);
         } else
             throw new SyntacticException(this.currentToken, "idMV");
@@ -267,10 +270,8 @@ public class SyntacticAnalyzer {
             this.match("pr_static");
             return "static";
         }
-        else {
-            // epsilon, no hago nada
+        else
             return "";
-        }
     }
 
     private Type tipoMetodo() throws LexicalException, IOException, SyntacticException {

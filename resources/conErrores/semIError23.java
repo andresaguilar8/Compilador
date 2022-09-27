@@ -19,5 +19,5 @@ class A {
     void metodo_1() {
 
     }
-
+    static void main(){}
 }

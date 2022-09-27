@@ -1,7 +1,6 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-
 import java.util.Hashtable;
 
 public class SymbolTable {
@@ -9,10 +8,12 @@ public class SymbolTable {
     private Class currentClass;
     private Method currentMethod;
     private static SymbolTable instance = null;
-    private Hashtable<String, ConcreteClass> concreteClassTable;
-    private Hashtable<String, Interface> interfaceTable;
+    private Hashtable<String, ConcreteClass> concreteClassesTable;
+    private Hashtable<String, Interface> interfacesTable;
     private boolean mainMethodIsDeclared;
+    private Token EOFToken;
 
+    //todo falta el constructor
     public static SymbolTable getInstance() {
         if (instance == null)
             instance = new SymbolTable();
@@ -20,25 +21,23 @@ public class SymbolTable {
     }
 
     private SymbolTable() {
-        this.concreteClassTable = new Hashtable<String, ConcreteClass>();
-        this.interfaceTable = new Hashtable<String, Interface>();
+        this.concreteClassesTable = new Hashtable<String, ConcreteClass>();
+        this.interfacesTable = new Hashtable<String, Interface>();
         this.mainMethodIsDeclared = false;
         this.initPredefinedClasses();
     }
 
     public void insertConcreteClass(ConcreteClass classToInsert) throws SemanticException {
-        if (!this.concreteClassTable.containsKey(classToInsert.getClassName()) && !this.interfaceTable.containsKey(classToInsert.getClassName())) {
-            this.concreteClassTable.put(classToInsert.getClassName(), classToInsert);
-        }
-        else
+        if (!this.concreteClassesTable.containsKey(classToInsert.getClassName()) && !this.interfacesTable.containsKey(classToInsert.getClassName())) {
+            this.concreteClassesTable.put(classToInsert.getClassName(), classToInsert);
+        } else
             throw new SemanticException(classToInsert.getToken(), "El nombre " + classToInsert.getClassName() + " ya esta declarado");
     }
 
     public void insertInterface(Interface interfaceToInsert) throws SemanticException {
-        if (!this.concreteClassTable.containsKey(interfaceToInsert.getClassName()) && !this.interfaceTable.containsKey(interfaceToInsert.getClassName())) {
-            this.interfaceTable.put(interfaceToInsert.getClassName(), interfaceToInsert);
-        }
-        else
+        if (!this.concreteClassesTable.containsKey(interfaceToInsert.getClassName()) && !this.interfacesTable.containsKey(interfaceToInsert.getClassName())) {
+            this.interfacesTable.put(interfaceToInsert.getClassName(), interfaceToInsert);
+        } else
             throw new SemanticException(interfaceToInsert.getToken(), "El nombre " + interfaceToInsert.getClassName() + " ya esta declarado");
     }
 
@@ -58,63 +57,105 @@ public class SymbolTable {
         return this.currentMethod;
     }
 
-    public Hashtable<String, ConcreteClass> getConcreteClassTable() {
-        return this.concreteClassTable;
+    public Hashtable<String, ConcreteClass> getConcreteClassesTable() {
+        return this.concreteClassesTable;
     }
 
-    public Hashtable<String, Interface> getInterfaceTable() {
-        return this.interfaceTable;
+    public Hashtable<String, Interface> getInterfacesTable() {
+        return this.interfacesTable;
     }
 
-    public boolean classIsDeclared(String className) {
-        return SymbolTable.getInstance().getConcreteClassTable().containsKey(className);
+    public boolean concreteClassIsDeclared(String className) {
+        return SymbolTable.getInstance().getConcreteClassesTable().containsKey(className);
     }
 
-    public boolean interfaceIsDeclared(String className) {
-        return SymbolTable.getInstance().getInterfaceTable().containsKey(className);
+    public boolean interfaceIsDeclared(String interfaceName) {
+        return SymbolTable.getInstance().getInterfacesTable().containsKey(interfaceName);
     }
 
     public ConcreteClass getConcreteClass(String concreteClassName) {
-        return SymbolTable.getInstance().getConcreteClassTable().get(concreteClassName);
+        return SymbolTable.getInstance().getConcreteClassesTable().get(concreteClassName);
     }
 
     public Interface getInterface(String interfaceName) {
-        return SymbolTable.getInstance().getInterfaceTable().get(interfaceName);
+        return SymbolTable.getInstance().getInterfacesTable().get(interfaceName);
     }
 
-    public void checkDeclaration() throws SemanticException {
-        for (Interface interfaceToCheck: this.interfaceTable.values())
-            interfaceToCheck.checkDeclaration();
-
-        for (ConcreteClass classToCheck: this.concreteClassTable.values()) {
-                classToCheck.checkDeclaration();
-                if (this.mainMethodIsDeclared == false)
-                    this.checkForMainMethod(classToCheck);
+    public void checkDeclarations() throws SemanticException {
+        for (ConcreteClass classToCheck : this.concreteClassesTable.values()) {
+            classToCheck.checkDeclarations();
+            this.checkMainMethod(classToCheck);
         }
-
-        //todo  cual seria la linea de token de error?
-        if (!this.mainMethodIsDeclared)
-            throw new SemanticException(new Token("idMV","main", 0), "No se encontro el metodo estatico main sin parametros declarado");
+        for (Interface interfaceToCheck : this.interfacesTable.values())
+            interfaceToCheck.checkDeclarations();
     }
 
-    private void checkForMainMethod(ConcreteClass classToCheck) {
-        for (Method methodToCheck: classToCheck.getMethods().values())
-            if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
-                this.mainMethodIsDeclared = true;
+    private void checkMainMethod(ConcreteClass classToCheck) throws SemanticException {
+        for (Method methodToCheck : classToCheck.getMethods().values())
+            if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnType().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
+                if (this.mainMethodIsDeclared == true)
+                    throw new SemanticException(methodToCheck.getMethodToken(), "Ya existe un metodo main estatico y sin parametros");
+                else
+                    this.mainMethodIsDeclared = true;
     }
 
     public void consolidate() throws SemanticException {
-        for (Interface interfaceToConsolidate: this.interfaceTable.values())
+        for (Interface interfaceToConsolidate : this.interfacesTable.values())
             interfaceToConsolidate.consolidate();
-        for (ConcreteClass classToConsolidate: this.concreteClassTable.values())
+        for (ConcreteClass classToConsolidate : this.concreteClassesTable.values())
             classToConsolidate.consolidate();
+        if (!this.mainMethodIsDeclared)
+            throw new SemanticException(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase");
     }
 
     private void initPredefinedClasses() {
         this.initObjectClass();
         this.initStringClass();
         this.initSystemClass();
-        //todo iniciar clase system
+    }
+
+    public void emptySymbolTable() {
+        this.concreteClassesTable = new Hashtable<String, ConcreteClass>();
+        this.interfacesTable = new Hashtable<String, Interface>();
+        this.mainMethodIsDeclared = false;
+        this.initPredefinedClasses();
+    }
+
+    public void imprimirTablaDeSimbolos() {
+        for (Interface interfaceToPrint: this.interfacesTable.values()) {
+            System.out.println();
+            System.out.println("Interface: "+interfaceToPrint.getClassName());
+            System.out.print("Metodos: ");
+            for (Method method: interfaceToPrint.getMethods().values())
+                System.out.print(method.getMethodName());
+            System.out.println();
+        }
+
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
+            System.out.println();
+            System.out.println("Clase: "+concreteClass.getClassName());
+            System.out.print("Atributos: ");
+            for (Attribute attribute: concreteClass.getAttributes().values())
+                System.out.print(attribute.getAttributeName() + ", ");
+            System.out.println();
+            System.out.println("Metodos: ");
+            for (Method method: concreteClass.getMethods().values()){
+                System.out.print(method.getMethodName() + " retorna: " + method.getReturnType());
+                if (method.getParametersList().size() > 0) {
+                    System.out.print(" sus parametros son: ");
+                    for (Parameter p : method.getParametersList())
+                        System.out.print(p.getParameterName() + " de tipo: " + p.getParameterType() + "");
+                    System.out.println();
+                }
+                else
+                    System.out.println(" y no tiene parametros ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void setEOFToken(Token EOFToken) {
+        this.EOFToken = EOFToken;
     }
 
     private void initObjectClass() {
@@ -135,60 +176,206 @@ public class SymbolTable {
         try {
             debugPrintMethod.insertParameter(methodParameter);
             objectClass.insertMethod(debugPrintMethod);
-            //todo preg el try catch
-            this.concreteClassTable.put(objectClass.getClassName(), objectClass);
+            this.concreteClassesTable.put(objectClass.getClassName(), objectClass);
         } catch (SemanticException exception) {
             exception.getMessage();
         }
-
     }
 
     private void initStringClass() {
         Token stringClassToken = new Token("idClase", "String", 0);
-        ConcreteClass ancestorClass = this.concreteClassTable.get("Object");
+        ConcreteClass ancestorClass = this.concreteClassesTable.get("Object");
         Token ancestorClassToken = ancestorClass.getToken();
 
         ConcreteClass stringConcreteClass = new ConcreteClass(stringClassToken, ancestorClassToken);
-        this.concreteClassTable.put(stringConcreteClass.getClassName(), stringConcreteClass);
+        this.concreteClassesTable.put(stringConcreteClass.getClassName(), stringConcreteClass);
     }
 
     private void initSystemClass() {
         Token systemClassToken = new Token("idClase", "System", 0);
-        ConcreteClass ancestorClass = this.concreteClassTable.get("Object");
+        ConcreteClass ancestorClass = this.concreteClassesTable.get("Object");
         Token ancestorClassToken = ancestorClass.getToken();
-
         ConcreteClass systemConcreteClass = new ConcreteClass(systemClassToken, ancestorClassToken);
-
+        this.concreteClassesTable.put(systemConcreteClass.getClassName(), systemConcreteClass);
+        this.insertReadMethod(systemConcreteClass);
+        this.insertPrintBMethod(systemConcreteClass);
+        this.insertPrintCMethod(systemConcreteClass);
+        this.insertPrintIMethod(systemConcreteClass);
+        this.insertPrintSMethod(systemConcreteClass);
+        this.insertPrintlnMethod(systemConcreteClass);
+        this.insertPrintBlnMethod(systemConcreteClass);
+        this.insertPrintClnMethod(systemConcreteClass);
+        this.insertPrintIlnMethod(systemConcreteClass);
+        this.insertPrintSlnMethod(systemConcreteClass);
     }
 
-    public void emptySymbolTable() {
-        this.concreteClassTable = new Hashtable<String, ConcreteClass>();
-        this.interfaceTable = new Hashtable<String, Interface>();
-        this.mainMethodIsDeclared = false;
-        this.initPredefinedClasses();
-    }
+    private void insertReadMethod(ConcreteClass concreteClass) {
+        Token intToken = new Token("pr_int", "int", 0);
+        Type readMethodType = new PrimitiveType(intToken);
+        Token readMethodToken = new Token("idMV", "read", 0);
+        Method readMethod = new Method(readMethodToken, "", readMethodType);
 
-    public void imprimirTablaDeSimbolos() {
-        for (Interface interfaceToPrint: this.interfaceTable.values()) {
-            System.out.println();
-            System.out.println("Interface: "+interfaceToPrint.getClassName());
-            System.out.print("Metodos: ");
-            for (Method method: interfaceToPrint.getMethods().values())
-                System.out.print(method.getMethodName() + " ");
-            System.out.println();
+        try {
+            concreteClass.insertMethod(readMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
         }
+    }
 
-        for (ConcreteClass concreteClass: this.concreteClassTable.values()) {
-            System.out.println();
-            System.out.println("Clase: "+concreteClass.getClassName());
-            System.out.print("Atributos: ");
-            for (Attribute attribute: concreteClass.getAttributes().values())
-                System.out.print(attribute.getAttributeName() + ", ");
-            System.out.println();
-            System.out.print("Metodos: ");
-            for (Method method: concreteClass.getMethods().values())
-                System.out.print(method.getMethodName() + " ");
-            System.out.println();
+    private void insertPrintBMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token booleanToken = new Token("pr_boolean", "boolean", 0);
+        Token parameterBToken = new Token("idMV", "b", 0);
+        Type printBMethodType = new PrimitiveType(voidToken);
+        Token printBMethodToken = new Token("idMV", "printB", 0);
+        Method printBMethod = new Method(printBMethodToken, "static", printBMethodType);
+        Type printBMethodParameterType = new PrimitiveType(booleanToken);
+        Parameter parameterB = new Parameter(parameterBToken, printBMethodParameterType);
+
+        try {
+            printBMethod.insertParameter(parameterB);
+            concreteClass.insertMethod(printBMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintCMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token charToken = new Token("pr_char", "char", 0);
+        Token parameterCToken = new Token("idMV", "c", 0);
+        Type printCMethodType = new PrimitiveType(voidToken);
+        Token printCMethodToken = new Token("idMV", "printC", 0);
+        Method printCMethod = new Method(printCMethodToken, "static", printCMethodType);
+        Type printCMethodParameterType = new PrimitiveType(charToken);
+        Parameter parameterC = new Parameter(parameterCToken, printCMethodParameterType);
+
+        try {
+            printCMethod.insertParameter(parameterC);
+            concreteClass.insertMethod(printCMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintIMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token intToken = new Token("pr_int", "int", 0);
+        Token parameterIToken = new Token("idMV", "i", 0);
+        Type printIMethodType = new PrimitiveType(voidToken);
+        Token printIMethodToken = new Token("idMV", "printI", 0);
+        Method printIMethod = new Method(printIMethodToken, "static", printIMethodType);
+        Type printIMethodParameterType = new PrimitiveType(intToken);
+        Parameter parameterI = new Parameter(parameterIToken, printIMethodParameterType);
+
+        try {
+            printIMethod.insertParameter(parameterI);
+            concreteClass.insertMethod(printIMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintSMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token stringToken = new Token("idClase", "String", 0);
+        Token parameterSToken = new Token("idMV", "s", 0);
+        Type printSMethodType = new PrimitiveType(voidToken);
+        Token printSMethodToken = new Token("idMV", "printS", 0);
+        Method printSMethod = new Method(printSMethodToken, "static", printSMethodType);
+        Type printIMethodParameterType = new PrimitiveType(stringToken);
+        Parameter parameterS = new Parameter(parameterSToken, printIMethodParameterType);
+
+        try {
+            printSMethod.insertParameter(parameterS);
+            concreteClass.insertMethod(printSMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintlnMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Type printlnMethodType = new PrimitiveType(voidToken);
+        Token printlnMethodToken = new Token("idMV", "println", 0);
+        Method printlnMethod = new Method(printlnMethodToken, "static", printlnMethodType);
+
+        try {
+            concreteClass.insertMethod(printlnMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintBlnMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token booleanToken = new Token("pr_boolean", "boolean", 0);
+        Token parameterBToken = new Token("idMV", "b", 0);
+        Type printBlnMethodType = new PrimitiveType(voidToken);
+        Token printBlnMethodToken = new Token("idMV", "printBln", 0);
+        Method printBlnMethod = new Method(printBlnMethodToken, "static", printBlnMethodType);
+        Type printBlnMethodParameterType = new PrimitiveType(booleanToken);
+        Parameter parameterB = new Parameter(parameterBToken, printBlnMethodParameterType);
+
+        try {
+            printBlnMethod.insertParameter(parameterB);
+            concreteClass.insertMethod(printBlnMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintClnMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token charToken = new Token("pr_char", "char", 0);
+        Token parameterCToken = new Token("idMV", "c", 0);
+        Type printClnMethodType = new PrimitiveType(voidToken);
+        Token printClnMethodToken = new Token("idMV", "printCln", 0);
+        Method printClnMethod = new Method(printClnMethodToken, "static", printClnMethodType);
+        Type printClnMethodParameterType = new PrimitiveType(charToken);
+        Parameter parameterB = new Parameter(parameterCToken, printClnMethodParameterType);
+
+        try {
+            printClnMethod.insertParameter(parameterB);
+            concreteClass.insertMethod(printClnMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintIlnMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token intToken = new Token("pr_int", "int", 0);
+        Token parameterIToken = new Token("idMV", "i", 0);
+        Type printIlnMethodType = new PrimitiveType(voidToken);
+        Token printIlnMethodToken = new Token("idMV", "printIln", 0);
+        Method printIlnMethod = new Method(printIlnMethodToken, "static", printIlnMethodType);
+        Type printIlnMethodParameterType = new PrimitiveType(intToken);
+        Parameter parameterI = new Parameter(parameterIToken, printIlnMethodParameterType);
+
+        try {
+            printIlnMethod.insertParameter(parameterI);
+            concreteClass.insertMethod(printIlnMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private void insertPrintSlnMethod(ConcreteClass concreteClass) {
+        Token voidToken = new Token("pr_void", "void", 0);
+        Token stringToken = new Token("idClase", "String", 0);
+        Token parameterSToken = new Token("idMV", "s", 0);
+        Type printSlnMethodType = new PrimitiveType(voidToken);
+        Token printSlnMethodToken = new Token("idMV", "printSln", 0);
+        Method printSlnMethod = new Method(printSlnMethodToken, "static", printSlnMethodType);
+        Type printSlnMethodParameterType = new PrimitiveType(stringToken);
+        Parameter parameterS = new Parameter(parameterSToken, printSlnMethodParameterType);
+
+        try {
+            printSlnMethod.insertParameter(parameterS);
+            concreteClass.insertMethod(printSlnMethod);
+        } catch (SemanticException exception) {
+            exception.printStackTrace();
         }
     }
 

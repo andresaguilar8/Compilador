@@ -1,4 +1,4 @@
-///[Error:A|5]
+///[Error:B|5]
 
 //test herencia circular
 

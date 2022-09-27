@@ -16,16 +16,9 @@ public class MainModule {
 
     public static void main (String [] args) {
 
-        File file = new File(args[0]);
-//        File file;
-//
-        try {
-            file = new File(args[0]);
-        }catch (ArrayIndexOutOfBoundsException exception) {
-            exception.printStackTrace();
-        }
-
-//        file = new File("src/CasosDePrueba.txt");
+//        File file = new File(args[0]);
+        File file;
+        file = new File("src/CasosDePrueba.txt");
         FileHandler fileHandler = null;
 
 
@@ -67,9 +60,9 @@ public class MainModule {
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
             syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
 
-            SymbolTable.getInstance().checkDeclaration();
+            SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-//            SymbolTable.getInstance().imprimir();
+            SymbolTable.getInstance().imprimirTablaDeSimbolos();
             SymbolTable.getInstance().emptySymbolTable();
 
             System.out.println("Compilación Exitosa\n\n");

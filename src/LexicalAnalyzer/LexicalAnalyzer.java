@@ -532,7 +532,6 @@ public class LexicalAnalyzer {
                 return this.estado39();
             }
             else {
-                //todo este update es el que puse despues de la nota de la entrega 1
                 this.updateLexeme();
                 throw new LexicalException(this.lexeme, this.fileHandler.getCurrentRowNumber(), this.fileHandler.getCurrentColumnNumber(), "no es un caracter válido", this.fileHandler.getLineWithError());
             }

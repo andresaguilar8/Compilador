@@ -46,20 +46,10 @@ public abstract class Class {
         this.consolidated = true;
     }
 
-    public void insertMethod(Method methodToInsert) throws SemanticException {
+    public abstract void insertMethod(Method methodToInsert) throws SemanticException;
 
-    }
+    public abstract void consolidate() throws SemanticException;
 
-    public void insertAttribute(Attribute attribute) throws SemanticException {
-
-    }
-
-    public void consolidate() throws SemanticException {
-
-    }
-
-    public void checkDeclaration() throws SemanticException {
-
-    }
+    public abstract void checkDeclarations() throws SemanticException;
 
 }

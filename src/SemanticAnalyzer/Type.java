@@ -18,11 +18,10 @@ public abstract class Type {
         return this.tokenType.getLexeme();
     }
 
-    public boolean isPrimitive() {
-        return this.getClassName().equals("int") || this.getClassName().equals("char") || this.getClassName().equals("boolean");
-    }
+    public abstract boolean isPrimitive();
 
     public Token getToken() {
         return this.tokenType;
     }
+
 }

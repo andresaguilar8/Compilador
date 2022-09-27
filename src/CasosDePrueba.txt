@@ -1,16 +1,19 @@
 
 
+class A {
 
+    public String x;
+    static void main(){}
+    static int meta(String x){}
+}
 
-
-interface B {
-
-    void metodo_1();
+class B extends A implements C{
 
 }
 
-class A implements B {
+interface C {
 
-    static void main() {}
+    void meta();
 }
+
 

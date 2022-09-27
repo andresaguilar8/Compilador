@@ -10,6 +10,6 @@ class A {
     void metodo() {
 
     }
-
+    static void main() {}
 }
 

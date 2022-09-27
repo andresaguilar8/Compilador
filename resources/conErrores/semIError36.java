@@ -1,4 +1,4 @@
-///[Error:C|6]
+///[Error:Z|10]
 
 //herencia circular, el error podria ser cualquiera de las interfaces
 

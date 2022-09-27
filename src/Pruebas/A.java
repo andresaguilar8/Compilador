@@ -1,19 +1,13 @@
 package Pruebas;
 
-public class A implements Z {
+public class A{
 
 
     public static void metodostatic() {
-
+//        Object.class.getClass();
     }
 
-    @Override
-    public void metodoY() {
-
-    }
-
-    @Override
-    public void metodoz() {
+    public void metodox() {
 
     }
 }

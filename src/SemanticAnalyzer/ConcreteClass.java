@@ -6,13 +6,13 @@ import java.util.Hashtable;
 
 public class ConcreteClass extends Class {
 
-    private Token ancestorToken;
+    private Token ancestorClassToken;
     private Hashtable<String, Attribute> attributes;
 
     public ConcreteClass(Token classToken, Token ancestorToken) {
         super(classToken);
         this.attributes = new Hashtable<>();
-        this.ancestorToken = ancestorToken;
+        this.ancestorClassToken = ancestorToken;
     }
 
     public Hashtable<String, Attribute> getAttributes() {
@@ -20,25 +20,17 @@ public class ConcreteClass extends Class {
     }
 
     public String getAncestorClassName() {
-        if (this.ancestorToken != null)
-            return this.ancestorToken.getLexeme();
+        if (this.ancestorClassToken != null)
+            return this.ancestorClassToken.getLexeme();
         return null;
     }
 
     public void insertMethod(Method methodToInsert) throws SemanticException {
-        if (!methodAlreadyExist(methodToInsert)) {
+        if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
-//            this.checkIfItsMainMethod(methodToInsert);
-        }
         else
-            throw new SemanticException(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName());
+            throw new SemanticException(methodToInsert.getMethodToken(), "Ya existe un metodo con nombre " + "\"" + methodToInsert.getMethodName() + "\"" + " en la clase " + this.getClassName());
     }
-
-    //todo acomodar, quedaria mejor si esta en la symboltable
-//    private void checkIfItsMainMethod(Method methodToCheck) {
-//        if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
-//            SymbolTable.getInstance().setMainMethodDeclared();
-//    }
 
     public void insertAttribute(Attribute attribute) throws SemanticException {
         if (!this.attributes.containsKey(attribute.getAttributeName()))
@@ -47,13 +39,52 @@ public class ConcreteClass extends Class {
             throw new SemanticException(attribute.getAttributeToken(), "El atributo " + attribute.getAttributeToken().getLexeme() + " ya esta declarado en la clase " + this.classToken.getLexeme());
     }
 
-    public void checkDeclaration() throws SemanticException {
+    public void checkDeclarations() throws SemanticException {
         this.checkCyclicInheritance();
         this.checkAncestorClass();
-        //todo los metodos de la interfaz los tengo que chequear despues de consolidar las inter
-//        this.checkInterfacesDeclaration();
+        this.checkInterfacesDeclaration();
         this.checkAttributesDeclaration();
         this.checkMethodsDeclaration();
+    }
+
+    private void checkAncestorClass() throws SemanticException {
+        if (this.getAncestorClassName() != null)
+            if (!this.concreteClassIsDeclared(this.getAncestorClassName()))
+                throw new SemanticException(this.ancestorClassToken, "La clase " + this.getAncestorClassName() + " no esta declarada");
+    }
+
+    private void checkCyclicInheritance() throws SemanticException {
+        ArrayList<String> ancestorsList = new ArrayList<>();
+        this.getAncestorsList(ancestorsList);
+    }
+
+    public void getAncestorsList(ArrayList<String> ancestorsList) throws SemanticException {
+        if (this.getAncestorClass() != null) {
+            if (!ancestorsList.contains(this.getAncestorClass().getClassName())) {
+                ancestorsList.add(this.ancestorClassToken.getLexeme());
+                this.getAncestorClass().getAncestorsList(ancestorsList);
+            } else
+                throw new SemanticException(this.ancestorClassToken, "Herencia circular: la clase " + "\"" + this.getClassName() + "\"" + " se extiende a si misma");
+        }
+    }
+
+    private void checkInterfacesDeclaration() throws SemanticException {
+        for (Interface interfaceToCheckIfItsDeclared : this.interfaces) {
+            Token interfaceToken = interfaceToCheckIfItsDeclared.getToken();
+            String interfaceName = interfaceToken.getLexeme();
+            if (!this.interfaceIsDeclared(interfaceName))
+                throw new SemanticException(interfaceToken, "La interface " + interfaceName + " no esta declarada");
+        }
+    }
+
+    private void checkAttributesDeclaration() throws SemanticException {
+        for (Attribute attributeToCheck: this.attributes.values())
+            attributeToCheck.checkDeclaration();
+    }
+
+    private void checkMethodsDeclaration() throws SemanticException {
+        for (Method methodToCheck: this.methods.values())
+            methodToCheck.checkDeclaration();
     }
 
     public void consolidate() throws SemanticException {
@@ -64,8 +95,7 @@ public class ConcreteClass extends Class {
                     ancestorClass.consolidate();
                 this.consolidateAttributes(ancestorClass);
                 this.consolidateMethods(ancestorClass);
-                this.checkInterfacesDeclaration(); //todo chequeo que la clase implemente toodos los metodos dps de consolidar
-                this.checkCyclicInheritance();
+                this.verifyInterfacesMethods();
                 this.consolidated = true;
             }
         }
@@ -78,7 +108,7 @@ public class ConcreteClass extends Class {
                 this.insertAttribute(ancestorAttribute);
             else {
                 Attribute thisClassAttribute = this.getAttributes().get(ancestorAttributeName);
-                throw new SemanticException(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en la clase ancestra");
+                throw new SemanticException(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en una clase ancestra");
             }
         }
     }
@@ -87,7 +117,8 @@ public class ConcreteClass extends Class {
         for (Method ancestorMethod: classToConsolidateWith.getMethods().values()) {
             String methodName = ancestorMethod.getMethodName();
             if (!this.getMethods().containsKey(methodName)) {
-                this.insertMethod(ancestorMethod);
+                if (!isMainMethod(ancestorMethod))
+                    this.insertMethod(ancestorMethod);
             }
             else {
                 Method thisClassMethod = this.getMethod(methodName);
@@ -97,9 +128,15 @@ public class ConcreteClass extends Class {
         }
     }
 
+    private boolean isMainMethod(Method method) {
+        if (method.getStaticHeader().equals("static") && method.getReturnType().equals("void") && method.getMethodName().equals("main") && !method.hasParameters())
+            return true;
+        return false;
+    }
+
     public ConcreteClass getAncestorClass() {
-        if (this.ancestorToken != null)
-            return SymbolTable.getInstance().getConcreteClass(this.ancestorToken.getLexeme());
+        if (this.ancestorClassToken != null)
+            return SymbolTable.getInstance().getConcreteClass(this.ancestorClassToken.getLexeme());
         return null;
     }
 
@@ -107,52 +144,17 @@ public class ConcreteClass extends Class {
         return this.consolidated;
     }
 
-    private void checkAncestorClass() throws SemanticException {
-        if (this.getAncestorClassName() != null)
-            if (!classIsDeclared(this.getAncestorClassName()))
-                throw new SemanticException(this.ancestorToken, "La clase " + this.getAncestorClassName() + " no esta declarada");
-    }
-
-    private void checkCyclicInheritance() throws SemanticException {
-        ArrayList<String> ancestorsList = new ArrayList<>();
-        this.getAncestorsList(ancestorsList);
-    }
-
-    public void getAncestorsList(ArrayList<String> ancestorsList) throws SemanticException {
-        if (this.getAncestorClass() != null) {
-            if (!ancestorsList.contains(this.getAncestorClass().getClassName())) {
-                ancestorsList.add(this.ancestorToken.getLexeme());
-                this.getAncestorClass().getAncestorsList(ancestorsList);
-            } else
-                throw new SemanticException(this.classToken, "Herencia circular: la clase " + "\"" + this.getClassName() + "\"" + " posee un ancestro que extiende a la clase " + "\"" + this.getClassName() + "\"");
-        }
-    }
-
-    private void checkInterfacesDeclaration() throws SemanticException {
-        for (Interface interfaceToCheckIfItsDeclared: this.interfaces) {
-            Token interfaceToken = interfaceToCheckIfItsDeclared.getToken();
+    private void verifyInterfacesMethods() throws SemanticException {
+        for (Interface interfaceThatImplements: this.interfaces) {
+            Token interfaceToken = interfaceThatImplements.getToken();
             String interfaceName = interfaceToken.getLexeme();
-            if (!this.interfaceIsDeclared(interfaceName))
-                throw new SemanticException(interfaceToken, "La interface " + interfaceName + " no esta declarada");
-            else {
-                Interface interfaceToCheck = SymbolTable.getInstance().getInterface(interfaceName);
-                interfaceToCheck.checkIfClassImplementsAllInterfaceMethods(interfaceToken, this);
-            }
+            Interface interfaceToVerifyMethodsImplementations = SymbolTable.getInstance().getInterface(interfaceName);
+            interfaceToVerifyMethodsImplementations.verifyMethodsImplementation(interfaceToken, this);
         }
     }
 
-    private void checkAttributesDeclaration() throws SemanticException {
-        for (Attribute attributeToCheck: this.attributes.values())
-            attributeToCheck.checkDeclaration();
-    }
-
-    private  void checkMethodsDeclaration() throws SemanticException {
-        for (Method methodToCheck: this.methods.values())
-            methodToCheck.checkDeclaration();
-    }
-
-    private boolean classIsDeclared(String concreteClassName) {
-        return SymbolTable.getInstance().classIsDeclared(concreteClassName);
+    private boolean concreteClassIsDeclared(String concreteClassName) {
+        return SymbolTable.getInstance().concreteClassIsDeclared(concreteClassName);
     }
 
     private boolean interfaceIsDeclared(String interfaceName) {

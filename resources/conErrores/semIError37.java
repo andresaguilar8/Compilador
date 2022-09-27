@@ -1,4 +1,4 @@
-///[Error:B|11]
+///[Error:T|11]
 
 //test de implementacion de metodos de interfaces
 //la clase B no implementa todos los metodos de la interface T

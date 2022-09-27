@@ -1,7 +1,7 @@
-///[Error:A|4]
+///[Error:C|4]
 
 //test herencia circular
-class A extends C implements X, Y{
+class A extends C {
     static void main(){}
 }
 
@@ -9,7 +9,6 @@ class B extends A {
 
 }
 
-interface X {}
-interface Y extends X{}
+
 
 class C extends A{}

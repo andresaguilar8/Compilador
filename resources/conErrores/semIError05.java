@@ -12,4 +12,5 @@ class B extends A {
 
     public char x;
 
+    static void main() {}
 }

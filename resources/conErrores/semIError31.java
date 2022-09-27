@@ -1,4 +1,4 @@
-///[Error:A|5]
+///[Error:C|5]
 
 //test herencia circular entre clases
 
