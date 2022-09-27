@@ -16,9 +16,7 @@ public class MainModule {
 
     public static void main (String [] args) {
 
-//        File file = new File(args[0]);
-        File file;
-        file = new File("src/CasosDePrueba.txt");
+        File file = new File(args[0]);
         FileHandler fileHandler = null;
 
 
@@ -57,13 +55,19 @@ public class MainModule {
         SyntacticAnalyzer syntaxAnalyzer = null;
 
         try {
+
+            SymbolTable.getInstance().emptySymbolTable();
+
             lexicalAnalyzer = new LexicalAnalyzer(fileHandler, keywordDictionary);
             syntaxAnalyzer = new SyntacticAnalyzer(lexicalAnalyzer);
 
             SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-            SymbolTable.getInstance().imprimirTablaDeSimbolos();
-            SymbolTable.getInstance().emptySymbolTable();
+//            SymbolTable.getInstance().imprimirTablaDeSimbolos();
+
+
+            if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
+                throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());
 
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");

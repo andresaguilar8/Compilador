@@ -1,33 +1,20 @@
+//prueba de consolidación clases (interfaces implementadas)
 
-//test de clase que implementa una interface que extiende a otra
-
-class A implements B {
-
-    public String x;
-
-    int metodo_b() {
-
-    }
-
-    int metodo_c() {
-
-    }
-
-    static void main() {
-
-    }
-
+interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{
+    int m1();
 }
 
-
-interface B extends C {
-
-    int metodo_b();
-
+interface MiInterfaz2 extends MiInterfaz3{
+    void m2();
 }
 
-interface C {
+interface MiInterfaz3{
+    String m3();
+}
 
-    int metodo_c();
-
+class MiClase implements MiInterfaz1, MiInterfaz2, MiInterfaz3{
+    int m1(){}
+    void m2(){}
+    String m3(){}
+    static void main(){}
 }

@@ -21,13 +21,13 @@ public class Method {
         this.parametersTable = new Hashtable<>();
     }
 
-    public void insertParameter(Parameter parameterToInsert) throws SemanticException {
+    public void insertParameter(Parameter parameterToInsert) {
         if (!this.parametersTable.containsKey(parameterToInsert.getParameterName())) {
             this.parametersTable.put(parameterToInsert.getParameterName(), parameterToInsert);
             this.parametersList.add(parameterToInsert);
         }
         else
-            throw new SemanticException(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodToken.getLexeme() + "\"");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodToken.getLexeme() + "\""));
     }
 
     public String getMethodName() {
@@ -56,7 +56,7 @@ public class Method {
             if (!parameter.getParameterType().isPrimitive())
                 if (!parameterTypeIsDeclared(parameter)) {
                     Token parameterTypeToken = parameter.getParameterType().getToken();
-                    throw new SemanticException(parameterTypeToken, "El tipo del parametro " + "\"" + parameter.getParameterName() + "\"" + " del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no esta declarado");
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(parameterTypeToken, "El tipo del parametro " + "\"" + parameter.getParameterName() + "\"" + " del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no esta declarado"));
                 }
         }
     }
@@ -64,7 +64,7 @@ public class Method {
     private void checkNoPrimitiveReturnType() throws SemanticException {
         if (!this.methodReturnType.isPrimitive())
             if (!this.returnTypeClassIsDeclared())
-                throw new SemanticException(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no es una clase declarada");
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no es una clase declarada"));
     }
 
     private boolean parameterTypeIsDeclared(Parameter parameter) {

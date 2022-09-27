@@ -17,12 +17,20 @@ preguntar
         ClaseC met() {}   ----------> aca el error me dice q la claseC no esta declarada pero podria ser que el metodo esta mal redefinido
     }
 
+    si tengo una clase que extiende a B y implementa una interface C
+    si al extender a B hereda un metodo con el mismo nombre que un metodo en la interface C
+    pero con distinto encabezado
+    cual seria el token de error?
+
+    metodos estaticos en interface , cual es el token de error --> nombre metodo
+
+
     si chequeo primero clases concretas o primero interfaces, los detalles de erroes pueden cambaiar
 
     si un metodo retorna un tipo no declarado, el error es en el metodo o en el tipo de retorno?
     --> tengo que el error es tipo
 
-    metodos estaticos en interface , cual es el token de error
+
 
     tiene que haber un solo metodo main estatico y sin parametros.
     Cuando consolido los metodos de una clase

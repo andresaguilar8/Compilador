@@ -1,20 +1,9 @@
-///[Error:y|13]
+//[Error:MiClase4|9]
 
-//test nombre atributo repetido en subclase
+class MiClase extends MiClase2{}
 
-class A {
+class MiClase2{}
 
-    public int x, y, z;
+class MiClase4 extends MiClase5{}
 
-}
-
-class B extends A {
-
-    public char y;
-
-    void metodo(int x) {
-
-    }
-
-    static void main () {}
-}
+class MiClase5 extends MiClase4{}

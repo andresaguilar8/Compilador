@@ -1,15 +1,11 @@
-///[Error:x|8]
+//[Error:MiClase7|7]
 
-//test nombre de atributo repetido en una misma clase
+class MiClase extends MiClase2{}
 
-class A {
+class MiClase2{}
 
-    public int x;
-    public int x;
+class MiClase6 extends MiClase7{}
 
-    void metodo() {
+class MiClase7 extends MiClase8{}
 
-    }
-    static void main() {}
-}
-
+class MiClase8 extends MiClase7{}

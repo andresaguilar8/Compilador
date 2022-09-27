@@ -1,16 +1,15 @@
-///[Error:Z|10]
+//[Error:m4|12]
 
-//herencia circular, el error podria ser cualquiera de las interfaces
-
-class A extends B implements C{
+class MiClase{
+    int m1(char a, String b){}
+    void m2(boolean c, MiClase d){}
+    String m4(){}
 }
 
-interface C extends Y{}
-interface Y extends H{}
-interface H extends Z{}
-interface Z extends X{}
-interface X extends C{}
+class MiClase2 extends MiClase{
+    char m1(){}
+    void m2(boolean e, MiClase f){}
+    static String m4(){}
 
-class B implements C, H{
     static void main(){}
 }

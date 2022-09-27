@@ -1,35 +1,8 @@
-///[Error:metodo_en_a|27]
+//[Error:MiClase5|7]
 
-// test de metodos heredados. La clase C "redefine" de manera incorrecta un metodo heredado de la clase A
-
-class A {
-
-    int metodo_en_a() {
-
-    }
-
-    static void main() {
-
-    }
-
+class MiClase{
+    void m2(MiClase c, MiInterfaz2 d, char e){}
 }
-
-class B extends A {
-
-    int metodo_b() {
-
-    }
-
-}
-
-class C extends B {
-
-    int metodo_en_a(int x) {
-
-    }
-
-    int metodo_b() {
-
-    }
-
+interface MiInterfaz{
+    void m5(MiClase5 i, char j);
 }

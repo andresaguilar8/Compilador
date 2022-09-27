@@ -24,7 +24,8 @@ public class Attribute {
 
     public void checkDeclaration() throws SemanticException {
         if (!this.attributeType.isPrimitive() && !referenceTypeExist(this.attributeType.getClassName()))
-            throw new SemanticException(this.attributeType.getToken(), "El tipo " + this.attributeType.getClassName() + " no esta declarado");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.attributeType.getToken(), "El tipo " + this.attributeType.getClassName() + " no esta declarado"));
+    //            throw new SemanticException(this.attributeType.getToken(), "El tipo " + this.attributeType.getClassName() + " no esta declarado");
     }
 
     private boolean referenceTypeExist(String className) {

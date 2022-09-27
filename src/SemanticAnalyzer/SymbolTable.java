@@ -1,6 +1,8 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
+
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class SymbolTable {
@@ -12,6 +14,7 @@ public class SymbolTable {
     private Hashtable<String, Interface> interfacesTable;
     private boolean mainMethodIsDeclared;
     private Token EOFToken;
+    private ArrayList<SemanticError> semanticErrorsList;
 
     //todo falta el constructor
     public static SymbolTable getInstance() {
@@ -24,21 +27,26 @@ public class SymbolTable {
         this.concreteClassesTable = new Hashtable<String, ConcreteClass>();
         this.interfacesTable = new Hashtable<String, Interface>();
         this.mainMethodIsDeclared = false;
+        this.semanticErrorsList = new ArrayList<>();
         this.initPredefinedClasses();
+    }
+
+    public ArrayList<SemanticError> getSemanticErrorsList() {
+        return this.semanticErrorsList;
     }
 
     public void insertConcreteClass(ConcreteClass classToInsert) throws SemanticException {
         if (!this.concreteClassesTable.containsKey(classToInsert.getClassName()) && !this.interfacesTable.containsKey(classToInsert.getClassName())) {
             this.concreteClassesTable.put(classToInsert.getClassName(), classToInsert);
         } else
-            throw new SemanticException(classToInsert.getToken(), "El nombre " + classToInsert.getClassName() + " ya esta declarado");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(classToInsert.getToken(), "El nombre " + classToInsert.getClassName() + " ya esta declarado"));
     }
 
     public void insertInterface(Interface interfaceToInsert) throws SemanticException {
         if (!this.concreteClassesTable.containsKey(interfaceToInsert.getClassName()) && !this.interfacesTable.containsKey(interfaceToInsert.getClassName())) {
             this.interfacesTable.put(interfaceToInsert.getClassName(), interfaceToInsert);
         } else
-            throw new SemanticException(interfaceToInsert.getToken(), "El nombre " + interfaceToInsert.getClassName() + " ya esta declarado");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToInsert.getToken(), "El nombre " + interfaceToInsert.getClassName() + " ya esta declarado"));
     }
 
     public Class getCurrentClass() {
@@ -94,7 +102,7 @@ public class SymbolTable {
         for (Method methodToCheck : classToCheck.getMethods().values())
             if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnType().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
                 if (this.mainMethodIsDeclared == true)
-                    throw new SemanticException(methodToCheck.getMethodToken(), "Ya existe un metodo main estatico y sin parametros");
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToCheck.getMethodToken(), "Ya existe un metodo main estatico y sin parametros"));
                 else
                     this.mainMethodIsDeclared = true;
     }
@@ -105,7 +113,7 @@ public class SymbolTable {
         for (ConcreteClass classToConsolidate : this.concreteClassesTable.values())
             classToConsolidate.consolidate();
         if (!this.mainMethodIsDeclared)
-            throw new SemanticException(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase"));
     }
 
     private void initPredefinedClasses() {
@@ -118,6 +126,7 @@ public class SymbolTable {
         this.concreteClassesTable = new Hashtable<String, ConcreteClass>();
         this.interfacesTable = new Hashtable<String, Interface>();
         this.mainMethodIsDeclared = false;
+        this.semanticErrorsList = new ArrayList<>();
         this.initPredefinedClasses();
     }
 
@@ -173,13 +182,11 @@ public class SymbolTable {
         ConcreteClass objectClass = new ConcreteClass(objectClassToken, null);
         objectClass.setConsolidated();
 
-        try {
-            debugPrintMethod.insertParameter(methodParameter);
-            objectClass.insertMethod(debugPrintMethod);
-            this.concreteClassesTable.put(objectClass.getClassName(), objectClass);
-        } catch (SemanticException exception) {
-            exception.getMessage();
-        }
+
+        debugPrintMethod.insertParameter(methodParameter);
+        objectClass.insertMethod(debugPrintMethod);
+        this.concreteClassesTable.put(objectClass.getClassName(), objectClass);
+
     }
 
     private void initStringClass() {
@@ -215,11 +222,7 @@ public class SymbolTable {
         Token readMethodToken = new Token("idMV", "read", 0);
         Method readMethod = new Method(readMethodToken, "", readMethodType);
 
-        try {
             concreteClass.insertMethod(readMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintBMethod(ConcreteClass concreteClass) {
@@ -232,12 +235,8 @@ public class SymbolTable {
         Type printBMethodParameterType = new PrimitiveType(booleanToken);
         Parameter parameterB = new Parameter(parameterBToken, printBMethodParameterType);
 
-        try {
-            printBMethod.insertParameter(parameterB);
-            concreteClass.insertMethod(printBMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
+        printBMethod.insertParameter(parameterB);
+        concreteClass.insertMethod(printBMethod);
     }
 
     private void insertPrintCMethod(ConcreteClass concreteClass) {
@@ -250,12 +249,8 @@ public class SymbolTable {
         Type printCMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterC = new Parameter(parameterCToken, printCMethodParameterType);
 
-        try {
             printCMethod.insertParameter(parameterC);
             concreteClass.insertMethod(printCMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintIMethod(ConcreteClass concreteClass) {
@@ -268,12 +263,8 @@ public class SymbolTable {
         Type printIMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIMethodParameterType);
 
-        try {
             printIMethod.insertParameter(parameterI);
             concreteClass.insertMethod(printIMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintSMethod(ConcreteClass concreteClass) {
@@ -286,12 +277,8 @@ public class SymbolTable {
         Type printIMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printIMethodParameterType);
 
-        try {
             printSMethod.insertParameter(parameterS);
             concreteClass.insertMethod(printSMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintlnMethod(ConcreteClass concreteClass) {
@@ -300,11 +287,7 @@ public class SymbolTable {
         Token printlnMethodToken = new Token("idMV", "println", 0);
         Method printlnMethod = new Method(printlnMethodToken, "static", printlnMethodType);
 
-        try {
             concreteClass.insertMethod(printlnMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintBlnMethod(ConcreteClass concreteClass) {
@@ -317,12 +300,8 @@ public class SymbolTable {
         Type printBlnMethodParameterType = new PrimitiveType(booleanToken);
         Parameter parameterB = new Parameter(parameterBToken, printBlnMethodParameterType);
 
-        try {
             printBlnMethod.insertParameter(parameterB);
             concreteClass.insertMethod(printBlnMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintClnMethod(ConcreteClass concreteClass) {
@@ -335,12 +314,8 @@ public class SymbolTable {
         Type printClnMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterB = new Parameter(parameterCToken, printClnMethodParameterType);
 
-        try {
             printClnMethod.insertParameter(parameterB);
             concreteClass.insertMethod(printClnMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintIlnMethod(ConcreteClass concreteClass) {
@@ -353,12 +328,8 @@ public class SymbolTable {
         Type printIlnMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIlnMethodParameterType);
 
-        try {
             printIlnMethod.insertParameter(parameterI);
             concreteClass.insertMethod(printIlnMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void insertPrintSlnMethod(ConcreteClass concreteClass) {
@@ -371,12 +342,8 @@ public class SymbolTable {
         Type printSlnMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printSlnMethodParameterType);
 
-        try {
             printSlnMethod.insertParameter(parameterS);
             concreteClass.insertMethod(printSlnMethod);
-        } catch (SemanticException exception) {
-            exception.printStackTrace();
         }
     }
 
-}

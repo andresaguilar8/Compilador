@@ -1,12 +1,13 @@
-///[Error:B|5]
+//[Error:MiInterfaz7|13]
 
-//test de una clase que implementa una interface que no esta declarada
+interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
 
-class A implements B {
+interface MiInterfaz2 extends MiInterfaz3{}
 
-}
+interface MiInterfaz3{}
 
-class B {
+interface MiInterfaz7 extends MiInterfaz8, MiInterfaz1{}
 
-    static void main(){}
-}
+interface MiInterfaz8 extends MiInterfaz9, MiInterfaz2{}
+
+interface MiInterfaz9 extends MiInterfaz7, MiInterfaz3{}

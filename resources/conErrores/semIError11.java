@@ -1,21 +1,9 @@
-///[Error:x|9]
+//[Error:MiInterfaz4|9]
 
-//test metodo tiene mismo nombre de parametros
+interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
 
-class A {
+interface MiInterfaz2 extends MiInterfaz3{}
 
-    public int x;
+interface MiInterfaz3{}
 
-    void metodo(char x, int x) {
-
-    }
-
-}
-
-class B extends A {
-
-    public char y;
-
-    static void main() {}
-
-}
+interface MiInterfaz4 extends MiInterfaz4, MiInterfaz1, MiInterfaz3{}

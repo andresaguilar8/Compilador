@@ -1,17 +1,6 @@
-///[Error:B|12]
+//[Error:MiClase2|5]
 
-//test de una clase que implementa a una interface pero no implementa todos sus metodos
-
-
-interface B {
-
-    void metodo_1();
-
+interface MiInterfaz{
+    static MiInterfaz m1();
+    static MiClase2 m3();
 }
-
-class A implements B {
-
-    static void main() {}
-}
-
-

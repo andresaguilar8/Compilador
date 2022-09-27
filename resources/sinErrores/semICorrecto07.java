@@ -1,33 +1,14 @@
+//prueba de consolidación clases (atributos heredados)
 
-//test de clase que implementa correctamente los metodos de una interfaz que extiende a otras dos
-interface X {
-    String metodox();
-}
-interface Y {
-    String metodoy();
-}
-
-interface Z extends X, Y {
-    String metodoz();
+class MiClase{
+    int a;
+    char b, c;
+    String d;
 }
 
-class A implements Z {
-
-    String metodox(){
-
-    }
-
-    String metodoy() {
-
-    }
-
-    String metodoz(){
-
-    }
-
-    static void main() {}
+class MiClase2 extends MiClase{
+    MiClase a;
+    char b;
+    boolean e;
+    static void main(){}
 }
-
-
-
-

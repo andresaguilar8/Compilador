@@ -1,23 +1,8 @@
-///[Error:debugPrint|7]
+//[Error:MiClase2|5]
 
-//test de una clase que redefine de manera incorrecta el metodo debugPrint
-
-class A implements B, C {
-
-    void debugPrint(int x) {
-
-    }
-
-    static void main () {
-
-    }
-
+class MiClase{
+    static MiInterfaz m1(){}
+    static MiClase2 m3(){}
 }
 
-interface B {
-
-}
-
-interface C {
-
-}
+interface MiInterfaz{}

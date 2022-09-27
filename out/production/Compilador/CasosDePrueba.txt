@@ -1,19 +1,11 @@
+//[Error:MiClase7|7]
 
+class MiClase extends MiClase2{}
 
-class A {
+class MiClase2{ static void main() {}}
 
-    public String x;
-    static void main(){}
-    static int meta(String x){}
-}
+class MiClase6 extends MiClase7{}
 
-class B extends System implements C{
+class MiClase7 extends MiClase8{}
 
-}
-
-interface C {
-
-    void println();
-}
-
-
+class MiClase8 extends MiClase7{}

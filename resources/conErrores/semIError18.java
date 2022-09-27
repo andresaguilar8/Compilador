@@ -1,23 +1,6 @@
-///[Error:metodo|15]
+//[Error:MiClase3|5]
 
-//test de una interface que tiene un metodo con alcance estatico
-
-class A implements B, C {
-
-    static void debugPrint(int x) {
-
-    }
-
-}
-
-interface B {
-
-    static void metodo() {
-
-    }
-
-}
-
-interface C {
-
+class MiClase{
+    MiClase m2(){}
+    MiClase3 m4(){}
 }

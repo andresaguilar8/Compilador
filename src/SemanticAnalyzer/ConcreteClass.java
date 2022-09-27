@@ -25,18 +25,18 @@ public class ConcreteClass extends Class {
         return null;
     }
 
-    public void insertMethod(Method methodToInsert) throws SemanticException {
+    public void insertMethod(Method methodToInsert) {
         if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
         else
-            throw new SemanticException(methodToInsert.getMethodToken(), "Ya existe un metodo con nombre " + "\"" + methodToInsert.getMethodName() + "\"" + " en la clase " + this.getClassName());
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "Ya existe un metodo con nombre " + "\"" + methodToInsert.getMethodName() + "\"" + " en la clase " + this.getClassName()));
     }
 
     public void insertAttribute(Attribute attribute) throws SemanticException {
         if (!this.attributes.containsKey(attribute.getAttributeName()))
             this.attributes.put(attribute.getAttributeName(), attribute);
         else
-            throw new SemanticException(attribute.getAttributeToken(), "El atributo " + attribute.getAttributeToken().getLexeme() + " ya esta declarado en la clase " + this.classToken.getLexeme());
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(attribute.getAttributeToken(), "El atributo " + attribute.getAttributeToken().getLexeme() + " ya esta declarado en la clase " + this.classToken.getLexeme()));
     }
 
     public void checkDeclarations() throws SemanticException {
@@ -47,25 +47,30 @@ public class ConcreteClass extends Class {
         this.checkMethodsDeclaration();
     }
 
-    private void checkAncestorClass() throws SemanticException {
+    private void checkAncestorClass() {
         if (this.getAncestorClassName() != null)
             if (!this.concreteClassIsDeclared(this.getAncestorClassName()))
-                throw new SemanticException(this.ancestorClassToken, "La clase " + this.getAncestorClassName() + " no esta declarada");
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.ancestorClassToken, "La clase " + this.getAncestorClassName() + " no esta declarada"));
     }
 
     private void checkCyclicInheritance() throws SemanticException {
         ArrayList<String> ancestorsList = new ArrayList<>();
-        this.getAncestorsList(ancestorsList);
+        if (this.getAncestorsList(ancestorsList))
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.ancestorClassToken, "Herencia circular: la clase " + "\"" + this.getClassName() + "\"" + " se extiende a si misma"));
     }
 
-    public void getAncestorsList(ArrayList<String> ancestorsList) throws SemanticException {
+    public boolean getAncestorsList(ArrayList<String> ancestorsList) throws SemanticException {
         if (this.getAncestorClass() != null) {
             if (!ancestorsList.contains(this.getAncestorClass().getClassName())) {
                 ancestorsList.add(this.ancestorClassToken.getLexeme());
-                this.getAncestorClass().getAncestorsList(ancestorsList);
-            } else
-                throw new SemanticException(this.ancestorClassToken, "Herencia circular: la clase " + "\"" + this.getClassName() + "\"" + " se extiende a si misma");
+                return this.getAncestorClass().getAncestorsList(ancestorsList);
+            }
+            else {
+                this.hasCyclicInheritance = true;
+                return true;
+            }
         }
+        return false;
     }
 
     private void checkInterfacesDeclaration() throws SemanticException {
@@ -73,7 +78,8 @@ public class ConcreteClass extends Class {
             Token interfaceToken = interfaceToCheckIfItsDeclared.getToken();
             String interfaceName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceName))
-                throw new SemanticException(interfaceToken, "La interface " + interfaceName + " no esta declarada");
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La interface " + interfaceName + " no esta declarada"));
+//                throw new SemanticException(interfaceToken, "La interface " + interfaceName + " no esta declarada");
         }
     }
 
@@ -89,15 +95,16 @@ public class ConcreteClass extends Class {
 
     public void consolidate() throws SemanticException {
         if (!this.consolidated) {
-            if (this.getAncestorClass() != null) {
-                ConcreteClass ancestorClass = this.getAncestorClass();
-                if (!ancestorClass.isConsolidated())
-                    ancestorClass.consolidate();
-                this.consolidateAttributes(ancestorClass);
-                this.consolidateMethods(ancestorClass);
-                this.verifyInterfacesMethods();
-                this.consolidated = true;
-            }
+            if (!this.hasCyclicInheritance)
+                if (this.getAncestorClass() != null) {
+                    ConcreteClass ancestorClass = this.getAncestorClass();
+                    if (!ancestorClass.isConsolidated())
+                        ancestorClass.consolidate();
+                    this.consolidateAttributes(ancestorClass);
+                    this.consolidateMethods(ancestorClass);
+                    this.verifyInterfacesMethods();
+                    this.consolidated = true;
+                }
         }
     }
 
@@ -108,7 +115,8 @@ public class ConcreteClass extends Class {
                 this.insertAttribute(ancestorAttribute);
             else {
                 Attribute thisClassAttribute = this.getAttributes().get(ancestorAttributeName);
-                throw new SemanticException(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en una clase ancestra");
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en una clase ancestra"));
+//                throw new SemanticException(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en una clase ancestra");
             }
         }
     }
@@ -123,7 +131,8 @@ public class ConcreteClass extends Class {
             else {
                 Method thisClassMethod = this.getMethod(methodName);
                 if (!thisClassMethod.correctRedefinedMethodHeader(ancestorMethod))
-                    throw new SemanticException(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido");
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido"));
+//                    throw new SemanticException(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido");
             }
         }
     }
@@ -149,7 +158,8 @@ public class ConcreteClass extends Class {
             Token interfaceToken = interfaceThatImplements.getToken();
             String interfaceName = interfaceToken.getLexeme();
             Interface interfaceToVerifyMethodsImplementations = SymbolTable.getInstance().getInterface(interfaceName);
-            interfaceToVerifyMethodsImplementations.verifyMethodsImplementation(interfaceToken, this);
+            if (interfaceToVerifyMethodsImplementations != null)
+                interfaceToVerifyMethodsImplementations.verifyMethodsImplementation(interfaceToken, this);
         }
     }
 

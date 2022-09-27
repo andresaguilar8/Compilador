@@ -1,30 +1,30 @@
 package SemanticAnalyzer;
-
-import LexicalAnalyzer.Token;
+import java.util.ArrayList;
 
 public class SemanticException extends Exception {
 
-    private Token errorToken;
-    private String errorMessage;
+    private ArrayList<SemanticError> semanticErrorList;
 
-    public SemanticException(Token errorToken, String errorMessage) {
-        this.errorToken = errorToken;
-        this.errorMessage = errorMessage;
+    public SemanticException(ArrayList<SemanticError> semanticErrorList) {
+        this.semanticErrorList = semanticErrorList;
     }
 
     public String getMessage() {
-        return "Error Semantico en linea "
-                + this.errorToken.getLineNumber()
-                + ": "
-                + this.errorMessage
-                + this.generateStringError();
+        String toReturn =  "";
+        for (SemanticError semanticError: this.semanticErrorList)
+            toReturn += "Error Semantico en linea "
+                    + semanticError.getErrorToken().getLineNumber()
+                    + ": "
+                    + semanticError.getErrorMessage()
+                    + this.generateStringError(semanticError);
+        return toReturn;
     }
 
-    private String generateStringError() {
+    private String generateStringError(SemanticError semanticError) {
         return "\n\n[Error:" +
-                this.errorToken.getLexeme()
+                semanticError.getErrorToken().getLexeme()
                 + "|"
-                + this.errorToken.getLineNumber()
+                + semanticError.getErrorToken().getLineNumber()
                 + "]\n\n";
     }
 

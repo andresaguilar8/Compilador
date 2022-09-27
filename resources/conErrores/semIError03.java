@@ -16,7 +16,7 @@ class A {
 }
 
 class B extends A{
-    int m1()
+    static int m1()
     {}
 }
 

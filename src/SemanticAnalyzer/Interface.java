@@ -11,11 +11,12 @@ public class Interface extends Class {
 
     public void insertMethod(Method methodToInsert) throws SemanticException {
         if (methodToInsert.getStaticHeader().equals("static"))
-            throw new SemanticException(methodToInsert.getMethodToken(), "Una interface no puede tener metodos estaticos");
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "Una interface no puede tener metodos estaticos"));
         if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
         else
-            throw new SemanticException(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName());
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName()));
+//            throw new SemanticException(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName());
     }
 
     public void checkDeclarations() throws SemanticException {
@@ -23,7 +24,8 @@ public class Interface extends Class {
             Token interfaceToken = interfaceToCheck.getToken();
             String interfaceToCheckName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceToCheckName))
-                throw new SemanticException(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada");
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada"));
+//                throw new SemanticException(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada");
         }
         this.checkMethodsDeclaration();
     }
@@ -35,32 +37,49 @@ public class Interface extends Class {
 
     public void consolidate() throws SemanticException {
         if (!this.consolidated) {
-            for (Interface interfaceToCheck: this.interfaces) {
-                if (!interfaceToCheck.isConsolidated())
-                    interfaceToCheck.consolidate();
-                Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(interfaceToCheck.getClassName());
-                this.consolidateMethods(interfaceInSymbolTable);
-                this.checkCyclicInheritance();
-                this.consolidated = true;
-            }
+            if (!this.hasCyclicInheritance)
+                for (Interface interfaceToCheck: this.interfaces) {
+                    if (!interfaceToCheck.isConsolidated())
+                        interfaceToCheck.consolidate();
+                    Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(interfaceToCheck.getClassName());
+                    if (interfaceInSymbolTable != null) {
+                        this.consolidateMethods(interfaceInSymbolTable);
+                        this.checkCyclicInheritance();
+                    }
+                    this.consolidated = true;
+                }
         }
     }
 
-    private void checkCyclicInheritance() throws SemanticException {
+    private void checkCyclicInheritance() {
         ArrayList<String> ancestorsList = new ArrayList<>();
-        this.getAncestorsList(ancestorsList, this.getClassName());
+        ancestorsList.add(this.getClassName());
+        for (Interface ancestorInterface: this.interfaces) {
+            Token ancestorToken = ancestorInterface.getToken();
+            Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(ancestorInterface.getClassName());
+            if (interfaceInSymbolTable != null)
+                if (interfaceInSymbolTable.hasCyclicInheritance(ancestorsList, ancestorToken))
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(ancestorInterface.classToken, "Herencia circular: la interface " + "\"" + this.getClassName() + "\"" + " se extiende a si misma"));
+        }
     }
 
-    public void getAncestorsList(ArrayList<String> ancestorsList, String interfaceName) throws SemanticException {
-        for (Interface ancestorInterface: this.interfaces) {
-            if (!ancestorsList.contains(interfaceName)) {
-                String ancestorInterfaceName = ancestorInterface.getToken().getLexeme();
-                if (!ancestorsList.contains(ancestorInterfaceName))
-                    ancestorsList.add(ancestorInterfaceName);
-                SymbolTable.getInstance().getInterface(ancestorInterfaceName).getAncestorsList(ancestorsList, interfaceName);
-            } else
-                throw new SemanticException(ancestorInterface.getToken(), "Herencia circular: la interface " + "\"" + this.getClassName() + "\"" + " se extiende a si misma");
+    public boolean hasCyclicInheritance(ArrayList<String> ancestorsList, Token interfaceToken){
+        if (!ancestorsList.contains(this.getClassName())) {
+            ancestorsList.add(interfaceToken.getLexeme());
+            for (Interface ancestorInterface: this.interfaces) {
+                Token ancestorToken = ancestorInterface.getToken();
+                Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(ancestorInterface.getClassName());
+                if (interfaceInSymbolTable != null)
+                    if (interfaceInSymbolTable.hasCyclicInheritance(ancestorsList, ancestorToken))
+                        return true;
+            }
+            ancestorsList.remove(interfaceToken.getLexeme());
         }
+        else {
+            this.hasCyclicInheritance = true;
+            return true;
+        }
+        return false;
     }
 
     private void consolidateMethods(Interface classToConsolidateWith) throws SemanticException {
@@ -71,7 +90,7 @@ public class Interface extends Class {
             else {
                 Method thisClassMethod = this.getMethod(methodName);
                 if (!thisClassMethod.correctRedefinedMethodHeader(ancestorMethod))
-                    throw new SemanticException(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido");
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido"));
             }
         }
     }
@@ -80,15 +99,15 @@ public class Interface extends Class {
         return SymbolTable.getInstance().interfaceIsDeclared(interfaceName);
     }
 
-    public void verifyMethodsImplementation(Token interfaceToken, ConcreteClass concreteClassToCheck) throws SemanticException {
+    public void verifyMethodsImplementation(Token interfaceToken, ConcreteClass concreteClassToCheck) {
         for (Method method : this.methods.values()) {
             if (concreteClassToCheck.getMethods().containsKey(method.getMethodName())) {
                 String methodName = method.getMethodName();
                 if (!method.methodsHeadersAreEquals(concreteClassToCheck.getMethod(methodName)))
-                    throw new SemanticException(concreteClassToCheck.getMethod(method.getMethodName()).getMethodToken(), "El metodo " + "\"" + method.getMethodName() + "\"" + " no respeta el encabezado del metodo definido en la interface " +this.getClassName());
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(concreteClassToCheck.getMethod(method.getMethodName()).getMethodToken(), "El metodo " + "\"" + method.getMethodName() + "\"" + " no respeta el encabezado del metodo definido en la interface " +this.getClassName()));
             }
             else
-                throw new SemanticException(interfaceToken, "La clase " + concreteClassToCheck.getClassName() + " no implementa todos los metodos de la interface " + this.getClassName());
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La clase " + concreteClassToCheck.getClassName() + " no implementa todos los metodos de la interface " + this.getClassName()));
         }
 
     }

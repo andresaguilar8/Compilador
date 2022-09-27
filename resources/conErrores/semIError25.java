@@ -1,24 +1,8 @@
-///[Error:metodo_en_a|23]
+//[Error:MiClase3|4]
 
-// test de metodos heredados. La clase D "redefine" de manera incorrecta un metodo heredado de la clase A
-
-class A {
-
-    String metodo_en_a(){}
+class MiClase{
+    int m3(MiClase3 g){}
 }
-
-class B extends A {
-
-    static void main() {}
-
-}
-
-class C extends B {
-
-
-}
-
-class D extends C {
-
-    void metodo_en_a(){}
+interface MiInterfaz{
+    boolean m6(MiClase6 l, String m);
 }

@@ -1,23 +1,18 @@
+//prueba de consolidación clases (metodos heredados/redefinidos)
 
-//test para ver si se heredan los metodos correctamente
+class MiClase{
+    int m1(char a, String b){}
+    void m2(boolean c, MiClase d){}
+    MiClase m2(){}
+    String m4(){}
+    static void m4(char g, String h){}
+}
 
-class A implements C {
+class MiClase2 extends MiClase{
+    char m1(){}
+    void m2(boolean e, MiClase f){}
+    String m4(){}
+    static void m4(char i, String j){}
+
     static void main(){}
-
-    A metodo_h(){}
-    int otro_metodo_h(){}
-    String metodoC() {}
-}
-
-interface H {
-    A metodo_h();
-    int otro_metodo_h();
-}
-
-class B extends A implements C,H {
-
-}
-
-interface C{
-    String metodoC();
 }

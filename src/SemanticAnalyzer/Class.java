@@ -10,12 +10,14 @@ public abstract class Class {
     protected Hashtable<String, Method> methods;
     protected HashSet<Interface> interfaces;
     protected boolean consolidated;
+    protected boolean hasCyclicInheritance;
 
     public Class(Token classToken) {
         this.classToken = classToken;
         this.methods = new Hashtable<>();
         this.interfaces = new HashSet<>();
         this.consolidated = false;
+        this.hasCyclicInheritance = false;
     }
 
     protected boolean methodAlreadyExist(Method method) {
