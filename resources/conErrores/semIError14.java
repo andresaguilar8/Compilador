@@ -1,13 +1,12 @@
-//[Error:MiInterfaz8|9]
+///[Error:C|5]
 
-interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
+//test de una clase que implementa correctamente una interface y otra interface que no esta declarada
 
-interface MiInterfaz2 extends MiInterfaz3{}
+class A implements B, C {
 
-interface MiInterfaz3{}
+    static void main() {}
+}
 
-interface MiInterfaz7 extends MiInterfaz8, MiInterfaz1{}
+interface B {
 
-interface MiInterfaz8 extends MiInterfaz9, MiInterfaz2{}
-
-interface MiInterfaz9 extends MiInterfaz8, MiInterfaz3{}
+}

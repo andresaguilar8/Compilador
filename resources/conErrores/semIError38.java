@@ -1,10 +1,12 @@
-//[Error:|10]
+///[Error:main|11]
 
-class A{
-    static void main(int a){}
-    static int main(){}
+//test de error: dos clases tienen el metodo main
+
+class A {
+    static void main(){}
+
 }
 
-class B{
-    void main(){}
+class X {
+    static void main(){}
 }

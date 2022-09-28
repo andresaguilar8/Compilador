@@ -5,42 +5,25 @@ hacer
 
 verificar
 
+     hacer tester de intER a implements B,B
+     LO MISMO CON CLASES
 
 preguntar 
 
-    class A {
-        void met(){}
-    }
-
-    class B extends A {
-        static void main() {}
-        ClaseC met() {}   ----------> aca el error me dice q la claseC no esta declarada pero podria ser que el metodo esta mal redefinido
-    }
-
-    si tengo una clase que extiende a B y implementa una interface C
-    si al extender a B hereda un metodo con el mismo nombre que un metodo en la interface C
-    pero con distinto encabezado
-    cual seria el token de error?
-
-    metodos estaticos en interface , cual es el token de error --> nombre metodo
 
 
-    si chequeo primero clases concretas o primero interfaces, los detalles de erroes pueden cambaiar
 
-    si un metodo retorna un tipo no declarado, el error es en el metodo o en el tipo de retorno?
-    --> tengo que el error es tipo
-
+    class A implements B, B, C, D, B  --> aca voy a tirar un error por cada interface repetida pero recorriendo todas las interfaces
+    es decir, va a detectar 6 veces que B esta repetida
 
 
     tiene que haber un solo metodo main estatico y sin parametros.
-    Cuando consolido los metodos de una clase
-    pregunto si el metodo que voy a consolidar es el main, si es el main, no lo agrego.
-    Entonces el chequeo de que solo haya un metodo main esta en ver si hay mas de un metodo main declarado "explicitamente"  --> el error esta en el "main"?
+
+    el chequeo de que solo haya un metodo main esta en ver si hay mas de un metodo main declarado "explicitamente"  --> el error esta en el "main"?
     Con respecto a si hay dos metodos main, no puedo saber que clase va a ser la que produzca el error cuando este chequeando declaraciones
 
-    Los metodos estaticos de una clase se pueden redefinir?
 
-	los metodos estaticos se heredan? supongo que si porque sino se podria "redefinir" un metodo estatico incorrectamente
+
 
 
 

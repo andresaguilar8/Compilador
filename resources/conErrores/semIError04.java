@@ -1,5 +1,17 @@
-//[Error:MiClase1|3]
+///[Error:x|14]
 
-class MiClase extends MiClase1 implements MiInterfaz{}
+//test nombre atributo de tipo primitivo repetido en clase hija
 
-interface MiInterfaz{}
+class A {
+
+    public int x;
+
+}
+
+class B extends A {
+
+
+    public char x;
+
+    static void main () {}
+}

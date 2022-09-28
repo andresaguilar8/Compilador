@@ -1,8 +1,15 @@
-//[Error:MiClase2|5]
+///[Error:|15]
 
-class MiClase{
-    public MiInterfaz a1;
-    private MiClase2 a3;
+//test de una clase que implementa correctamente dos interfaces pero falta una clase con el metodo main
+
+class A implements B, C {
+
 }
 
-interface MiInterfaz{}
+interface B {
+
+}
+
+interface C {
+
+}

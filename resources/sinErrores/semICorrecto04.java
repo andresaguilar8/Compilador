@@ -1,9 +1,18 @@
-//prueba extender clases predefinidas
 
-class MiClase1 extends Object{
-    static void main(){}
+//test atributo de tipo String, metodo que retorna un String y recibe como parametro un String
+
+class A {
+
+    public String x;
+
+    static void main() {
+        
+    }
+
 }
 
-class MiClase2 extends String{}
+interface B {
 
-class MiClase3 extends System{}
+    String metodo(String parametro);
+
+}

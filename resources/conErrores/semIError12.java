@@ -1,11 +1,20 @@
-//[Error:MiInterfaz5|11]
+///[Error:C|9]
 
-interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
+//test metodo tiene un tipo de parametro no declarado
 
-interface MiInterfaz2 extends MiInterfaz3{}
+class A {
 
-interface MiInterfaz3{}
+    public int x;
 
-interface MiInterfaz5 extends MiInterfaz6, MiInterfaz1, MiInterfaz2{}
+    void metodo(C x, int y) {
 
-interface MiInterfaz6 extends MiInterfaz5, MiInterfaz1, MiInterfaz2, MiInterfaz3{}
+    }
+
+}
+
+class B extends A {
+
+    public char y;
+
+    static void main() {}
+}

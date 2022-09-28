@@ -9,14 +9,23 @@ public class Interface extends Class {
         super(interfaceToken);
     }
 
-    public void insertMethod(Method methodToInsert) throws SemanticException {
+    public void insertMethod(Method methodToInsert) {
         if (methodToInsert.getStaticHeader().equals("static"))
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "Una interface no puede tener metodos estaticos"));
         if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
         else
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName()));
-//            throw new SemanticException(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName());
+    }
+
+    public void checkRepeatedInterfaceImplementation(Interface otherInterface) {
+        int total = 0;
+        for (Interface interfaceToCheck : this.interfaces)
+            if (interfaceToCheck.getClassName().equals(otherInterface.getClassName())) {
+                total += 1;
+                if (total > 1)
+                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(otherInterface.getToken(), "La interface " + "\"" + this.getClassName() + "\"" + " extiende mas de una vez a una misma interface"));
+            }
     }
 
     public void checkDeclarations() throws SemanticException {
@@ -25,7 +34,7 @@ public class Interface extends Class {
             String interfaceToCheckName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceToCheckName))
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada"));
-//                throw new SemanticException(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada");
+            this.checkRepeatedInterfaceImplementation(interfaceToCheck);
         }
         this.checkMethodsDeclaration();
     }
@@ -58,8 +67,10 @@ public class Interface extends Class {
             Token ancestorToken = ancestorInterface.getToken();
             Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(ancestorInterface.getClassName());
             if (interfaceInSymbolTable != null)
-                if (interfaceInSymbolTable.hasCyclicInheritance(ancestorsList, ancestorToken))
+                if (interfaceInSymbolTable.hasCyclicInheritance(ancestorsList, ancestorToken)) {
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(ancestorInterface.classToken, "Herencia circular: la interface " + "\"" + this.getClassName() + "\"" + " se extiende a si misma"));
+                    this.hasCyclicInheritance = true;
+                }
         }
     }
 
@@ -75,10 +86,8 @@ public class Interface extends Class {
             }
             ancestorsList.remove(interfaceToken.getLexeme());
         }
-        else {
-            this.hasCyclicInheritance = true;
+        else
             return true;
-        }
         return false;
     }
 

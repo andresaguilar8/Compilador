@@ -1,8 +1,23 @@
-//[Error:MiClase7|7]
+///[Error:x|21]
 
-class MiClase{
-    String m4(MiClase4 h){}
+//test nombre de atributo heredado repetido
+
+class A {
+
+    public int x;
+
 }
-interface MiInterfaz{
-    MiClase m7(int a, String b, MiClase7 n);
+
+class B extends A {
+
+
+
+
+    static void main () {}
+}
+
+class C extends B {
+
+    public String x;
+
 }

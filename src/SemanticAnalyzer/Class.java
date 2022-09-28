@@ -48,6 +48,8 @@ public abstract class Class {
         this.consolidated = true;
     }
 
+    public abstract void checkRepeatedInterfaceImplementation(Interface otherInterface);
+
     public abstract void insertMethod(Method methodToInsert) throws SemanticException;
 
     public abstract void consolidate() throws SemanticException;

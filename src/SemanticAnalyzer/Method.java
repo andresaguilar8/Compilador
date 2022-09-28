@@ -46,12 +46,12 @@ public class Method {
         return this.parametersList;
     }
 
-    public void checkDeclaration() throws SemanticException {
+    public void checkDeclaration() {
         this.checkNoPrimitiveParameters();
         this.checkNoPrimitiveReturnType();
     }
 
-    private void checkNoPrimitiveParameters() throws SemanticException {
+    private void checkNoPrimitiveParameters() {
         for (Parameter parameter: this.parametersTable.values()) {
             if (!parameter.getParameterType().isPrimitive())
                 if (!parameterTypeIsDeclared(parameter)) {
@@ -61,7 +61,7 @@ public class Method {
         }
     }
 
-    private void checkNoPrimitiveReturnType() throws SemanticException {
+    private void checkNoPrimitiveReturnType() {
         if (!this.methodReturnType.isPrimitive())
             if (!this.returnTypeClassIsDeclared())
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no es una clase declarada"));

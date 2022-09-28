@@ -1,6 +1,21 @@
-//[Error:MiClase3|4]
-
-class MiClase{
-    MiClase(MiClase3 g){}
+///[Error:metodox|18]
+//metodo mal redefinido
+interface X {
+    int metodox();
 }
-interface MiInterfaz{}
+interface Y{
+    int metodoy();
+}
+interface Z{
+    int metodoz();
+}
+class A {
+    int metodox(){}
+    int metodoy(){}
+}
+
+class B extends A implements Z {
+    char metodox(){}
+    int metodoz(){}
+    static void main(){}
+}

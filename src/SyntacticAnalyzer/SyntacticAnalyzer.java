@@ -6,7 +6,6 @@ import LexicalAnalyzer.LexicalException;
 import SemanticAnalyzer.*;
 import SemanticAnalyzer.Class;
 import SemanticAnalyzer.ConcreteClass;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;

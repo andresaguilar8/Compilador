@@ -1,6 +1,23 @@
-//[Error:MiClase2|4]
+///[Error:Z|19]
+//test de una una clase  que implementa una interface que extiende a otras dos interfaces y no implementa todos los metodos
 
-class MiClase{
-    MiClase(int a, MiClase2 b, MiInterfaz c){}
+
+interface X {
+
+    void metodox();
 }
-interface MiInterfaz{}
+
+interface Y {
+    void metodoy();
+}
+
+interface Z extends X, Y{
+
+}
+
+
+class A implements Z {
+
+
+    static void main() {}
+}

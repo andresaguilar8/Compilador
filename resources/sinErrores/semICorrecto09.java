@@ -1,12 +1,20 @@
-
-interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
-
-interface MiInterfaz2 extends MiInterfaz3{
-
+interface X {
+    int metodox();
+}
+interface Y{
+    int metodoy();
+}
+interface Z extends X,Y {
+    int metodoz();
 }
 
-interface MiInterfaz3{}
-
 class A {
+    int metodox(){}
+    int metodoy(){}
+}
+
+class B extends A implements Z {
+
+    int metodoz(){}
     static void main(){}
 }

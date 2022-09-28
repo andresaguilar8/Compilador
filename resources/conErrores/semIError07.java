@@ -1,7 +1,23 @@
-//[Error:MiClase3|7]
+///[Error:met|13]
 
-class MiClase extends MiClase2{}
+//test nombre de metodo repetido dentro de una misma clase
 
-class MiClase2{}
+class A {
 
-class MiClase3 extends MiClase3{}
+    public int x;
+
+    void met() {
+
+    }
+
+    int met() {
+
+    }
+
+}
+
+class B extends A {
+
+    public char y;
+    static void main() {}
+}

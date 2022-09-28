@@ -1,11 +1,23 @@
-//[Error:MiClase8|9]
+///[Error:C|19]
 
-class MiClase extends MiClase2{}
+//test tipo de retorno de metodo (idClase) no declarado
 
-class MiClase2{}
+class A {
 
-class MiClase6 extends MiClase7{}
+    public int x;
 
-class MiClase7 extends MiClase8{}
+    void metodo() {
 
-class MiClase8 extends MiClase6{}
+    }
+
+}
+
+class B extends A {
+
+    public char y;
+
+    C met() {
+
+    }
+    static void main() {}
+}

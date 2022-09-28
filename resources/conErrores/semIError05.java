@@ -1,7 +1,16 @@
-//[Error:MiInterfaz2|3]
+///[Error:C|7]
 
-class MiClase1 extends MiClase2 implements MiInterfaz1, MiInterfaz2{}
+//test nombre atributo de tipo clase repetido pero la clase no esta declarada
 
-class MiClase2{}
+class A {
 
-interface MiInterfaz1{}
+    public C x;
+
+}
+
+class B extends A {
+
+    public char x;
+
+    static void main() {}
+}

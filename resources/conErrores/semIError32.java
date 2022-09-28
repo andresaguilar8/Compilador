@@ -1,14 +1,15 @@
-//[Error:m1|12]
+///[Error:B|9]
 
-interface MiInterfaz1 extends MiInterfaz2{
-    MiClase m1();
+//test herencia circular entre interfaces
+
+class Init{
+    static void main(){}
 }
 
-interface MiInterfaz2{
-    void m2();
+interface A extends B {
+
 }
 
-class MiClase implements MiInterfaz1{
-    MiInterfaz2 m1(){}
-    void m2(){}
+interface B extends A {
+
 }

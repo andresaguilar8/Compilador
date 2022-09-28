@@ -1,15 +1,23 @@
-//[Error:m4|12]
+///[Error:T|11]
 
-class MiClase{
-    int m1(char a, String b){}
-    void m2(boolean c, MiClase d){}
-    static void m4(char g, String h){}
+//test de implementacion de metodos de interfaces
+//la clase B no implementa todos los metodos de la interface T
+
+class A {
+    static void main(){}
 }
 
-class MiClase2 extends MiClase{
-    char m1(){}
-    void m2(boolean e, MiClase f){}
-    void m4(char i, String j){}
 
-    static void main(){}
+class B extends A implements T{
+
+}
+
+
+interface T extends U { }
+interface U extends V, W {}
+interface W {}
+interface V extends X, Y {}
+interface X{}
+interface Y{
+    void metodo_en_y();
 }

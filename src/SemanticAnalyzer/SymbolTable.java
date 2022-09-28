@@ -98,7 +98,7 @@ public class SymbolTable {
             interfaceToCheck.checkDeclarations();
     }
 
-    private void checkMainMethod(ConcreteClass classToCheck) throws SemanticException {
+    private void checkMainMethod(ConcreteClass classToCheck) {
         for (Method methodToCheck : classToCheck.getMethods().values())
             if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnType().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
                 if (this.mainMethodIsDeclared == true)

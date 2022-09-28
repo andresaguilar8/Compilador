@@ -1,8 +1,23 @@
-//[Error:MiClase3|7]
+///[Error:B|14]
 
-class MiClase{}
+//test de una clase que implementa a una interface pero no implementa todos sus metodos
 
-interface MiInterfaz{
-    MiClase m2();
-    MiClase3 m4();
+
+interface B {
+
+    void metodo_1();
+
+    void metodo_2();
+
+}
+
+class A implements B {
+
+    void metodo_1() {
+
+    }
+
+    static void main() {}
+
+
 }

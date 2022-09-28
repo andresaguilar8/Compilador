@@ -1,5 +1,27 @@
-//[Error:MiInterfaz3|3]
+///[Error:metodo|19]
 
-interface MiInterfaz1 extends MiInterfaz2, MiInterfaz3{}
+//test metodo redefinido con distintos parametros
 
-interface MiInterfaz2{}
+class A {
+
+    public int x;
+
+    void metodo() {
+
+    }
+
+}
+
+class B extends A {
+
+    public char y;
+
+    void metodo(int x) {
+
+    }
+
+    static void main () {
+
+    }
+
+}

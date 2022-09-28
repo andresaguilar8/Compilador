@@ -1,5 +1,11 @@
-//[Error:MiClase7|4]
+///[Error:B|5]
 
-class MiClase{
-    MiClase(int a, MiClase b, MiClase7 n){}
+//test herencia circular
+
+class A extends B {
+
+}
+
+class B extends A {
+    static void main(){}
 }
