@@ -76,20 +76,20 @@ public class ConcreteClass extends Class {
 
     private void checkCyclicInheritance() {
         ArrayList<String> ancestorsList = new ArrayList<>();
-        if (this.getAncestorsList(ancestorsList))
+        if (this.hasCyclicInheritance(ancestorsList)) {
+            this.hasCyclicInheritance = true;
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.ancestorClassToken, "Herencia circular: la clase " + "\"" + this.getClassName() + "\"" + " se extiende a si misma"));
+        }
     }
 
-    public boolean getAncestorsList(ArrayList<String> ancestorsList) {
+    public boolean hasCyclicInheritance(ArrayList<String> ancestorsList) {
         if (this.getAncestorClass() != null) {
             if (!ancestorsList.contains(this.getAncestorClass().getClassName())) {
                 ancestorsList.add(this.ancestorClassToken.getLexeme());
-                return this.getAncestorClass().getAncestorsList(ancestorsList);
+                return this.getAncestorClass().hasCyclicInheritance(ancestorsList);
             }
-            else {
-                this.hasCyclicInheritance = true;
+            else
                 return true;
-            }
         }
         return false;
     }
