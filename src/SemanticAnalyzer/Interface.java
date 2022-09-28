@@ -18,14 +18,17 @@ public class Interface extends Class {
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName()));
     }
 
-    public void checkRepeatedInterfaceImplementation(Interface otherInterface) {
-        int total = 0;
-        for (Interface interfaceToCheck : this.interfaces)
-            if (interfaceToCheck.getClassName().equals(otherInterface.getClassName())) {
-                total += 1;
-                if (total > 1)
-                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(otherInterface.getToken(), "La interface " + "\"" + this.getClassName() + "\"" + " extiende mas de una vez a una misma interface"));
+    public void addAncestorInterface(Interface interfaceToAdd) {
+        String interfaceToAddName = interfaceToAdd.getClassName();
+        String interfaceNameToCompare;
+        for (Interface interfacess: this.interfaces) {
+            interfaceNameToCompare = interfacess.getClassName();
+            if (interfaceToAddName.equals(interfaceNameToCompare)) {
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToAdd.getToken(), "La interface " + "\"" + this.getClassName() + "\"" + " ya extiende a la interface " + interfaceToAdd.getClassName()));
+                break;
             }
+        }
+        this.interfaces.add(interfaceToAdd);
     }
 
     public void checkDeclarations() {
@@ -34,7 +37,6 @@ public class Interface extends Class {
             String interfaceToCheckName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceToCheckName))
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La interface " + interfaceToCheckName + " no esta declarada"));
-            this.checkRepeatedInterfaceImplementation(interfaceToCheck);
         }
         this.checkMethodsDeclaration();
     }

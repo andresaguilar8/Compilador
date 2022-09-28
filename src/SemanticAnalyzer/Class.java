@@ -20,6 +20,8 @@ public abstract class Class {
         this.hasCyclicInheritance = false;
     }
 
+    public abstract void addAncestorInterface(Interface interfaceToAdd);
+
     protected boolean methodAlreadyExist(Method method) {
         return this.methods.containsKey(method.getMethodName());
     }
@@ -47,8 +49,6 @@ public abstract class Class {
     public void setConsolidated() {
         this.consolidated = true;
     }
-
-    public abstract void checkRepeatedInterfaceImplementation(Interface otherInterface);
 
     public abstract void insertMethod(Method methodToInsert) throws SemanticException;
 

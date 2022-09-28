@@ -3,26 +3,6 @@ hacer
 	constructor
 
 
-verificar
-
-     hacer tester de intER a implements B,B
-     LO MISMO CON CLASES
-
-preguntar 
-
-
-
-
-    class A implements B, B, C, D, B  --> aca voy a tirar un error por cada interface repetida pero recorriendo todas las interfaces
-    es decir, va a detectar 6 veces que B esta repetida
-
-
-    tiene que haber un solo metodo main estatico y sin parametros.
-
-    el chequeo de que solo haya un metodo main esta en ver si hay mas de un metodo main declarado "explicitamente"  --> el error esta en el "main"?
-    Con respecto a si hay dos metodos main, no puedo saber que clase va a ser la que produzca el error cuando este chequeando declaraciones
-
-
 
 
 

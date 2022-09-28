@@ -1,11 +1,6 @@
 
 
-
-class A {
-    static void metodo(){}
-    static void main(){}
-}
-
-class B extends A{
-    static void metodo(){}
-}
+class A extends B implements
+B,
+B,
+B {}

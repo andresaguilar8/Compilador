@@ -8,7 +8,6 @@ import SemanticAnalyzer.Class;
 import SemanticAnalyzer.ConcreteClass;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class SyntacticAnalyzer {
 
@@ -119,8 +118,7 @@ public class SyntacticAnalyzer {
             Token interfaceToken = this.currentToken;
             Interface interfaceToAdd = new Interface(interfaceToken);
             Class currentClass = SymbolTable.getInstance().getCurrentClass();
-            HashSet<Interface> interfaces = currentClass.getInterfaces();
-            interfaces.add(interfaceToAdd);
+            currentClass.addAncestorInterface(interfaceToAdd);
             this.match("idClase");
             this.listaTipoReferenciaPrima();
         } else

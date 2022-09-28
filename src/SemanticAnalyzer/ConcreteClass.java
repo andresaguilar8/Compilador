@@ -28,6 +28,19 @@ public class ConcreteClass extends Class {
         return null;
     }
 
+    public void addAncestorInterface(Interface interfaceToAdd) {
+        String interfaceToAddName = interfaceToAdd.getClassName();
+        String interfaceNameToCompare;
+        for (Interface interfacess: this.interfaces) {
+            interfaceNameToCompare = interfacess.getClassName();
+            if (interfaceToAddName.equals(interfaceNameToCompare)) {
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToAdd.getToken(), "La clase " + "\"" + this.getClassName() + "\"" + " ya implementa a la interface " + interfaceToAdd.getClassName()));
+                break;
+            }
+        }
+        this.interfaces.add(interfaceToAdd);
+    }
+
     public void insertMethod(Method methodToInsert) {
         if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
@@ -52,7 +65,7 @@ public class ConcreteClass extends Class {
     }
 
     private void insertConstructor() {
-        this.classConstructor = new Constructor(new Token("idMV", this.getClassName(), 0));
+        this.classConstructor = new Constructor(new Token("idClase", this.getClassName(), 0));
     }
 
     private void checkAncestorClass() {
@@ -87,18 +100,7 @@ public class ConcreteClass extends Class {
             String interfaceName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceName))
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La interface " + interfaceName + " no esta declarada"));
-            this.checkRepeatedInterfaceImplementation(interfaceToCheck);
         }
-    }
-
-    public void checkRepeatedInterfaceImplementation(Interface otherInterface) {
-        int total = 0;
-        for (Interface interfaceToCheck : this.interfaces)
-            if (interfaceToCheck.getClassName().equals(otherInterface.getClassName())) {
-                total += 1;
-                if (total > 1)
-                    SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(otherInterface.getToken(), "La clase " + "\"" + this.getClassName() + "\"" + " ya implementa a la interface " + otherInterface.getClassName()));
-            }
     }
 
     private void checkAttributesDeclaration() {
