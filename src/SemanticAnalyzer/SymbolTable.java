@@ -16,7 +16,6 @@ public class SymbolTable {
     private Token EOFToken;
     private ArrayList<SemanticError> semanticErrorsList;
 
-    //todo falta el constructor
     public static SymbolTable getInstance() {
         if (instance == null)
             instance = new SymbolTable();

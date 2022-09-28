@@ -28,7 +28,7 @@ public class Interface extends Class {
             }
     }
 
-    public void checkDeclarations() throws SemanticException {
+    public void checkDeclarations() {
         for (Interface interfaceToCheck : this.interfaces) {
             Token interfaceToken = interfaceToCheck.getToken();
             String interfaceToCheckName = interfaceToken.getLexeme();
@@ -39,12 +39,12 @@ public class Interface extends Class {
         this.checkMethodsDeclaration();
     }
 
-    private void checkMethodsDeclaration() throws SemanticException {
+    private void checkMethodsDeclaration() {
         for (Method methodToCheck: this.methods.values())
             methodToCheck.checkDeclaration();
     }
 
-    public void consolidate() throws SemanticException {
+    public void consolidate() {
         if (!this.consolidated) {
             if (!this.hasCyclicInheritance)
                 for (Interface interfaceToCheck: this.interfaces) {
@@ -91,7 +91,7 @@ public class Interface extends Class {
         return false;
     }
 
-    private void consolidateMethods(Interface classToConsolidateWith) throws SemanticException {
+    private void consolidateMethods(Interface classToConsolidateWith) {
         for (Method ancestorMethod: classToConsolidateWith.getMethods().values()) {
             String methodName = ancestorMethod.getMethodName();
             if (!this.getMethods().containsKey(methodName))

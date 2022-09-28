@@ -140,22 +140,14 @@ public class ConcreteClass extends Class {
     public void consolidateMethods(Class classToConsolidateWith) {
         for (Method ancestorMethod: classToConsolidateWith.getMethods().values()) {
             String methodName = ancestorMethod.getMethodName();
-            if (!this.getMethods().containsKey(methodName)) {
-//                if (!isMainMethod(ancestorMethod))
+            if (!this.getMethods().containsKey(methodName))
                     this.insertMethod(ancestorMethod);
-            }
             else {
                 Method thisClassMethod = this.getMethod(methodName);
                 if (!thisClassMethod.correctRedefinedMethodHeader(ancestorMethod))
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido"));
             }
         }
-    }
-
-    private boolean isMainMethod(Method method) {
-        if (method.getStaticHeader().equals("static") && method.getReturnType().equals("void") && method.getMethodName().equals("main") && !method.hasParameters())
-            return true;
-        return false;
     }
 
     public ConcreteClass getAncestorClass() {

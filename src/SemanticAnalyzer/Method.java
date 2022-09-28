@@ -6,7 +6,6 @@ import java.util.Hashtable;
 
 public class Method {
 
-
     private Token methodToken;
     private String staticScope;
     private Type methodReturnType;
