@@ -1,4 +1,4 @@
-
+///[Error:met|20]
 
 class A {
 
@@ -10,9 +10,7 @@ class A {
 }
 
 interface B {
-X
-metodo(
-X ja);
+
     C met(C x);
 
 }

@@ -63,13 +63,13 @@ public class Method {
     private void checkNoPrimitiveReturnType() {
         if (!this.methodReturnType.isPrimitive())
             if (!this.returnTypeClassIsDeclared())
-                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no es una clase declarada"));
+                SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.methodReturnType.getToken(), "El tipo de retorno del metodo " + "\"" + this.methodToken.getLexeme() + "\"" + " no esta declarado"));
     }
 
     private boolean parameterTypeIsDeclared(Parameter parameter) {
         Type parameterType = parameter.getParameterType();
         String parameterClass = parameterType.getClassName();
-        return SymbolTable.getInstance().concreteClassIsDeclared(parameterClass);
+        return SymbolTable.getInstance().concreteClassIsDeclared(parameterClass) || SymbolTable.getInstance().interfaceIsDeclared(parameterClass);
     }
 
     public boolean correctRedefinedMethodHeader(Method ancestorMethod) {

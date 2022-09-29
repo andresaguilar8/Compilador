@@ -28,7 +28,7 @@ public class Attribute {
     }
 
     private boolean referenceTypeExist(String className) {
-        return SymbolTable.getInstance().concreteClassIsDeclared(className);
+        return SymbolTable.getInstance().concreteClassIsDeclared(className) || SymbolTable.getInstance().interfaceIsDeclared(className);
     }
 
 }
