@@ -8,14 +8,14 @@ public abstract class Class {
 
     protected Token classToken;
     protected Hashtable<String, Method> methods;
-    protected HashSet<Interface> interfaces;
+    protected HashSet<Interface> ancestorsInterfaces;
     protected boolean consolidated;
     protected boolean hasCyclicInheritance;
 
     public Class(Token classToken) {
         this.classToken = classToken;
         this.methods = new Hashtable<>();
-        this.interfaces = new HashSet<>();
+        this.ancestorsInterfaces = new HashSet<>();
         this.consolidated = false;
         this.hasCyclicInheritance = false;
     }
@@ -32,8 +32,8 @@ public abstract class Class {
         return this.methods;
     }
 
-    public HashSet<Interface> getInterfaces() {
-        return this.interfaces;
+    public HashSet<Interface> getAncestorsInterfaces() {
+        return this.ancestorsInterfaces;
     }
 
     public String getClassName() {

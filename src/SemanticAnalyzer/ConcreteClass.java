@@ -31,14 +31,17 @@ public class ConcreteClass extends Class {
     public void addAncestorInterface(Interface interfaceToAdd) {
         String interfaceToAddName = interfaceToAdd.getClassName();
         String interfaceNameToCompare;
-        for (Interface interfacess: this.interfaces) {
-            interfaceNameToCompare = interfacess.getClassName();
+        boolean nameExists = false;
+        for (Interface ancestorInterface: this.ancestorsInterfaces) {
+            interfaceNameToCompare = ancestorInterface.getClassName();
             if (interfaceToAddName.equals(interfaceNameToCompare)) {
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToAdd.getToken(), "La clase " + "\"" + this.getClassName() + "\"" + " ya implementa a la interface " + interfaceToAdd.getClassName()));
+                nameExists = true;
                 break;
             }
         }
-        this.interfaces.add(interfaceToAdd);
+        if (!nameExists)
+            this.ancestorsInterfaces.add(interfaceToAdd);
     }
 
     public void insertMethod(Method methodToInsert) {
@@ -95,7 +98,7 @@ public class ConcreteClass extends Class {
     }
 
     private void checkInterfacesDeclaration() {
-        for (Interface interfaceToCheck : this.interfaces) {
+        for (Interface interfaceToCheck : this.ancestorsInterfaces) {
             Token interfaceToken = interfaceToCheck.getToken();
             String interfaceName = interfaceToken.getLexeme();
             if (!this.interfaceIsDeclared(interfaceName))
@@ -163,7 +166,7 @@ public class ConcreteClass extends Class {
     }
 
     private void verifyInterfacesMethods() {
-        for (Interface interfaceThatImplements: this.interfaces) {
+        for (Interface interfaceThatImplements: this.ancestorsInterfaces) {
             Token interfaceToken = interfaceThatImplements.getToken();
             String interfaceName = interfaceToken.getLexeme();
             Interface interfaceToVerifyMethodsImplementations = SymbolTable.getInstance().getInterface(interfaceName);

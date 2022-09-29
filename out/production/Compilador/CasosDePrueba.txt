@@ -1,23 +1,19 @@
 
 
-class A {
+interface C {
+    void metc();
+}
+interface B extends C{
+    String met();
+    String met2();
+}
 
-    public B x;
+interface X extends  B {
+    int met();
+    int met2();
+}
+
+class Ja implements X {
+
     static void main(){}
-
-    B met(B x){}
-
-}
-
-interface B {
-X
-metodo(
-X ja);
-    C met(C x);
-
-}
-
-interface C extends B {
-
-    B met(B x);
 }
