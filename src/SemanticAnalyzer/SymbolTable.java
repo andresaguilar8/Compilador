@@ -129,39 +129,6 @@ public class SymbolTable {
         this.initPredefinedClasses();
     }
 
-    public void imprimirTablaDeSimbolos() {
-        for (Interface interfaceToPrint: this.interfacesTable.values()) {
-            System.out.println();
-            System.out.println("Interface: "+interfaceToPrint.getClassName());
-            System.out.print("Metodos: ");
-            for (Method method: interfaceToPrint.getMethods().values())
-                System.out.print(method.getMethodName());
-            System.out.println();
-        }
-
-        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
-            System.out.println();
-            System.out.println("Clase: "+concreteClass.getClassName());
-            System.out.print("Atributos: ");
-            for (Attribute attribute: concreteClass.getAttributes().values())
-                System.out.print(attribute.getAttributeName() + ", ");
-            System.out.println();
-            System.out.println("Metodos: ");
-            for (Method method: concreteClass.getMethods().values()){
-                System.out.print(method.getMethodName() + " retorna: " + method.getReturnType());
-                if (method.getParametersList().size() > 0) {
-                    System.out.print(" sus parametros son: ");
-                    for (Parameter p : method.getParametersList())
-                        System.out.print(p.getParameterName() + " de tipo: " + p.getParameterType() + "");
-                    System.out.println();
-                }
-                else
-                    System.out.println(" y no tiene parametros ");
-            }
-            System.out.println();
-        }
-    }
-
     public void setEOFToken(Token EOFToken) {
         this.EOFToken = EOFToken;
     }
@@ -221,7 +188,7 @@ public class SymbolTable {
         Token readMethodToken = new Token("idMV", "read", 0);
         Method readMethod = new Method(readMethodToken, "", readMethodType);
 
-            concreteClass.insertMethod(readMethod);
+        concreteClass.insertMethod(readMethod);
     }
 
     private void insertPrintBMethod(ConcreteClass concreteClass) {
@@ -248,8 +215,8 @@ public class SymbolTable {
         Type printCMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterC = new Parameter(parameterCToken, printCMethodParameterType);
 
-            printCMethod.insertParameter(parameterC);
-            concreteClass.insertMethod(printCMethod);
+        printCMethod.insertParameter(parameterC);
+        concreteClass.insertMethod(printCMethod);
     }
 
     private void insertPrintIMethod(ConcreteClass concreteClass) {
@@ -262,8 +229,8 @@ public class SymbolTable {
         Type printIMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIMethodParameterType);
 
-            printIMethod.insertParameter(parameterI);
-            concreteClass.insertMethod(printIMethod);
+        printIMethod.insertParameter(parameterI);
+        concreteClass.insertMethod(printIMethod);
     }
 
     private void insertPrintSMethod(ConcreteClass concreteClass) {
@@ -276,8 +243,8 @@ public class SymbolTable {
         Type printIMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printIMethodParameterType);
 
-            printSMethod.insertParameter(parameterS);
-            concreteClass.insertMethod(printSMethod);
+        printSMethod.insertParameter(parameterS);
+        concreteClass.insertMethod(printSMethod);
     }
 
     private void insertPrintlnMethod(ConcreteClass concreteClass) {
@@ -286,7 +253,7 @@ public class SymbolTable {
         Token printlnMethodToken = new Token("idMV", "println", 0);
         Method printlnMethod = new Method(printlnMethodToken, "static", printlnMethodType);
 
-            concreteClass.insertMethod(printlnMethod);
+        concreteClass.insertMethod(printlnMethod);
     }
 
     private void insertPrintBlnMethod(ConcreteClass concreteClass) {
@@ -299,8 +266,8 @@ public class SymbolTable {
         Type printBlnMethodParameterType = new PrimitiveType(booleanToken);
         Parameter parameterB = new Parameter(parameterBToken, printBlnMethodParameterType);
 
-            printBlnMethod.insertParameter(parameterB);
-            concreteClass.insertMethod(printBlnMethod);
+        printBlnMethod.insertParameter(parameterB);
+        concreteClass.insertMethod(printBlnMethod);
     }
 
     private void insertPrintClnMethod(ConcreteClass concreteClass) {
@@ -313,8 +280,8 @@ public class SymbolTable {
         Type printClnMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterB = new Parameter(parameterCToken, printClnMethodParameterType);
 
-            printClnMethod.insertParameter(parameterB);
-            concreteClass.insertMethod(printClnMethod);
+        printClnMethod.insertParameter(parameterB);
+        concreteClass.insertMethod(printClnMethod);
     }
 
     private void insertPrintIlnMethod(ConcreteClass concreteClass) {
@@ -327,8 +294,8 @@ public class SymbolTable {
         Type printIlnMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIlnMethodParameterType);
 
-            printIlnMethod.insertParameter(parameterI);
-            concreteClass.insertMethod(printIlnMethod);
+        printIlnMethod.insertParameter(parameterI);
+        concreteClass.insertMethod(printIlnMethod);
     }
 
     private void insertPrintSlnMethod(ConcreteClass concreteClass) {
@@ -341,8 +308,8 @@ public class SymbolTable {
         Type printSlnMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printSlnMethodParameterType);
 
-            printSlnMethod.insertParameter(parameterS);
-            concreteClass.insertMethod(printSlnMethod);
+        printSlnMethod.insertParameter(parameterS);
+        concreteClass.insertMethod(printSlnMethod);
         }
     }
 

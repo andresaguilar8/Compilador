@@ -19,7 +19,6 @@ public class MainModule {
         File file = new File(args[0]);
         FileHandler fileHandler = null;
 
-
         try {
             fileHandler = new FileHandler(file);
         } catch (FileNotFoundException fileNotFoundException) {
@@ -63,8 +62,6 @@ public class MainModule {
 
             SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-            SymbolTable.getInstance().imprimirTablaDeSimbolos();
-
 
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());

@@ -32,10 +32,6 @@ public abstract class Class {
         return this.methods;
     }
 
-    public HashSet<Interface> getAncestorsInterfaces() {
-        return this.ancestorsInterfaces;
-    }
-
     public String getClassName() {
         return this.classToken.getLexeme();
     }
