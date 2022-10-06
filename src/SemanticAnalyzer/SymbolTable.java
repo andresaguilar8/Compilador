@@ -1,5 +1,7 @@
 package SemanticAnalyzer;
 
+import AST.Sentence.BlockNode;
+import AST.Sentence.SentenceNode;
 import LexicalAnalyzer.Token;
 
 import java.util.ArrayList;
@@ -46,6 +48,45 @@ public class SymbolTable {
             this.interfacesTable.put(interfaceToInsert.getClassName(), interfaceToInsert);
         } else
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToInsert.getToken(), "El nombre " + interfaceToInsert.getClassName() + " ya esta declarado"));
+    }
+
+    public void imprimirTablaDeSimbolos() {
+        for (Interface interfaceToPrint: this.interfacesTable.values()) {
+            System.out.println();
+            System.out.println("Interface: "+interfaceToPrint.getClassName());
+            System.out.print("Metodos: ");
+            for (Method method: interfaceToPrint.getMethods().values())
+                System.out.print(method.getMethodName());
+            System.out.println();
+        }
+
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
+            System.out.println();
+            System.out.println("Clase: "+concreteClass.getClassName());
+            System.out.print("Atributos: ");
+            for (Attribute attribute: concreteClass.getAttributes().values())
+                System.out.print(attribute.getAttributeName() + ", ");
+            System.out.println();
+            System.out.println("Metodos: ");
+            for (Method method: concreteClass.getMethods().values()){
+                System.out.print("El metodo: " + "\"" + method.getMethodName() + "\"" + " retorna: " + method.getReturnType());
+                if (method.getParametersList().size() > 0) {
+                    System.out.print(" sus parametros son: ");
+                    for (Parameter p : method.getParametersList())
+                        System.out.print(p.getParameterName() + " de tipo: " + p.getParameterType() + "");
+                    System.out.println();
+                }
+                else
+                    System.out.println(" y no tiene parametros ");
+                if (method.getCurrentBlock() != null) {
+                    if (method.getCurrentBlock().getSentencesList().size() > 0)
+                        System.out.println("Sentencias del metodo " + "\"" + method.getMethodName() + "\"" + ": ");
+                    for (SentenceNode sentenceNode : method.getCurrentBlock().getSentencesList())
+                        sentenceNode.printSentence();
+                }
+            }
+            System.out.println();
+        }
     }
 
     public Class getCurrentClass() {

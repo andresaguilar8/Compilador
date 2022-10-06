@@ -1,12 +1,10 @@
 package Pruebas;
 
-public class B implements Y {
+public class B extends A {
 
-    @Override
-    public void metodoY() {
+    void x() {
 
     }
-
 //    this.metodostatic();
 //    public void metodostatic() {
 //        super.metodostatic();

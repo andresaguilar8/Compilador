@@ -1,5 +1,6 @@
 package SemanticAnalyzer;
 
+import AST.Sentence.BlockNode;
 import LexicalAnalyzer.Token;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -11,6 +12,7 @@ public class Method {
     private Type methodReturnType;
     private ArrayList<Parameter> parametersList;
     private Hashtable<String, Parameter> parametersTable;
+    private BlockNode currentBlock;
 
     public Method(Token methodToken, String staticScope, Type methodReturnType) {
         this.staticScope = staticScope;
@@ -116,5 +118,13 @@ public class Method {
 
     public boolean hasParameters() {
         return this.parametersList.size() != 0;
+    }
+
+    public void setCurrentBlock(BlockNode blockNode) {
+        this.currentBlock = blockNode;
+    }
+
+    public BlockNode getCurrentBlock() {
+        return this.currentBlock;
     }
 }
