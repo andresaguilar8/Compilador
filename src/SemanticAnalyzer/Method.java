@@ -1,6 +1,7 @@
 package SemanticAnalyzer;
 
 import AST.Sentence.BlockNode;
+import AST.Sentence.LocalVarNode;
 import LexicalAnalyzer.Token;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -13,6 +14,8 @@ public class Method {
     private ArrayList<Parameter> parametersList;
     private Hashtable<String, Parameter> parametersTable;
     private BlockNode currentBlock;
+    private BlockNode principalBlock;
+    private Hashtable<String, LocalVarNode> localVarTable;
 
     public Method(Token methodToken, String staticScope, Type methodReturnType) {
         this.staticScope = staticScope;
@@ -20,6 +23,7 @@ public class Method {
         this.methodReturnType = methodReturnType;
         this.parametersList = new ArrayList<>();
         this.parametersTable = new Hashtable<>();
+        this.localVarTable = new Hashtable<>();
     }
 
     public void insertParameter(Parameter parameterToInsert) {
@@ -118,6 +122,14 @@ public class Method {
 
     public boolean hasParameters() {
         return this.parametersList.size() != 0;
+    }
+
+    public void setPrincipalBlock(BlockNode blockNode) {
+        this.principalBlock = blockNode;
+    }
+
+    public BlockNode getPrincipalBlock() {
+        return this.principalBlock;
     }
 
     public void setCurrentBlock(BlockNode blockNode) {

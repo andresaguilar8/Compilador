@@ -31,4 +31,11 @@ public class Attribute {
         return SymbolTable.getInstance().concreteClassIsDeclared(className) || SymbolTable.getInstance().interfaceIsDeclared(className);
     }
 
+    public Type getAttributeType() {
+        return this.attributeType;
+    }
+
+    public String getVisibility() {
+        return this.visibility;
+    }
 }

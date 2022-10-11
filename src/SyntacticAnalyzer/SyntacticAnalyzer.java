@@ -1,17 +1,17 @@
 package SyntacticAnalyzer;
 
+import AST.Access.*;
 import AST.Expression.*;
-import AST.Sentence.BlockNode;
-import AST.Sentence.ReturnNode;
-import AST.Sentence.SentenceNode;
-import AST.Sentence.VarNode;
+import AST.Sentence.*;
 import LexicalAnalyzer.LexicalAnalyzer;
 import LexicalAnalyzer.Token;
 import LexicalAnalyzer.LexicalException;
+import Pruebas.A;
 import SemanticAnalyzer.*;
 import SemanticAnalyzer.Class;
 import SemanticAnalyzer.ConcreteClass;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SyntacticAnalyzer {
@@ -19,7 +19,7 @@ public class SyntacticAnalyzer {
     private LexicalAnalyzer lexicalAnalyzer;
     private Token currentToken;
 
-    public SyntacticAnalyzer(LexicalAnalyzer lexicalAnalyzer) throws LexicalException, IOException, SyntacticException, SemanticException {
+    public SyntacticAnalyzer(LexicalAnalyzer lexicalAnalyzer) throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         this.lexicalAnalyzer = lexicalAnalyzer;
         this.currentToken = this.lexicalAnalyzer.nextToken();
         this.inicial();
@@ -32,14 +32,14 @@ public class SyntacticAnalyzer {
             throw new SyntacticException(this.currentToken, tokenId);
     }
 
-    private void inicial() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void inicial() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         this.listaClases();
         Token EOFToken = this.currentToken;
         SymbolTable.getInstance().setEOFToken(EOFToken);
         match("EOF");
     }
 
-    private void listaClases() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void listaClases() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (Arrays.asList("pr_class", "pr_interface").contains(this.currentToken.getTokenId())) {
             this.clase();
             this.listaClases();
@@ -48,7 +48,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void clase() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void clase() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (this.currentToken.getTokenId().equals("pr_class")) {
             this.claseConcreta();
         } else if (this.currentToken.getTokenId().equals("pr_interface")) {
@@ -57,7 +57,7 @@ public class SyntacticAnalyzer {
             throw new SyntacticException(this.currentToken, "class o interface");
     }
 
-    private void claseConcreta() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void claseConcreta() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (this.currentToken.getTokenId().equals("pr_class")) {
             this.match("pr_class");
             Token currentTokenClass = this.currentToken;
@@ -139,7 +139,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void listaMiembros() throws LexicalException, SyntacticException, IOException, SemanticException {
+    private void listaMiembros() throws LexicalException, SyntacticException, IOException, SemanticException, SemanticExceptionSimple {
         if (Arrays.asList("pr_public", "pr_private", "pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.miembro();
             this.listaMiembros();
@@ -159,7 +159,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void miembro() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void miembro() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (Arrays.asList("pr_public", "pr_private").contains(this.currentToken.getTokenId()))
             this.atributo();
         else
@@ -179,12 +179,15 @@ public class SyntacticAnalyzer {
             throw new SyntacticException(this.currentToken, "public o private");
     }
 
-    private void metodo() throws LexicalException, IOException, SyntacticException, SemanticException {
+    private void metodo() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.encabezadoMetodo();
-            BlockNode blockNode = new BlockNode();
-            SymbolTable.getInstance().getCurrentMethod().setCurrentBlock(blockNode);
-            this.bloque();
+            //todo no se que token va a tener el bloque.. si es que tiene.. no tiene
+            //todo acomodar
+            BlockNode principalBlock = new BlockNode(SymbolTable.getInstance().getCurrentMethod().getMethodToken(), null);
+            SymbolTable.getInstance().getCurrentMethod().setPrincipalBlock(principalBlock);
+//            SymbolTable.getInstance().getCurrentMethod().setCurrentBlock(principalBlock);
+            this.bloque(principalBlock);
         }
          else
             throw new SyntacticException(this.currentToken, "public, void, idClase, boolean, char o int");
@@ -336,49 +339,51 @@ public class SyntacticAnalyzer {
             throw new SyntacticException(this.currentToken, "boolean, char, int o idClase");
     }
 
-    private BlockNode bloque() throws LexicalException, SyntacticException, IOException {
-        BlockNode blockNode = new BlockNode();
+    private BlockNode bloque(BlockNode blockNode) throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
+        BlockNode toReturn = blockNode;
+        SymbolTable.getInstance().getCurrentMethod().setCurrentBlock(blockNode);
         if (this.currentToken.getTokenId().equals("{")) {
             this.match("{");
             this.listaSentencias();
             this.match("}");
+            if (blockNode.getAncestorBlock() != null)
+                SymbolTable.getInstance().getCurrentMethod().setCurrentBlock(blockNode.getAncestorBlock());
         } else
             throw new SyntacticException(this.currentToken, "{");
-        return blockNode;
+        return toReturn;
     }
 
-    private void sentenciaPrima() throws LexicalException, SyntacticException, IOException {
+    private AssignmentNode sentenciaPrima(AccessNode accessNode) throws LexicalException, SyntacticException, IOException {
         if (Arrays.asList("=", "+=", "-=").contains(this.currentToken.getTokenId())) {
-            this.tipoAsignacion();
-            this.expresion();
+            Token tokenAsignacion = this.tipoAsignacion();
+            ExpressionNode expressionNode = this.expresion();
+            return new AssignmentNode(tokenAsignacion, accessNode, expressionNode);
         }
         else {
             //epsilon, no hago nada
+            return new AssignmentNode(null, accessNode, null);
         }
     }
 
-    private void listaSentencias() throws LexicalException, SyntacticException, IOException {
+    private void listaSentencias() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
         if (Arrays.asList(";", "idMV", "pr_this", "pr_new", "idClase", "(", "pr_return", "pr_if", "pr_while", "{", "pr_var").contains(this.currentToken.getTokenId())) {
             SentenceNode sentenceNode = this.sentencia();
-            BlockNode blockNode = SymbolTable.getInstance().getCurrentMethod().getCurrentBlock();
-            blockNode.addSentence(sentenceNode);
-            System.out.println("jaja");
+            SymbolTable.getInstance().getCurrentMethod().getCurrentBlock().addSentence(sentenceNode);
             this.listaSentencias();
         } else {
             // epsilon, no hago nada
         }
     }
 
-    private SentenceNode sentencia() throws LexicalException, SyntacticException, IOException {
+    private SentenceNode sentencia() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
         SentenceNode sentenceNode = null;
         if (this.currentToken.getTokenId().equals(";")) {
             this.match(";");
-            //todo
-//            sentenceNode = null;
+            //todo aca que retorno?? crear clase sentencia vacia
         }
         else if (Arrays.asList("idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
-            this.acceso();
-            this.sentenciaPrima();
+            AccessNode accessNode = this.acceso();
+            sentenceNode = this.sentenciaPrima(accessNode);
             this.match(";");
         } else if (this.currentToken.getTokenId().equals("pr_var")) {
             sentenceNode = this.varLocal();
@@ -387,42 +392,54 @@ public class SyntacticAnalyzer {
             sentenceNode = this.noTerminalReturn();
             this.match(";");
         } else if (this.currentToken.getTokenId().equals("pr_if"))
-            this.noTerminalIf();
+            sentenceNode = this.noTerminalIf();
         else if (this.currentToken.getTokenId().equals("pr_while"))
-            this.noTerminalWhile();
-        else if (this.currentToken.getTokenId().equals("{"))
-            this.bloque();
+            sentenceNode = this.noTerminalWhile();
+        else if (this.currentToken.getTokenId().equals("{")) {
+            //todo este nuevo bloque va a ser un bloque dentro de otro bloque
+            BlockNode currentBlock = SymbolTable.getInstance().getCurrentMethod().getCurrentBlock();
+            BlockNode newBlock = new BlockNode(SymbolTable.getInstance().getCurrentMethod().getMethodToken(), currentBlock);
+            sentenceNode = this.bloque(newBlock);
+        }
         else
             throw new SyntacticException(this.currentToken, ";, this, new, idClase, (, var, return, if, while o {");
         return sentenceNode;
     }
 
-    private void tipoAsignacion() throws LexicalException, SyntacticException, IOException {
-        if (this.currentToken.getTokenId().equals("="))
+    private Token tipoAsignacion() throws LexicalException, SyntacticException, IOException {
+        Token asignacionToken;
+        if (this.currentToken.getTokenId().equals("=")) {
+            asignacionToken = this.currentToken;
             this.match("=");
-        else if (this.currentToken.getTokenId().equals("+="))
+        }
+        else if (this.currentToken.getTokenId().equals("+=")) {
+            asignacionToken = this.currentToken;
             this.match("+=");
-        else if (this.currentToken.getTokenId().equals("-="))
+        }
+        else if (this.currentToken.getTokenId().equals("-=")) {
+            asignacionToken = this.currentToken;
             this.match("-=");
+        }
         else
             throw new SyntacticException(this.currentToken, "=, += o -=");
+        return asignacionToken;
     }
 
-    private VarNode varLocal() throws LexicalException, SyntacticException, IOException {
+    private LocalVarNode varLocal() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
         if (this.currentToken.getTokenId().equals("pr_var")) {
             this.match("pr_var");
             Token varNodeToken = this.currentToken;
             this.match("idMV");
             this.match("=");
             ExpressionNode expressionNode = this.expresion();
-            VarNode varNode = new VarNode(varNodeToken, expressionNode);
+            LocalVarNode varNode = new LocalVarNode(varNodeToken, expressionNode);
             return varNode;
         } else
             throw new SyntacticException(this.currentToken, "var");
     }
 
     private ReturnNode noTerminalReturn() throws LexicalException, SyntacticException, IOException {
-        ExpressionNode expressionNode = null;
+        ExpressionNode expressionNode;
         if (this.currentToken.getTokenId().equals("pr_return")) {
             Token returnToken = this.currentToken;
             this.match("pr_return");
@@ -442,19 +459,24 @@ public class SyntacticAnalyzer {
         return expressionNode;
     }
 
-    private void noTerminalIf() throws LexicalException, SyntacticException, IOException {
+    private IfNode noTerminalIf() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
+        IfNode ifNode;
         if (this.currentToken.getTokenId().equals("pr_if")) {
+            Token ifToken = this.currentToken;
             this.match("pr_if");
             this.match("(");
-            this.expresion();
+            ExpressionNode expressionNode = this.expresion();
             this.match(")");
-            this.sentencia();
+            SentenceNode sentenceNode = this.sentencia();
+            ifNode = new IfNode(ifToken, expressionNode, sentenceNode);
+            expressionNode.setType();
             this.noTerminalIfPrima();
         } else
             throw new SyntacticException(this.currentToken, "if");
+        return ifNode;
     }
 
-    private void noTerminalIfPrima() throws LexicalException, SyntacticException, IOException {
+    private void noTerminalIfPrima() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
         if (this.currentToken.getTokenId().equals("pr_else")) {
             this.match("pr_else");
             this.sentencia();
@@ -463,75 +485,47 @@ public class SyntacticAnalyzer {
         }
     }
 
-    private void noTerminalWhile() throws LexicalException, SyntacticException, IOException {
+    private WhileNode noTerminalWhile() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
+        WhileNode whileNode;
         if (this.currentToken.getTokenId().equals("pr_while")) {
+            Token whileToken = this.currentToken;
             this.match("pr_while");
             this.match("(");
-            this.expresion();
+            ExpressionNode expressionNode = this.expresion();
             this.match(")");
-            this.sentencia();
+            SentenceNode sentenceNode = this.sentencia();
+            whileNode = new WhileNode(whileToken, expressionNode, sentenceNode);
         } else
             throw new SyntacticException(this.currentToken, "while");
+        return whileNode;
     }
 
     private ExpressionNode expresion() throws SyntacticException, LexicalException, IOException {
-        ExpressionNode expressionNode = null;
+        ExpressionNode expressionToReturn;
         if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
-            expressionNode = this.expresionUnaria();
-            //todo
-//            expressionNode = this.expresionPrima();
+            ExpressionNode expressionNode = this.expresionUnaria();
+            expressionToReturn = this.expresionPrima(expressionNode);
         }
         else
             throw new SyntacticException(this.currentToken, "+, -, !, null, true, false, intLiteral, charLiteral o stringLiteral");
-        return expressionNode;
+        return expressionToReturn;
     }
 
-    private void expresionPrima() throws LexicalException, SyntacticException, IOException {
+    private ExpressionNode expresionPrima(ExpressionNode expressionLeftSide) throws LexicalException, SyntacticException, IOException {
         if (Arrays.asList("||", "&&", "==", "!=", "<", ">", "<=", ">=", "+", "-", "*", "/", "%").contains(this.currentToken.getTokenId())) {
-            this.operadorBinario();
-            this.expresionUnaria();
-            this.expresionPrima();
-        } else {
-            // epsilon, no hago nada
-        }
-    }
-
-    private void operadorBinario() throws LexicalException, SyntacticException, IOException {
-        if (this.currentToken.getTokenId().equals("||"))
-            this.match("||");
-        else if (this.currentToken.getTokenId().equals("&&"))
-            this.match("&&");
-        else if (this.currentToken.getTokenId().equals("=="))
-            this.match("==");
-        else if (this.currentToken.getTokenId().equals("!="))
-            this.match("!=");
-        else if (this.currentToken.getTokenId().equals("<"))
-            this.match("<");
-        else if (this.currentToken.getTokenId().equals(">"))
-            this.match(">");
-        else if (this.currentToken.getTokenId().equals("<="))
-            this.match("<=");
-        else if (this.currentToken.getTokenId().equals(">="))
-            this.match(">=");
-        else if (this.currentToken.getTokenId().equals("+"))
-            this.match("+");
-        else if (this.currentToken.getTokenId().equals("-"))
-            this.match("-");
-        else if (this.currentToken.getTokenId().equals("*"))
-            this.match("*");
-        else if (this.currentToken.getTokenId().equals("/"))
-            this.match("/");
-        else if (this.currentToken.getTokenId().equals("%"))
-            this.match("%");
-        else
-            throw new SyntacticException(this.currentToken, "+, -, *, /, %, >=, <=, >, <, !=, ==, && o ||");
+            Token binaryOperator = this.operadorBinario();
+            ExpressionNode expressionRightSide = this.expresionUnaria();
+            BinaryExpressionNode binaryExpressionNode = new BinaryExpressionNode(binaryOperator, expressionLeftSide, expressionRightSide);
+            return this.expresionPrima(binaryExpressionNode);
+        } else
+            return expressionLeftSide;
     }
 
     private ExpressionNode expresionUnaria() throws SyntacticException, LexicalException, IOException {
         ExpressionNode expressionNode;
         if (Arrays.asList("+", "-", "!").contains(this.currentToken.getTokenId())) {
             Token operator = this.operadorUnario();
-            OperandNode operandNode = this.operando();
+            ExpressionNode operandNode = this.operando();
             expressionNode = new UnaryExpressionNode(operator, operandNode);
         } else if (Arrays.asList("pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "pr_this", "idMV", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
             expressionNode = this.operando();
@@ -559,13 +553,70 @@ public class SyntacticAnalyzer {
         return operator;
     }
 
-    private OperandNode operando() throws SyntacticException, LexicalException, IOException {
+    private Token operadorBinario() throws LexicalException, SyntacticException, IOException {
+        Token tokenToReturn;
+        if (this.currentToken.getTokenId().equals("||")) {
+            tokenToReturn = this.currentToken;
+            this.match("||");
+        }
+        else if (this.currentToken.getTokenId().equals("&&")) {
+            tokenToReturn = this.currentToken;
+            this.match("&&");
+        }
+        else if (this.currentToken.getTokenId().equals("==")) {
+            tokenToReturn = this.currentToken;
+            this.match("==");
+        }
+        else if (this.currentToken.getTokenId().equals("!=")) {
+            tokenToReturn = this.currentToken;
+            this.match("!=");
+        }
+        else if (this.currentToken.getTokenId().equals("<")) {
+            tokenToReturn = this.currentToken;
+            this.match("<");
+        }
+        else if (this.currentToken.getTokenId().equals(">")) {
+            tokenToReturn = this.currentToken;
+            this.match(">");
+        }
+        else if (this.currentToken.getTokenId().equals("<=")) {
+            tokenToReturn = this.currentToken;
+            this.match("<=");
+        }
+        else if (this.currentToken.getTokenId().equals(">=")) {
+            tokenToReturn = this.currentToken;
+            this.match(">=");
+        }
+        else if (this.currentToken.getTokenId().equals("+")) {
+            tokenToReturn = this.currentToken;
+            this.match("+");
+        }
+        else if (this.currentToken.getTokenId().equals("-")) {
+            tokenToReturn = this.currentToken;
+            this.match("-");
+        }
+        else if (this.currentToken.getTokenId().equals("*")) {
+            tokenToReturn = this.currentToken;
+            this.match("*");
+        }
+        else if (this.currentToken.getTokenId().equals("/")) {
+            tokenToReturn = this.currentToken;
+            this.match("/");
+        }
+        else if (this.currentToken.getTokenId().equals("%")) {
+            tokenToReturn = this.currentToken;
+            this.match("%");
+        }
+        else
+            throw new SyntacticException(this.currentToken, "+, -, *, /, %, >=, <=, >, <, !=, ==, && o ||");
+        return tokenToReturn;
+    }
+
+    private ExpressionNode operando() throws SyntacticException, LexicalException, IOException {
         if (Arrays.asList("pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral").contains(this.currentToken.getTokenId()))
             return this.literal();
         else if (Arrays.asList("idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
-            //todo
-            this.acceso();
-            return null;
+            return this.acceso();
         }
         else
             throw new SyntacticException(this.currentToken, "null, true, false, intLiteral, charLiteral, stringLiteral, idMV, this, new, idClase o (");
@@ -602,43 +653,55 @@ public class SyntacticAnalyzer {
         return literalOperandNode;
     }
 
-    private void acceso() throws SyntacticException, LexicalException, IOException {
+    private AccessNode acceso() throws SyntacticException, LexicalException, IOException {
+        AccessNode primarioAccessNode;
         if (Arrays.asList("pr_this", "idMV", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
-            this.primario();
-            this.encadenadoOpt();
+            primarioAccessNode = this.primario();
+            this.encadenadoOpt(primarioAccessNode);
         } else
             throw new SyntacticException(this.currentToken, "this, idMV, new, idClase o (");
+        return primarioAccessNode;
     }
 
-    private void primario() throws LexicalException, SyntacticException, IOException {
+    private AccessNode primario() throws LexicalException, SyntacticException, IOException {
         if (this.currentToken.getTokenId().equals("idMV")) {
+            Token idMVToken = this.currentToken;
             this.match("idMV");
-            this.primarioPrima();
+            return this.primarioPrima(idMVToken);
         } else if (this.currentToken.getTokenId().equals("pr_this"))
-            this.accesoThis();
+            return this.accesoThis();
         else if (this.currentToken.getTokenId().equals("pr_new"))
             this.accesoConstructor();
         else if (this.currentToken.getTokenId().equals("idClase"))
-            this.accesoMetodoEstatico();
+            return this.accesoMetodoEstatico();
         else if (this.currentToken.getTokenId().equals("("))
-            this.expresionParentizada();
+            return this.expresionParentizada();
         else
             throw new SyntacticException(this.currentToken, "this, idMV, pnew, idClase o (");
+        return null;
+        //todo faltan returns
     }
 
-    private void primarioPrima() throws LexicalException, SyntacticException, IOException {
+    private AccessNode primarioPrima(Token idMVToken) throws LexicalException, SyntacticException, IOException {
+        AccessNode accessNodeToReturn = null;
         if (this.currentToken.getTokenId().equals("("))
+            //todo acomodar argsActuales
             this.argsActuales();
-        else {
-            // epsilon, no hago nada
-        }
+        else
+             accessNodeToReturn = new VarAccessNode(idMVToken, (ConcreteClass) SymbolTable.getInstance().getCurrentClass(), SymbolTable.getInstance().getCurrentMethod());
+            // epsilon, no hago nada //todo si entra al else el acceso es a una variable
+        return accessNodeToReturn;
     }
 
-    private void accesoThis() throws LexicalException, SyntacticException, IOException {
-        if (this.currentToken.getTokenId().equals("pr_this"))
+    private ThisAccessNode accesoThis() throws LexicalException, SyntacticException, IOException {
+        ThisAccessNode thisAccessNode;
+        if (this.currentToken.getTokenId().equals("pr_this")) {
+            thisAccessNode = new ThisAccessNode(this.currentToken, SymbolTable.getInstance().getCurrentClass().getClassName());
             this.match("pr_this");
+        }
         else
             throw new SyntacticException(this.currentToken, "this");
+        return thisAccessNode;
     }
 
     private void accesoConstructor() throws LexicalException, SyntacticException, IOException {
@@ -652,82 +715,109 @@ public class SyntacticAnalyzer {
             throw new SyntacticException(this.currentToken, "new");
     }
 
-    private void expresionParentizada() throws LexicalException, SyntacticException, IOException {
+    private ParenthesizedExpressionNode expresionParentizada() throws LexicalException, SyntacticException, IOException {
         if (this.currentToken.getTokenId().equals("(")) {
             this.match("(");
-            this.expresion();
+            ExpressionNode expression = this.expresion();
             this.match(")");
+            //todo el token de una expresion parentizada que seria?
+            return new ParenthesizedExpressionNode(SymbolTable.getInstance().getCurrentClass().getToken(), expression);
         } else
             throw new SyntacticException(this.currentToken, "(");
     }
 
-    private void accesoMetodoEstatico() throws LexicalException, SyntacticException, IOException {
+    private StaticMethodAccessNode accesoMetodoEstatico() throws LexicalException, SyntacticException, IOException {
         if (this.currentToken.getTokenId().equals("idClase")) {
+            Token classNameToken = this.currentToken;
             this.match("idClase");
             this.match(".");
+            Token methodNameToken = this.currentToken;
             this.match("idMV");
-            this.argsActuales();
+            ArrayList<ExpressionNode> expressionNodesList = this.argsActuales();
+            StaticMethodAccessNode staticMethodAccessNode = new StaticMethodAccessNode(classNameToken, methodNameToken, expressionNodesList);
+            return staticMethodAccessNode;
         } else
             throw new SyntacticException(this.currentToken, "idClase");
     }
 
-    private void argsActuales() throws LexicalException, SyntacticException, IOException {
+    private ArrayList<ExpressionNode> argsActuales() throws LexicalException, SyntacticException, IOException {
+        ArrayList<ExpressionNode> expressionNodesList = new ArrayList<>();
         if (this.currentToken.getTokenId().equals("(")) {
             this.match("(");
-            this.listaExpsOpt();
+            expressionNodesList = this.listaExpsOpt(expressionNodesList);
             this.match(")");
+            return expressionNodesList;
         } else
             throw new SyntacticException(this.currentToken, "(");
     }
 
-    private void listaExpsOpt() throws LexicalException, SyntacticException, IOException {
+    private ArrayList<ExpressionNode> listaExpsOpt(ArrayList<ExpressionNode> expressionNodesList) throws LexicalException, SyntacticException, IOException {
         if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
-            this.listaExps();
+            return this.listaExps(expressionNodesList);
         else {
             // epsilon, no hago nada
+            return null;
         }
     }
 
-    private void listaExps() throws LexicalException, SyntacticException, IOException {
+    private ArrayList<ExpressionNode> listaExps(ArrayList<ExpressionNode> expressionNodesList) throws LexicalException, SyntacticException, IOException {
         if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
-            this.expresion();
-            this.listaExpsPrima();
+            ExpressionNode expressionNode = this.expresion();
+            expressionNodesList.add(expressionNode);
+            return this.listaExpsPrima(expressionNodesList);
         }
         else
             throw new SyntacticException(this.currentToken, "+, -, !, null, true, false, intLiteral, charLiteral, stringLiteral, idMV, this, new, idClase, (");
     }
 
-    private void listaExpsPrima() throws LexicalException, SyntacticException, IOException {
+    private ArrayList<ExpressionNode> listaExpsPrima(ArrayList<ExpressionNode> expressionNodesList) throws LexicalException, SyntacticException, IOException {
         if (this.currentToken.getTokenId().equals(",")) {
             this.match(",");
-            this.listaExps();
+            return this.listaExps(expressionNodesList);
         } else {
+            return expressionNodesList;
             // epsilon, no hago nada
         }
     }
 
-    private void encadenadoOpt() throws LexicalException, SyntacticException, IOException {
+    private void encadenadoOpt(AccessNode accessNode) throws LexicalException, SyntacticException, IOException {
+        Encadenado encadenado = null;
         if (this.currentToken.getTokenId().equals(".")) {
             this.match(".");
+            Token encadenadoToken = this.currentToken;
             this.match("idMV");
-            this.encadenadoOptPrima();
+            if (accessNode != null) {
+                encadenado = this.encadenadoOptPrima(encadenadoToken);
+                if (encadenado == null)
+                    encadenado = new VarEncadenada(encadenadoToken);
+                accessNode.setEncadenado(encadenado);
+            }
         }
         else {
             // epsilon, no hago nada
         }
     }
 
-    private void encadenadoOptPrima() throws LexicalException, SyntacticException, IOException {
-        if (this.currentToken.getTokenId().equals("."))
-            this.encadenadoOpt();
+    private Encadenado encadenadoOptPrima(Token encadenadoToken) throws LexicalException, SyntacticException, IOException {
+        Encadenado encadenado;
+        if (this.currentToken.getTokenId().equals(".")) {
+            //creo var
+            encadenado = new VarEncadenada(encadenadoToken);
+            this.encadenadoOpt(encadenado);
+            return encadenado;
+        }
         else
             if (this.currentToken.getTokenId().equals("(")) {
+                //creo llamada encadenada
+                encadenado = new LlamadaEncadenada(encadenadoToken);
+                //todo meterle argumentos a la llamada encadenada
                 this.argsActuales();
-                this.encadenadoOpt();
+                this.encadenadoOpt(encadenado);
+                return encadenado;
             }
-            else {
+            else
                 // epsilon,  no hago nada
-            }
+                return null;
     }
 
 }

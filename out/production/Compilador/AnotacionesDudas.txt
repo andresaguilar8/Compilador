@@ -1,7 +1,7 @@
-hacer
 
-	constructor
 
+acomodar:
+Error Semantico en linea 24: x no es compatible con &&
 
 
 

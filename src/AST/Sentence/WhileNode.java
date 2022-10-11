@@ -2,17 +2,15 @@ package AST.Sentence;
 
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
-import SemanticAnalyzer.SemanticError;
 import SemanticAnalyzer.SemanticExceptionSimple;
-import SemanticAnalyzer.SymbolTable;
 import SemanticAnalyzer.Type;
 
-public class IfNode extends SentenceNode {
+public class WhileNode extends SentenceNode {
 
     private ExpressionNode condition;
     private SentenceNode sentence;
 
-    public IfNode(Token token, ExpressionNode condition, SentenceNode sentence) {
+    public WhileNode(Token token, ExpressionNode condition, SentenceNode sentence) {
         super(token);
         this.condition = condition;
         this.sentence = sentence;
@@ -20,9 +18,7 @@ public class IfNode extends SentenceNode {
 
     @Override
     public void printSentence() {
-        System.out.print(this.token.getLexeme() + " condicion: ");
-        this.condition.printExpression();
-        System.out.println(" sentencia: ");
+        System.out.println("while con condicion: " + this.condition + " y la/las sentencias es/son: ");
         this.sentence.printSentence();
     }
 
@@ -33,7 +29,6 @@ public class IfNode extends SentenceNode {
             if (conditionType.isPrimitive() && conditionType.getClassName().equals("boolean"))
                 this.sentence.check();
             else
-               throw new SemanticExceptionSimple(this.condition.getToken(), "La condicion del if debe ser de tipo primitivo boolean");
+                throw new SemanticExceptionSimple(this.condition.getToken(), "La condicion del while debe ser de tipo primitivo boolean");
     }
-
 }

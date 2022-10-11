@@ -1,17 +1,24 @@
 package AST.Expression;
 
-import AST.Expression.OperandNode;
+import LexicalAnalyzer.Token;
 import SemanticAnalyzer.Type;
 
-public class AccessOperand extends OperandNode {
+public abstract class AccessOperand extends OperandNode {
 
-    @Override
-    public Type check() {
-        return null;
+    public AccessOperand(Token token) {
+        super(token);
     }
 
     @Override
+    public abstract Type check();
+
+    @Override
     public void printExpression() {
+
+    }
+
+    @Override
+    public void setType() {
 
     }
 }

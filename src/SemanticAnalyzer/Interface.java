@@ -15,7 +15,7 @@ public class Interface extends Class {
         if (!methodAlreadyExist(methodToInsert))
             this.methods.put(methodToInsert.getMethodName(), methodToInsert);
         else
-            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la clase " + this.getClassName()));
+            SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToInsert.getMethodToken(), "El metodo " + "\"" + methodToInsert.getMethodName() + "\"" + " ya esta declarado" + " en la interface " + this.getClassName()));
     }
 
     public void addAncestorInterface(Interface interfaceToAdd) {
@@ -125,7 +125,6 @@ public class Interface extends Class {
                 break;
             }
         }
-
     }
 
     private boolean isConsolidated() {

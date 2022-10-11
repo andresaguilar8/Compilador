@@ -1,10 +1,28 @@
 class A {
 
-   static void main(){}
-
-   void metodo() {
-        var x = 3;
+   void metodo(boolean xa) {
+            while ((true)&&(10<1)) {
+                var x = this.x().y.z.metodo(2);
+                //var y = x && (false||false);
+                //x = false || true;
+            }
    }
-   
+
+
+   static void main(){}
 }
 
+
+
+
+
+//var ju = ((4+ 10 + 33) > 12) || (true) ;
+          //  var ja = ((4+ 10 + 33) > 12) || ((99*15) == 23) && (97<=12) || !true && ((4/2) != 2);
+
+          //  var x = this;
+            //var y = (-9*3+4);
+            //var z = (false||true||(10<1));
+            //return;
+            //return (x+10)+(1)+(((b-99*43+variable)));
+            //var x = null;
+            //var x = variable-9*(x);

@@ -3,19 +3,18 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.Type;
 
-public class LiteralOperandNode extends OperandNode {
+public abstract class LiteralOperandNode extends OperandNode {
 
-    public LiteralOperandNode(Token currentToken) {
-        super();
+    public LiteralOperandNode(Token token) {
+        super(token);
     }
 
-    @Override
-    public Type check() {
-        return null;
-    }
+    public abstract Type check();
+
+    public abstract void printExpression();
 
     @Override
-    public void printExpression() {
+    public void setType() {
 
     }
 

@@ -4,19 +4,19 @@ import LexicalAnalyzer.Token;
 
 public abstract class Type {
 
-    private Token tokenType;
+    protected Token tokenType;
+    protected String className;
 
     public Type(Token tokenType) {
         this.tokenType = tokenType;
+        this.className = tokenType.getLexeme();
     }
 
     public String toString() {
         return this.tokenType.getLexeme();
     }
 
-    public String getClassName() {
-        return this.tokenType.getLexeme();
-    }
+    public abstract String getClassName();
 
     public abstract boolean isPrimitive();
 
@@ -24,4 +24,9 @@ public abstract class Type {
         return this.tokenType;
     }
 
+    public abstract boolean isCompatibleWithOperator(String operator);
+
+    public abstract void setClassName(Token tokenType);
+
+    public abstract boolean isCompatibleWithType(Type rightSideAssignmentType);
 }

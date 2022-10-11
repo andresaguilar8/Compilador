@@ -46,10 +46,10 @@ public abstract class Class {
 
     public abstract void addAncestorInterface(Interface interfaceToAdd);
 
-    public abstract void insertMethod(Method methodToInsert) throws SemanticException;
+    public abstract void insertMethod(Method methodToInsert);
 
-    public abstract void consolidate() throws SemanticException;
+    public abstract void consolidate();
 
-    public abstract void checkDeclarations() throws SemanticException;
+    public abstract void checkDeclarations();
 
 }

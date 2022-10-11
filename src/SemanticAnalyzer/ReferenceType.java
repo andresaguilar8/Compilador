@@ -8,7 +8,26 @@ public class ReferenceType extends Type {
         super(tokenType);
     }
 
+    @Override
+    public String getClassName() {
+        return this.tokenType.getLexeme();
+    }
+
     public boolean isPrimitive() {
+        return false;
+    }
+
+    public boolean isCompatibleWithOperator(String operator) {
+        return false;
+    }
+
+    @Override
+    public void setClassName(Token tokenType) {
+
+    }
+
+    @Override
+    public boolean isCompatibleWithType(Type rightSideAssignmentType) {
         return false;
     }
 

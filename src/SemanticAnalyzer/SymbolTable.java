@@ -17,6 +17,7 @@ public class SymbolTable {
     private boolean mainMethodIsDeclared;
     private Token EOFToken;
     private ArrayList<SemanticError> semanticErrorsList;
+    private BlockNode currentBlock;
 
     public static SymbolTable getInstance() {
         if (instance == null)
@@ -78,11 +79,12 @@ public class SymbolTable {
                 }
                 else
                     System.out.println(" y no tiene parametros ");
-                if (method.getCurrentBlock() != null) {
-                    if (method.getCurrentBlock().getSentencesList().size() > 0)
-                        System.out.println("Sentencias del metodo " + "\"" + method.getMethodName() + "\"" + ": ");
-                    for (SentenceNode sentenceNode : method.getCurrentBlock().getSentencesList())
+                if (method.getPrincipalBlock() != null) {
+                    if (method.getPrincipalBlock().getSentencesList().size() > 0)
+                        System.out.println("Sentencias del metodo " + "\"" + method.getMethodName() + "\"" + ": "+method.getPrincipalBlock().getSentencesList().size());
+                    for (SentenceNode sentenceNode : method.getPrincipalBlock().getSentencesList())
                         sentenceNode.printSentence();
+                    System.out.println();
                 }
             }
             System.out.println();
@@ -136,6 +138,64 @@ public class SymbolTable {
         }
         for (Interface interfaceToCheck : this.interfacesTable.values())
             interfaceToCheck.checkDeclarations();
+    }
+
+    public void setCurrentBlock(BlockNode currentBlock) {
+        this.currentBlock = currentBlock;
+    }
+
+    public BlockNode getCurrentBlock() {
+        return this.currentBlock;
+    }
+
+    public void checkSentences() throws SemanticExceptionSimple {
+        //setear clase actual y metodo actual en la primera instruccion de los for
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values())
+            for (Method method: concreteClass.getMethods().values())
+                //todo aca no es necesario el if, nunca va a ser null
+                if (method.getPrincipalBlock() != null) {
+                    this.setCurrentBlock(method.getPrincipalBlock());
+                    method.getPrincipalBlock().check();
+                }
+    }
+
+    public boolean isMethodParameter(String varName, Method method){
+        for (Parameter parameter: method.getParametersList())
+            if (parameter.getParameterName().equals(varName))
+                return true;
+        return false;
+    }
+
+    public Type retrieveParameterType(String varName, Method method) {
+        boolean foundParameter = false;
+        ArrayList<Parameter> methodParameterList = method.getParametersList();
+        int listIndex = 0;
+        Type typeToReturn = null;
+        while (!foundParameter) {
+            Parameter parameter = methodParameterList.get(listIndex);
+            if (parameter.getParameterName().equals(varName)) {
+                typeToReturn =  parameter.getParameterType();
+                foundParameter = true;
+            }
+            listIndex += 1;
+        }
+        return typeToReturn;
+    }
+
+    public boolean isAttribute(String varName, ConcreteClass concreteClass) {
+        return concreteClass.getAttributes().containsKey(varName) && concreteClass.getAttributes().get(varName).getVisibility().equals("public");
+    }
+
+    public Type retrieveAttribute(String varName, ConcreteClass concreteClass) {
+        return concreteClass.getAttributes().get(varName).getAttributeType();
+    }
+
+    public boolean isLocalVar(String varName, Method method) {
+        return method.getLocalVarTable().containsKey(varName);
+    }
+
+    public Type retrieveLocalVarType(String varName, Method method) {
+        return method.getLocalVarTable().get(varName).getLocalVarType();
     }
 
     private void checkMainMethod(ConcreteClass classToCheck) {

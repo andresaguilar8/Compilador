@@ -9,6 +9,14 @@ public class A{
     }
 
     public void metodox() {
+        int x =10;
+        {
+            int x = 60;
+            int y = 3;
+        }
+        {
+            {  x=1;
 
+            } }
     }
 }

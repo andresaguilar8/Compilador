@@ -2,6 +2,7 @@ import LexicalAnalyzer.LexicalAnalyzer;
 import FileHandler.FileHandler;
 import LexicalAnalyzer.LexicalException;
 import SemanticAnalyzer.SemanticException;
+import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
@@ -62,7 +63,8 @@ public class MainModule {
 
             SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-            SymbolTable.getInstance().imprimirTablaDeSimbolos();
+            SymbolTable.getInstance().checkSentences();
+//            SymbolTable.getInstance().imprimirTablaDeSimbolos();
 
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());
@@ -70,7 +72,7 @@ public class MainModule {
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");
 
-        } catch (IOException | LexicalException | SyntacticException | SemanticException exception) {
+        } catch (IOException | LexicalException | SyntacticException | SemanticException | SemanticExceptionSimple exception) {
             System.out.println(exception.getMessage());
         }
     }
