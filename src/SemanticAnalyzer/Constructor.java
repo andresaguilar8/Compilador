@@ -10,4 +10,7 @@ public class Constructor {
         this.constructorToken = constructorToken;
     }
 
+    public Token getConstructorToken() {
+        return this.constructorToken;
+    }
 }

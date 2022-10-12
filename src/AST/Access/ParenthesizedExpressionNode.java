@@ -30,8 +30,4 @@ public class ParenthesizedExpressionNode extends AccessNode {
 
     }
 
-    @Override
-    public void setEncadenado(Encadenado encadenado) {
-        this.encadenado = encadenado;
-    }
 }

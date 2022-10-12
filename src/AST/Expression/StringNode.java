@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import LexicalAnalyzer.Token;
+import SemanticAnalyzer.ReferenceType;
 import SemanticAnalyzer.Type;
 
 public class StringNode extends LiteralOperandNode {
@@ -11,11 +12,12 @@ public class StringNode extends LiteralOperandNode {
 
     @Override
     public Type check() {
-        return null;
+        return new ReferenceType(new Token("idClase", "String", 0));
     }
 
     @Override
     public void printExpression() {
         System.out.print(this.token.getLexeme());
     }
+
 }

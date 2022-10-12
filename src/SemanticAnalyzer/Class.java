@@ -20,6 +20,10 @@ public abstract class Class {
         this.hasCyclicInheritance = false;
     }
 
+    public HashSet<Interface> getAncestorsInterfaces() {
+        return this.ancestorsInterfaces;
+    }
+
     protected boolean methodAlreadyExist(Method method) {
         return this.methods.containsKey(method.getMethodName());
     }

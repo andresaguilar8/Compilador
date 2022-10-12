@@ -1,7 +1,7 @@
 package AST.Access;
 
 import LexicalAnalyzer.Token;
-import SemanticAnalyzer.Type;
+import SemanticAnalyzer.*;
 
 public class ThisAccessNode extends AccessNode {
 
@@ -13,8 +13,14 @@ public class ThisAccessNode extends AccessNode {
     }
 
     @Override
-    public Type check() {
-        return null;
+    public Type check() throws SemanticExceptionSimple {
+        //todo revisar tokens
+        ConcreteClass currentClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
+        if (this.encadenado != null)
+            //todo ver que onda el token este
+            return encadenado.check(new ReferenceType(new Token("idClase", this.className, 0)));
+        else
+            return new ReferenceType(currentClass.getToken());
     }
 
     @Override
@@ -31,8 +37,4 @@ public class ThisAccessNode extends AccessNode {
 
     }
 
-    @Override
-    public void setEncadenado(Encadenado encadenado) {
-        this.encadenado = encadenado;
-    }
 }

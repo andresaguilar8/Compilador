@@ -1,16 +1,27 @@
 class A {
+    public int a1;
 
-   void metodo(boolean xa) {
-            while ((true)&&(10<1)) {
-                var x = this.x().y.z.metodo(2);
-                //var y = x && (false||false);
-                //x = false || true;
-            }
-   }
+    static void m1(int p1)
 
+    {
 
-   static void main(){}
+        this.m2().x = 3;
+        this.a1 = 3;
+        //(x+y) = 3;
+        this.m2() = 3;
+        new A() = 5;
+
+    }
+
+     void m2()
+    {}
+
+    static void main(){}
+
 }
+
+
+
 
 
 

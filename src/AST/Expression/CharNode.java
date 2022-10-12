@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import LexicalAnalyzer.Token;
+import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.Type;
 
 public class CharNode extends LiteralOperandNode {
@@ -11,7 +12,7 @@ public class CharNode extends LiteralOperandNode {
 
     @Override
     public Type check() {
-        return null;
+        return new PrimitiveType(new Token("pr_char","char",0));
     }
 
     @Override

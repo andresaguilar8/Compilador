@@ -9,14 +9,35 @@ public class A{
     }
 
     public void metodox() {
+        var b = new A();
+//        new A() = b;
+//        this.m1(aa);
+        this.m1(2);
         int x =10;
         {
-            int x = 60;
+            int xj = 60;
             int y = 3;
         }
         {
-            {  x=1;
+            {  int jx=1;
 
             } }
+    }
+
+    void m1(int p1)
+    {
+
+
+        {
+
+            { var y = 2;
+                var x = 3;
+                //var x = 20;
+            }
+            var y = 3;
+
+        }
+        var x = 1;
+
     }
 }

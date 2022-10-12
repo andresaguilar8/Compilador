@@ -6,7 +6,6 @@ import AST.Sentence.*;
 import LexicalAnalyzer.LexicalAnalyzer;
 import LexicalAnalyzer.Token;
 import LexicalAnalyzer.LexicalException;
-import Pruebas.A;
 import SemanticAnalyzer.*;
 import SemanticAnalyzer.Class;
 import SemanticAnalyzer.ConcreteClass;
@@ -353,7 +352,7 @@ public class SyntacticAnalyzer {
         return toReturn;
     }
 
-    private AssignmentNode sentenciaPrima(AccessNode accessNode) throws LexicalException, SyntacticException, IOException {
+    private SentenceNode sentenciaPrima(AccessNode accessNode) throws LexicalException, SyntacticException, IOException {
         if (Arrays.asList("=", "+=", "-=").contains(this.currentToken.getTokenId())) {
             Token tokenAsignacion = this.tipoAsignacion();
             ExpressionNode expressionNode = this.expresion();
@@ -361,7 +360,7 @@ public class SyntacticAnalyzer {
         }
         else {
             //epsilon, no hago nada
-            return new AssignmentNode(null, accessNode, null);
+            return new CallNode(accessNode.getToken(), accessNode);
         }
     }
 
@@ -376,10 +375,10 @@ public class SyntacticAnalyzer {
     }
 
     private SentenceNode sentencia() throws LexicalException, SyntacticException, IOException, SemanticExceptionSimple {
-        SentenceNode sentenceNode = null;
+        SentenceNode sentenceNode;
         if (this.currentToken.getTokenId().equals(";")) {
+            sentenceNode = new EmptySentence(this.currentToken);
             this.match(";");
-            //todo aca que retorno?? crear clase sentencia vacia
         }
         else if (Arrays.asList("idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
             AccessNode accessNode = this.acceso();
@@ -671,25 +670,23 @@ public class SyntacticAnalyzer {
         } else if (this.currentToken.getTokenId().equals("pr_this"))
             return this.accesoThis();
         else if (this.currentToken.getTokenId().equals("pr_new"))
-            this.accesoConstructor();
+            return this.accesoConstructor();
         else if (this.currentToken.getTokenId().equals("idClase"))
             return this.accesoMetodoEstatico();
         else if (this.currentToken.getTokenId().equals("("))
             return this.expresionParentizada();
         else
             throw new SyntacticException(this.currentToken, "this, idMV, pnew, idClase o (");
-        return null;
-        //todo faltan returns
     }
 
     private AccessNode primarioPrima(Token idMVToken) throws LexicalException, SyntacticException, IOException {
-        AccessNode accessNodeToReturn = null;
-        if (this.currentToken.getTokenId().equals("("))
-            //todo acomodar argsActuales
-            this.argsActuales();
+        AccessNode accessNodeToReturn;
+        if (this.currentToken.getTokenId().equals("(")) {
+            ArrayList<ExpressionNode> expressionNodesList = this.argsActuales();
+            accessNodeToReturn = new MethodAccess(idMVToken, expressionNodesList);
+        }
         else
-             accessNodeToReturn = new VarAccessNode(idMVToken, (ConcreteClass) SymbolTable.getInstance().getCurrentClass(), SymbolTable.getInstance().getCurrentMethod());
-            // epsilon, no hago nada //todo si entra al else el acceso es a una variable
+             accessNodeToReturn = new VarAccessNode(idMVToken);
         return accessNodeToReturn;
     }
 
@@ -697,6 +694,7 @@ public class SyntacticAnalyzer {
         ThisAccessNode thisAccessNode;
         if (this.currentToken.getTokenId().equals("pr_this")) {
             thisAccessNode = new ThisAccessNode(this.currentToken, SymbolTable.getInstance().getCurrentClass().getClassName());
+            thisAccessNode.setIsNotAssignable();
             this.match("pr_this");
         }
         else
@@ -704,15 +702,19 @@ public class SyntacticAnalyzer {
         return thisAccessNode;
     }
 
-    private void accesoConstructor() throws LexicalException, SyntacticException, IOException {
+    private ConstructorAccess accesoConstructor() throws LexicalException, SyntacticException, IOException {
+        ConstructorAccess constructorAccess;
         if (this.currentToken.getTokenId().equals("pr_new")) {
             this.match("pr_new");
+            constructorAccess = new ConstructorAccess(this.currentToken);
+            constructorAccess.setIsNotAssignable();
             this.match("idClase");
             this.match("(");
             this.match(")");
         }
         else
             throw new SyntacticException(this.currentToken, "new");
+        return constructorAccess;
     }
 
     private ParenthesizedExpressionNode expresionParentizada() throws LexicalException, SyntacticException, IOException {
@@ -721,7 +723,9 @@ public class SyntacticAnalyzer {
             ExpressionNode expression = this.expresion();
             this.match(")");
             //todo el token de una expresion parentizada que seria?
-            return new ParenthesizedExpressionNode(SymbolTable.getInstance().getCurrentClass().getToken(), expression);
+            ParenthesizedExpressionNode parenthesizedExpressionNode = new ParenthesizedExpressionNode(SymbolTable.getInstance().getCurrentClass().getToken(), expression);
+            parenthesizedExpressionNode.setIsNotAssignable();
+            return parenthesizedExpressionNode;
         } else
             throw new SyntacticException(this.currentToken, "(");
     }
@@ -735,6 +739,7 @@ public class SyntacticAnalyzer {
             this.match("idMV");
             ArrayList<ExpressionNode> expressionNodesList = this.argsActuales();
             StaticMethodAccessNode staticMethodAccessNode = new StaticMethodAccessNode(classNameToken, methodNameToken, expressionNodesList);
+            staticMethodAccessNode.setIsNotAssignable();
             return staticMethodAccessNode;
         } else
             throw new SyntacticException(this.currentToken, "idClase");
@@ -781,7 +786,7 @@ public class SyntacticAnalyzer {
     }
 
     private void encadenadoOpt(AccessNode accessNode) throws LexicalException, SyntacticException, IOException {
-        Encadenado encadenado = null;
+        Encadenado encadenado;
         if (this.currentToken.getTokenId().equals(".")) {
             this.match(".");
             Token encadenadoToken = this.currentToken;
@@ -809,9 +814,10 @@ public class SyntacticAnalyzer {
         else
             if (this.currentToken.getTokenId().equals("(")) {
                 //creo llamada encadenada
-                encadenado = new LlamadaEncadenada(encadenadoToken);
                 //todo meterle argumentos a la llamada encadenada
-                this.argsActuales();
+                ArrayList<ExpressionNode> expressionNodesList = this.argsActuales();
+                encadenado = new LlamadaEncadenada(encadenadoToken, expressionNodesList);
+                encadenado.setIsNotAssignable();
                 this.encadenadoOpt(encadenado);
                 return encadenado;
             }

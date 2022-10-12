@@ -3,6 +3,7 @@
 acomodar:
 Error Semantico en linea 24: x no es compatible con &&
 
+ {int x = 10; { int x = 10;}}  --> es un error?
 
 
 

@@ -5,35 +5,33 @@ import SemanticAnalyzer.*;
 
 public class VarAccessNode extends AccessNode {
 
-    protected Method varMethod;
-    protected ConcreteClass concreteClass;
-    protected AccessNode encadenado;
-
-    public VarAccessNode(Token token, ConcreteClass concreteClass, Method varMethod) {
-        //todo no es necesario tener la clase actual aca, se la puedo pedir a la tabla de simbolos
+    public VarAccessNode(Token token) {
         super(token);
-        this.concreteClass = concreteClass;
-        this.varMethod = varMethod;
+        this.isAssignable = true;
     }
 
     @Override
     public Type check() throws SemanticExceptionSimple {
         Type varType;
         String varName = this.token.getLexeme();
-        if (SymbolTable.getInstance().isMethodParameter(varName, this.varMethod))
-            varType = SymbolTable.getInstance().retrieveParameterType(varName, varMethod);
+        Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
+        if (SymbolTable.getInstance().isMethodParameter(varName, currentMethod))
+            varType = SymbolTable.getInstance().retrieveParameterType(varName, currentMethod);
         else
-            if (SymbolTable.getInstance().isLocalVar(varName, varMethod)) {
-                System.out.println("aca");
-                varType = SymbolTable.getInstance().retrieveLocalVarType(varName, varMethod);
-            }
-            else
-                if (SymbolTable.getInstance().isAttribute(varName, concreteClass))
-                    varType = SymbolTable.getInstance().retrieveAttribute(varName, concreteClass);
+            if (SymbolTable.getInstance().isCurrentBlockLocalVar(varName))
+                varType = SymbolTable.getInstance().retrieveLocalVarType(varName);
+            else {
+                ConcreteClass currentClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
+                if (SymbolTable.getInstance().isAttribute(varName, currentClass) && SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals(""))
+                    varType = SymbolTable.getInstance().retrieveAttribute(varName, currentClass);
                 else
-                    throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + this.varMethod.getMethodName() + " ni un atributo de la clase " + this.concreteClass.getClassName());
+                    throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + currentMethod.getMethodName() + " ni un atributo de la clase " + currentClass.getClassName());
+            }
+        if (this.encadenado != null)
+            return this.encadenado.check(varType);
         return varType;
     }
+
 
     @Override
     public void printExpression() {
@@ -45,8 +43,4 @@ public class VarAccessNode extends AccessNode {
 
     }
 
-    @Override
-    public void setEncadenado(Encadenado encadenado) {
-        this.encadenado = encadenado;
-    }
 }

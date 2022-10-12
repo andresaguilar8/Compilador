@@ -39,13 +39,15 @@ public class PrimitiveType extends Type {
     }
 
     @Override
-    public boolean isCompatibleWithType(Type rightSideAssignmentType) {
+    public boolean isCompatibleWithType(Type typeToCompareWith) {
         if (this.className.equals("int"))
-            return rightSideAssignmentType.getClassName().equals("int");
+            return typeToCompareWith.getClassName().equals("int");
         else
             if (this.className.equals("boolean"))
-                return rightSideAssignmentType.getClassName().equals("boolean");
+                return typeToCompareWith.getClassName().equals("boolean");
             else
+                if (this.className.equals("char"))
+                    return typeToCompareWith.getClassName().equals("char");
                 return false;
             //todo terminar
     }

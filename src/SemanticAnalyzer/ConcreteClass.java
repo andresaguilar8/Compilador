@@ -67,6 +67,10 @@ public class ConcreteClass extends Class {
         this.checkMethodsDeclaration();
     }
 
+    public Constructor getClassConstructor() {
+        return this.classConstructor;
+    }
+
     private void insertConstructor() {
         this.classConstructor = new Constructor(new Token("idClase", this.getClassName(), 0));
     }

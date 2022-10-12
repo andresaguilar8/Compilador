@@ -2,9 +2,7 @@ package AST.Sentence;
 
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
-import SemanticAnalyzer.SemanticError;
 import SemanticAnalyzer.SemanticExceptionSimple;
-import SemanticAnalyzer.SymbolTable;
 import SemanticAnalyzer.Type;
 
 public class IfNode extends SentenceNode {

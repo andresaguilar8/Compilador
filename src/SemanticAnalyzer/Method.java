@@ -43,8 +43,12 @@ public class Method {
         return this.staticScope;
     }
 
-    public String getReturnType() {
+    public String getReturnTypeString() {
         return this.methodReturnType.getClassName();
+    }
+
+    public Type getReturnType() {
+        return this.methodReturnType;
     }
 
     public ArrayList<Parameter> getParametersList() {
@@ -83,7 +87,7 @@ public class Method {
     }
 
     public boolean methodsHeadersAreEquals(Method ancestorMethod) {
-        if (!ancestorMethod.getStaticHeader().equals(this.staticScope) || !ancestorMethod.getReturnType().equals(this.methodReturnType.getClassName()) || !this.hasEqualsParameters(ancestorMethod))
+        if (!ancestorMethod.getStaticHeader().equals(this.staticScope) || !ancestorMethod.getReturnTypeString().equals(this.methodReturnType.getClassName()) || !this.hasEqualsParameters(ancestorMethod))
             return false;
         return true;
     }

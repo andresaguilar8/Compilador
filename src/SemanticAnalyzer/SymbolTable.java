@@ -70,7 +70,7 @@ public class SymbolTable {
             System.out.println();
             System.out.println("Metodos: ");
             for (Method method: concreteClass.getMethods().values()){
-                System.out.print("El metodo: " + "\"" + method.getMethodName() + "\"" + " retorna: " + method.getReturnType());
+                System.out.print("El metodo: " + "\"" + method.getMethodName() + "\"" + " retorna: " + method.getReturnTypeString());
                 if (method.getParametersList().size() > 0) {
                     System.out.print(" sus parametros son: ");
                     for (Parameter p : method.getParametersList())
@@ -149,14 +149,17 @@ public class SymbolTable {
     }
 
     public void checkSentences() throws SemanticExceptionSimple {
-        //setear clase actual y metodo actual en la primera instruccion de los for
-        for (ConcreteClass concreteClass: this.concreteClassesTable.values())
-            for (Method method: concreteClass.getMethods().values())
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
+            this.currentClass = concreteClass;
+            for (Method method : concreteClass.getMethods().values()) {
+                this.currentMethod = method;
                 //todo aca no es necesario el if, nunca va a ser null
                 if (method.getPrincipalBlock() != null) {
                     this.setCurrentBlock(method.getPrincipalBlock());
                     method.getPrincipalBlock().check();
                 }
+            }
+        }
     }
 
     public boolean isMethodParameter(String varName, Method method){
@@ -183,24 +186,25 @@ public class SymbolTable {
     }
 
     public boolean isAttribute(String varName, ConcreteClass concreteClass) {
-        return concreteClass.getAttributes().containsKey(varName) && concreteClass.getAttributes().get(varName).getVisibility().equals("public");
+        return concreteClass.getAttributes().containsKey(varName);
+        //todo ver como hacer con los atributos que heredo y son privados concreteClass.getAttributes().get(varName).getVisibility().equals("public");
     }
 
     public Type retrieveAttribute(String varName, ConcreteClass concreteClass) {
         return concreteClass.getAttributes().get(varName).getAttributeType();
     }
 
-    public boolean isLocalVar(String varName, Method method) {
-        return method.getLocalVarTable().containsKey(varName);
+    public boolean isCurrentBlockLocalVar(String varName) {
+        return this.currentBlock.getLocalVarTable().containsKey(varName);
     }
 
-    public Type retrieveLocalVarType(String varName, Method method) {
-        return method.getLocalVarTable().get(varName).getLocalVarType();
+    public Type retrieveLocalVarType(String varName) {
+        return this.currentBlock.getLocalVarTable().get(varName).getLocalVarType();
     }
 
     private void checkMainMethod(ConcreteClass classToCheck) {
         for (Method methodToCheck : classToCheck.getMethods().values())
-            if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnType().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
+            if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnTypeString().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
                 if (this.mainMethodIsDeclared == true)
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToCheck.getMethodToken(), "Ya existe un metodo main estatico y sin parametros"));
                 else

@@ -18,7 +18,7 @@ public class ReferenceType extends Type {
     }
 
     public boolean isCompatibleWithOperator(String operator) {
-        return false;
+        return operator.equals("=");
     }
 
     @Override
@@ -28,7 +28,14 @@ public class ReferenceType extends Type {
 
     @Override
     public boolean isCompatibleWithType(Type rightSideAssignmentType) {
-        return false;
+        if (this.tokenType.getLexeme().equals(rightSideAssignmentType.getClassName()))
+            return true;
+        else {
+            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
+            if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
+                return true;
+            else
+                return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
+        }
     }
-
 }

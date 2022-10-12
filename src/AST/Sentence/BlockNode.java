@@ -1,6 +1,7 @@
 package AST.Sentence;
 
 import LexicalAnalyzer.Token;
+import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 
@@ -25,19 +26,22 @@ public class BlockNode extends SentenceNode {
     }
 
     public void insertLocalVar(LocalVarNode localVarNode) throws SemanticExceptionSimple {
-        //todo todos los chequeos son dps de la consolidacion,
-        //al momento que yo inserrto un varLocal, en el sintactico es una sentencia,
-        //dps de chequear esa sentencia, ahi si es una varLocal
-        //todo aca chequear que no exista
-        //todo y chequear que no sea un parametro: le pido el metodo actual a la tabla de simbolos
-//        if (!this.parametersTable.containsKey(localVarNode.getVarName())) {
+        if (this.ancestorBlock != null) {
+            for (LocalVarNode localVarInAncestorBlock: ancestorBlock.getLocalVarTable().values()) {
+                System.out.println(localVarInAncestorBlock.token);
+                this.localVarTable.put(localVarInAncestorBlock.getVarName(), localVarInAncestorBlock);
+            }
+        }
+        Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
+        if (!currentMethod.getParametersList().contains(localVarNode.getVarName())) {
             if (!this.localVarTable.containsKey(localVarNode.getVarName()))
                 this.localVarTable.put(localVarNode.getVarName(), localVarNode);
             else
-                throw new SemanticExceptionSimple(localVarNode.getVarToken(), "Ya existe una variable local con nombre " + localVarNode.getVarName() + " dentro del metodo " + "\"" + this.methodToken.getLexeme() + "\"");
-//        }
-//        else
-//            throw new SemanticExceptionSimple(localVarNode.getVarToken(), "El nombre " + localVarNode.getVarName() + " ya esta utilizado en un parametro dentro del metodo " + "\"" + this.methodToken.getLexeme() + "\"");
+                //todo preg la sigueinte excepcion
+                throw new SemanticExceptionSimple(localVarNode.getVarToken(), "Ya existe una variable local con nombre " + localVarNode.getVarName() + " dentro del alcance");
+        }
+        else
+            throw new SemanticExceptionSimple(localVarNode.getVarToken(), "El nombre " + localVarNode.getVarName() + " ya esta utilizado en un parametro dentro del metodo " + "\"" + currentMethod.getMethodName() + "\"");
     }
 
     @Override

@@ -20,11 +20,6 @@ public class StaticMethodAccessNode extends AccessNode {
     }
 
     @Override
-    public void setEncadenado(Encadenado encadenado) {
-
-    }
-
-    @Override
     public Type check() throws SemanticExceptionSimple {
         return null;
     }
