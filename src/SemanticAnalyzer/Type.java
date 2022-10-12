@@ -28,5 +28,5 @@ public abstract class Type {
 
     public abstract void setClassName(Token tokenType);
 
-    public abstract boolean isCompatibleWithType(Type rightSideAssignmentType);
+    public abstract boolean isCompatibleWithType(Type expressionType);
 }

@@ -20,6 +20,8 @@ public class MethodAccess extends AccessNode {
         ConcreteClass concreteClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
         if (!this.classContainsThisMethod(concreteClass))
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un metodo visible en la clase " + concreteClass.getClassName());
+        if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
+            throw new SemanticExceptionSimple(this.token, "no se puede llamar a un metodo dinamico dentro de un metodo con alcance estatico");
         Method method = concreteClass.getMethods().get(this.token.getLexeme());
         System.out.println(expressionNodesList == null);
         if (method.getParametersList().size() > 0)

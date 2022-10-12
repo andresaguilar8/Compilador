@@ -26,16 +26,19 @@ public class ReferenceType extends Type {
 
     }
 
-    @Override
     public boolean isCompatibleWithType(Type rightSideAssignmentType) {
+        System.out.println(this.getClassName());
+        System.out.println(rightSideAssignmentType.getClassName());
+        if (this.tokenType.getLexeme().equals("null") && rightSideAssignmentType.isPrimitive())
+            return false;
+        if (this.tokenType.getLexeme().equals("null") || rightSideAssignmentType.getClassName().equals("null"))
+            return true;
         if (this.tokenType.getLexeme().equals(rightSideAssignmentType.getClassName()))
             return true;
-        else {
-            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
-            if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
-                return true;
-            else
-                return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
-        }
+        ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
+        if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
+            return true;
+        else
+            return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
     }
 }

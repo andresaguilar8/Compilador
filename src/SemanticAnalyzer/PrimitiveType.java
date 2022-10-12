@@ -35,6 +35,10 @@ public class PrimitiveType extends Type {
         else
             if (Arrays.asList("&&", "!", "||", "!=", "==", "=").contains(operator) && this.getClassName().equals("boolean"))
                 return true;
+            else
+                if (Arrays.asList("=").contains(operator) && this.getClassName().equals("char"))
+                    return true;
+                //todo creo q no estoy verificando los tipos clase con los operadores, por ej var x de clase hacerle x = algo
         return false;
     }
 

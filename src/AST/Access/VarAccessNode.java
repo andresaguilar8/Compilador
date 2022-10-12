@@ -12,6 +12,8 @@ public class VarAccessNode extends AccessNode {
 
     @Override
     public Type check() throws SemanticExceptionSimple {
+        if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
+            throw new SemanticExceptionSimple(this.token, "un metodo estatico no puede acceder a un atributo");
         Type varType;
         String varName = this.token.getLexeme();
         Method currentMethod = SymbolTable.getInstance().getCurrentMethod();

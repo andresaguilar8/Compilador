@@ -6,6 +6,7 @@ public class A{
 
     public static void metodostatic() {
 //        Object.class.getClass();
+//        a = 3;
     }
 
     public void metodox() {

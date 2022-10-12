@@ -26,6 +26,7 @@ public class LocalVarNode extends SentenceNode {
     @Override
     public void check() throws SemanticExceptionSimple {
         Type localVarType = this.expressionNode.check();
+        System.out.println(localVarType.getClassName());
         this.setType(localVarType);
         SymbolTable.getInstance().getCurrentBlock().insertLocalVar(this);
     }

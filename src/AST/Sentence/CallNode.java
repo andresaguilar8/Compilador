@@ -21,6 +21,8 @@ public class CallNode extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
+        System.out.println("se");
+        System.out.println(this.accessNode);
         this.accessNode.check();
     }
 }

@@ -32,7 +32,7 @@ public class AssignmentNode extends SentenceNode {
                 Type leftSideAssignmentType = this.leftSide.check();
                 Type rightSideAssignmentType = this.rightSide.check();
                 if (!leftSideAssignmentType.isCompatibleWithType(rightSideAssignmentType))
-                    throw new SemanticExceptionSimple(this.token, leftSide.getToken().getLexeme() + " no conforma con el tipo " + rightSideAssignmentType.getClassName());
+                    throw new SemanticExceptionSimple(this.token, "el tipo de " +leftSide.getToken().getLexeme() + " no conforma con el tipo " + rightSideAssignmentType.getClassName());
                 if (!bothSidesAreCompatibleWithOperand(leftSideAssignmentType, rightSideAssignmentType))
                     throw new SemanticExceptionSimple(this.token, "el lado izquierdo y derecho de la asignación no son compatibles con el operador " + this.token.getLexeme());
             } else

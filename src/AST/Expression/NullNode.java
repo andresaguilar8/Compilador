@@ -1,6 +1,7 @@
 package AST.Expression;
 
 import LexicalAnalyzer.Token;
+import SemanticAnalyzer.ReferenceType;
 import SemanticAnalyzer.Type;
 
 public class NullNode extends LiteralOperandNode {
@@ -11,7 +12,7 @@ public class NullNode extends LiteralOperandNode {
 
     @Override
     public Type check() {
-        return null;
+        return new ReferenceType(new Token("idClase", "null", 0));
     }
 
     public void printExpression() {

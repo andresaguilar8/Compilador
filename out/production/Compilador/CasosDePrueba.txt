@@ -1,17 +1,29 @@
+class C {
+    char metodostatic() {
+        var x = null;
+        x = 'a';
+    }
+}
+
 class A {
     public int a1;
 
-    static void m1(int p1)
-
-    {
-
-        this.m2().x = 3;
-        this.a1 = 3;
-        //(x+y) = 3;
-        this.m2() = 3;
-        new A() = 5;
-
+    void met() {
+        //a1 = C.metodostatic() + 1;
     }
+
+
+
+//    static void m1(int p1) {
+        //this.a1 = C.metodostatic();
+        //met();
+  //      a1 = 10;
+        //this.m2().x = 3;
+        //this.a1 = 3;
+        //(x+y) = 3;
+        //this.m2() = 3;
+        //new A() = 5;
+    //}
 
      void m2()
     {}
