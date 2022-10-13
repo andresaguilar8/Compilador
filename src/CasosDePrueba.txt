@@ -1,16 +1,17 @@
 class C {
-    char metodostatic() {
-        var x = null;
-        x = 'a';
+    A met() {
+        var x = new B();
+        return x;
     }
+    static void main(){}
+}
+class B implements A{
 }
 
-class A {
-    public int a1;
+interface A {
 
-    void met() {
-        //a1 = C.metodostatic() + 1;
-    }
+
+    void met();
 
 
 
@@ -25,10 +26,9 @@ class A {
         //new A() = 5;
     //}
 
-     void m2()
-    {}
 
-    static void main(){}
+
+
 
 }
 

@@ -16,6 +16,6 @@ public class EmptySentence extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
-
+        System.out.println("emptysentence");
     }
 }

@@ -46,13 +46,13 @@ public class PrimitiveType extends Type {
     public boolean isCompatibleWithType(Type typeToCompareWith) {
         if (this.className.equals("int"))
             return typeToCompareWith.getClassName().equals("int");
-        else
-            if (this.className.equals("boolean"))
-                return typeToCompareWith.getClassName().equals("boolean");
-            else
-                if (this.className.equals("char"))
-                    return typeToCompareWith.getClassName().equals("char");
-                return false;
+        if (this.className.equals("boolean"))
+            return typeToCompareWith.getClassName().equals("boolean");
+        if (this.className.equals("char"))
+            return typeToCompareWith.getClassName().equals("char");
+        if (this.className.equals("void"))
+            return typeToCompareWith.getClassName().equals("void");
+        return false;
             //todo terminar
     }
 }

@@ -453,6 +453,8 @@ public class SyntacticAnalyzer {
         if (Arrays.asList("+", "-", "!", "pr_null", "pr_true", "pr_false", "intLiteral", "charLiteral", "stringLiteral", "idMV", "pr_this", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId()))
             expressionNode =  this.expresion();
         else {
+            if (this.currentToken.getTokenId().equals(";"))
+                expressionNode = new EmptyExpression(this.currentToken);
             //epsilon, no hago nada
         }
         return expressionNode;

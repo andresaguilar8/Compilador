@@ -9,7 +9,7 @@ public class A{
 //        a = 3;
     }
 
-    public void metodox() {
+    public int metodox() {
         var b = new A();
 //        new A() = b;
 //        this.m1(aa);
@@ -23,6 +23,7 @@ public class A{
             {  int jx=1;
 
             } }
+        return '2';
     }
 
     void m1(int p1)

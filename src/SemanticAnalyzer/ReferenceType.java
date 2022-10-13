@@ -35,10 +35,21 @@ public class ReferenceType extends Type {
             return true;
         if (this.tokenType.getLexeme().equals(rightSideAssignmentType.getClassName()))
             return true;
+        Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(this.getClassName());
         ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
-        if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
-            return true;
-        else
-            return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
+        if (interfaceInSymbolTable != null) {
+            System.out.println("jaua jus");
+            if (concreteClass != null)
+                //todo acomodar esto.. no anda
+                return concreteClass.getAncestorsInterfaces().contains(interfaceInSymbolTable.getClassName());
+        }
+        if (concreteClass != null) {
+//            if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
+//                return true;
+//            else
+                return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
+
+        }
+        return false;
     }
 }
