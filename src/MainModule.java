@@ -63,17 +63,21 @@ public class MainModule {
 
             SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-            SymbolTable.getInstance().checkSentences();
 //            SymbolTable.getInstance().imprimirTablaDeSimbolos();
 
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());
 
-            System.out.println("Compilación Exitosa\n\n");
-            System.out.println("[SinErrores]");
-
         } catch (IOException | LexicalException | SyntacticException | SemanticException | SemanticExceptionSimple exception) {
             System.out.println(exception.getMessage());
+        }
+
+        try {
+            SymbolTable.getInstance().checkSentences();
+            System.out.println("Compilación Exitosa\n\n");
+            System.out.println("[SinErrores]");
+        } catch (SemanticExceptionSimple exceptionSimple) {
+            System.out.println(exceptionSimple.getMessage());
         }
     }
 

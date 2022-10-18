@@ -8,7 +8,7 @@ public class PrimitiveType extends Type {
 
     public PrimitiveType(Token tokenType) {
         super(tokenType);
-        this.setClassName(tokenType);
+//        this.setClassName(tokenType);
     }
 
     public boolean isPrimitive() {
@@ -30,20 +30,22 @@ public class PrimitiveType extends Type {
 
     @Override
     public boolean isCompatibleWithOperator(String operator) {
-        if (Arrays.asList("-", "+", "*", "/", "<", ">", "<=", ">=", "==", "!=", "+=", "-=", "=").contains(operator) && this.getClassName().equals("int"))
+        if (Arrays.asList("-", "+", "*", "/", "<", ">", "<=", ">=", "==", "!=", "+=", "-=", "=", "%").contains(operator) && this.getClassName().equals("int"))
             return true;
         else
             if (Arrays.asList("&&", "!", "||", "!=", "==", "=").contains(operator) && this.getClassName().equals("boolean"))
                 return true;
             else
-                if (Arrays.asList("=").contains(operator) && this.getClassName().equals("char"))
+                if (Arrays.asList("=", "==", "!=").contains(operator) && this.getClassName().equals("char"))
                     return true;
-                //todo creo q no estoy verificando los tipos clase con los operadores, por ej var x de clase hacerle x = algo
+                //todo puede que falten cosas
         return false;
     }
 
     @Override
     public boolean isCompatibleWithType(Type typeToCompareWith) {
+        if (!typeToCompareWith.isPrimitive())
+            return false;
         if (this.className.equals("int"))
             return typeToCompareWith.getClassName().equals("int");
         if (this.className.equals("boolean"))

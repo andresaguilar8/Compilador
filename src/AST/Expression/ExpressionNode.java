@@ -7,7 +7,6 @@ import SemanticAnalyzer.Type;
 public abstract class ExpressionNode {
 
     protected Token token;
-    protected Type expressionType;
 
     public ExpressionNode(Token token){
         this.token = token;
@@ -20,7 +19,5 @@ public abstract class ExpressionNode {
     public Token getToken() {
         return this.token;
     }
-
-    public abstract void setType();
 
 }

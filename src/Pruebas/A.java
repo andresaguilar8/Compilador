@@ -1,30 +1,46 @@
 package Pruebas;
 
-public class A{
+public class A implements X, Y{
 
-    private int a = 10;
+    private int x =3;
 
-    public static void metodostatic() {
-//        Object.class.getClass();
-//        a = 3;
+    public static A mae() {
+        mae().x = 3;
+        return new A();
     }
 
-    public int metodox() {
+    void met() {
+        this.mae().x = 3;
+    }
+
+    B x(){
+        return this.x();
+    }
+
+    public Y a(){
+//        this
+//        this.x == 4;
+        var a = new A();
+        this.metodox((3+4*(23+1)));
         var b = new A();
-//        new A() = b;
-//        this.m1(aa);
-        this.m1(2);
-        int x =10;
-        {
-            int xj = 60;
-            int y = 3;
-        }
-        {
-            {  int jx=1;
+        //var x = 3;
+        if (true) {
+            var x = 3;
+            b = new A(); {x =3;} {{
 
-            } }
-        return '2';
+            }x= 3;}
+        }
+//        var x = (a != b) ;
+        var x = 3;
+        return a;
     }
+    public void metodox(int xa) {
+        Y y = new A();
+        X x = new A();
+        A a = new A();
+        return;
+    }
+
 
     void m1(int p1)
     {
@@ -40,6 +56,16 @@ public class A{
 
         }
         var x = 1;
+
+    }
+
+    @Override
+    public void metodox() {
+
+    }
+
+    @Override
+    public void metodoY() {
 
     }
 }

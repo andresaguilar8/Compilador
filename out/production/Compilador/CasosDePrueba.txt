@@ -1,51 +1,24 @@
-class C {
-    A met() {
-        var x = new B();
-        return x;
+class A extends B {
+
+    private B b;
+
+
+
+}
+
+class B extends C{
+
+    public B aa;
+
+    static B metodoStatic(int x) {
+        var x = 3;
+        var y = 3;
+
+        return aa;
     }
-    static void main(){}
-}
-class B implements A{
-}
-
-interface A {
 
 
-    void met();
-
-
-
-//    static void m1(int p1) {
-        //this.a1 = C.metodostatic();
-        //met();
-  //      a1 = 10;
-        //this.m2().x = 3;
-        //this.a1 = 3;
-        //(x+y) = 3;
-        //this.m2() = 3;
-        //new A() = 5;
-    //}
-
-
-
-
-
+    static void main() {}
 }
 
-
-
-
-
-
-
-
-//var ju = ((4+ 10 + 33) > 12) || (true) ;
-          //  var ja = ((4+ 10 + 33) > 12) || ((99*15) == 23) && (97<=12) || !true && ((4/2) != 2);
-
-          //  var x = this;
-            //var y = (-9*3+4);
-            //var z = (false||true||(10<1));
-            //return;
-            //return (x+10)+(1)+(((b-99*43+variable)));
-            //var x = null;
-            //var x = variable-9*(x);
+class C{}

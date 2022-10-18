@@ -11,7 +11,7 @@ import java.util.Hashtable;
 public class BlockNode extends SentenceNode {
 
     private ArrayList<SentenceNode> sentencesList;
-    private Hashtable<String, LocalVarNode> localVarTable;
+    private Hashtable<String, LocalVarDeclarationNode> localVarTable;
     private BlockNode ancestorBlock;
 
     public BlockNode(Token token, BlockNode ancestorBlock) {
@@ -21,13 +21,13 @@ public class BlockNode extends SentenceNode {
         this.ancestorBlock = ancestorBlock;
     }
 
-    public Hashtable<String, LocalVarNode> getLocalVarTable() {
+    public Hashtable<String, LocalVarDeclarationNode> getLocalVarTable() {
         return this.localVarTable;
     }
 
-    public void insertLocalVar(LocalVarNode localVarNode) throws SemanticExceptionSimple {
+    public void insertLocalVar(LocalVarDeclarationNode localVarNode) throws SemanticExceptionSimple {
         if (this.ancestorBlock != null) {
-            for (LocalVarNode localVarInAncestorBlock: ancestorBlock.getLocalVarTable().values()) {
+            for (LocalVarDeclarationNode localVarInAncestorBlock: ancestorBlock.getLocalVarTable().values()) {
                 System.out.println(localVarInAncestorBlock.token);
                 this.localVarTable.put(localVarInAncestorBlock.getVarName(), localVarInAncestorBlock);
             }
@@ -37,7 +37,6 @@ public class BlockNode extends SentenceNode {
             if (!this.localVarTable.containsKey(localVarNode.getVarName()))
                 this.localVarTable.put(localVarNode.getVarName(), localVarNode);
             else
-                //todo preg la sigueinte excepcion
                 throw new SemanticExceptionSimple(localVarNode.getVarToken(), "Ya existe una variable local con nombre " + localVarNode.getVarName() + " dentro del alcance");
         }
         else

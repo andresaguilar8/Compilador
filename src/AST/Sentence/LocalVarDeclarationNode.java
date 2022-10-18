@@ -6,12 +6,12 @@ import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 import SemanticAnalyzer.Type;
 
-public class LocalVarNode extends SentenceNode {
+public class LocalVarDeclarationNode extends SentenceNode {
 
     private ExpressionNode expressionNode;
     private Type localVarType;
 
-    public LocalVarNode(Token nodeToken, ExpressionNode expressionNode) {
+    public LocalVarDeclarationNode(Token nodeToken, ExpressionNode expressionNode) {
         super(nodeToken);
         this.expressionNode = expressionNode;
     }
@@ -26,7 +26,6 @@ public class LocalVarNode extends SentenceNode {
     @Override
     public void check() throws SemanticExceptionSimple {
         Type localVarType = this.expressionNode.check();
-        System.out.println(localVarType.getClassName());
         this.setType(localVarType);
         SymbolTable.getInstance().getCurrentBlock().insertLocalVar(this);
     }

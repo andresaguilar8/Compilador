@@ -15,4 +15,5 @@ public abstract class SentenceNode {
     public abstract void printSentence();
 
     public abstract void check() throws SemanticExceptionSimple;
+
 }

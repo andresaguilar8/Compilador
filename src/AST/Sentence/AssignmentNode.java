@@ -1,6 +1,7 @@
 package AST.Sentence;
 
 import AST.Access.AccessNode;
+import AST.Access.Encadenado;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
@@ -27,19 +28,32 @@ public class AssignmentNode extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
-        if (this.leftSide.getEncadenado() == null) {
-            if (leftSide.isAssignable()) {
-                Type leftSideAssignmentType = this.leftSide.check();
-                Type rightSideAssignmentType = this.rightSide.check();
-                if (!leftSideAssignmentType.isCompatibleWithType(rightSideAssignmentType))
-                    throw new SemanticExceptionSimple(this.token, "el tipo de " +leftSide.getToken().getLexeme() + " no conforma con el tipo " + rightSideAssignmentType.getClassName());
-                if (!bothSidesAreCompatibleWithOperand(leftSideAssignmentType, rightSideAssignmentType))
-                    throw new SemanticExceptionSimple(this.token, "el lado izquierdo y derecho de la asignación no son compatibles con el operador " + this.token.getLexeme());
-            } else
-                throw new SemanticExceptionSimple(this.token, "El lado izquierdo de la asignación no es asignable");
+        Type leftSideType;
+        if (this.leftSideIsAssignable())
+            leftSideType = this.leftSide.check();
+        else
+            throw new SemanticExceptionSimple(this.token, "El lado izquierdo de la asignación no es asignable");
+        Type rightSideAssignmentType = this.rightSide.check();
+        if (!rightSideAssignmentType.isCompatibleWithType(leftSideType))
+            throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo de la asignacion " + "(" + leftSideType.getClassName() + ") no conforma con el tipo " + rightSideAssignmentType.getClassName());
+        if (!bothSidesAreCompatibleWithOperand(leftSideType, rightSideAssignmentType))
+            throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo y del lado derecho de la asignación no son compatibles con el operador " + this.token.getLexeme());
+    }
+
+    private boolean leftSideIsAssignable() {
+        Encadenado leftSideCad = leftSide.getEncadenado();
+        if (leftSideCad != null) {
+            boolean isLastCad = false;
+            while (!isLastCad) {
+                if (leftSideCad.getEncadenado() == null)
+                    isLastCad = true;
+                else
+                    leftSideCad = leftSideCad.getEncadenado();
+            }
+            return leftSideCad.isAssignable();
         }
         else
-            this.leftSide.check();
+            return leftSide.isAssignable();
     }
 
     private boolean bothSidesAreCompatibleWithOperand(Type leftSideAssignmentType, Type rightSideAssignmentType) {

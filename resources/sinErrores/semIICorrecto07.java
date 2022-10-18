@@ -2,6 +2,7 @@ class C {
     char metodostatic() {
         var x = null;
         x = new A();
+        return 'a';
     }
 }
 

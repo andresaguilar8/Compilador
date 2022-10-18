@@ -153,11 +153,15 @@ public class SymbolTable {
             this.currentClass = concreteClass;
             for (Method method : concreteClass.getMethods().values()) {
                 this.currentMethod = method;
-                //todo aca no es necesario el if, nunca va a ser null
-                if (method.getPrincipalBlock() != null) {
-                    this.setCurrentBlock(method.getPrincipalBlock());
-                    method.getPrincipalBlock().check();
+                if (!method.isChecked()) {
+                    if (method.getPrincipalBlock() != null) {
+                        this.setCurrentBlock(method.getPrincipalBlock());
+                        method.getPrincipalBlock().check();
+                    }
+                    if (!method.returnIsChecked())
+                        method.checkReturn();
                 }
+                method.setChecked();
             }
         }
     }
@@ -186,8 +190,16 @@ public class SymbolTable {
     }
 
     public boolean isAttribute(String varName, ConcreteClass concreteClass) {
-        return concreteClass.getAttributes().containsKey(varName);
-        //todo ver como hacer con los atributos que heredo y son privados concreteClass.getAttributes().get(varName).getVisibility().equals("public");
+        if (concreteClass.getAttributes().containsKey(varName)) {
+            Attribute attribute = concreteClass.getAttributes().get(varName);
+            System.out.println(varName + " es heredado: "+ attribute.isInherited() + " en clase: "+concreteClass.getClassName());
+            if (attribute.isInherited())
+                return attribute.getVisibility().equals("public");
+            else
+                return true;
+        }
+        return false;
+
     }
 
     public Type retrieveAttribute(String varName, ConcreteClass concreteClass) {
@@ -195,11 +207,29 @@ public class SymbolTable {
     }
 
     public boolean isCurrentBlockLocalVar(String varName) {
-        return this.currentBlock.getLocalVarTable().containsKey(varName);
+        BlockNode currentBlockAncestor = this.currentBlock;
+        if (!currentBlockAncestor.getLocalVarTable().containsKey(varName))
+            while (currentBlockAncestor.getAncestorBlock() != null) {
+                currentBlockAncestor = currentBlockAncestor.getAncestorBlock();
+                if (currentBlockAncestor.getLocalVarTable().containsKey(varName))
+                    return true;
+            }
+        else
+            return true;
+        return false;
     }
 
     public Type retrieveLocalVarType(String varName) {
-        return this.currentBlock.getLocalVarTable().get(varName).getLocalVarType();
+        BlockNode currentBlockAncestor = this.currentBlock;
+        if (!currentBlockAncestor.getLocalVarTable().containsKey(varName))
+            while (currentBlockAncestor.getAncestorBlock() != null) {
+                currentBlockAncestor = currentBlockAncestor.getAncestorBlock();
+                if (currentBlockAncestor.getLocalVarTable().containsKey(varName))
+                    return currentBlockAncestor.getLocalVarTable().get(varName).getLocalVarType();
+            }
+        else
+            return currentBlockAncestor.getLocalVarTable().get(varName).getLocalVarType();
+        return null;
     }
 
     private void checkMainMethod(ConcreteClass classToCheck) {
@@ -248,10 +278,11 @@ public class SymbolTable {
         Type debugPrintMethodType = new PrimitiveType(voidToken);
         Type debugPrintMethodParameterType = new PrimitiveType(intToken);
 
-        Method debugPrintMethod = new Method(debugPrintMethodToken, "static", debugPrintMethodType);
         Parameter methodParameter = new Parameter(parameterToken, debugPrintMethodParameterType);
         ConcreteClass objectClass = new ConcreteClass(objectClassToken, null);
         objectClass.setConsolidated();
+        Method debugPrintMethod = new Method(debugPrintMethodToken, "static", debugPrintMethodType, objectClass.getClassName());
+        debugPrintMethod.setReturnIsChecked();
 
 
         debugPrintMethod.insertParameter(methodParameter);
@@ -291,8 +322,8 @@ public class SymbolTable {
         Token intToken = new Token("pr_int", "int", 0);
         Type readMethodType = new PrimitiveType(intToken);
         Token readMethodToken = new Token("idMV", "read", 0);
-        Method readMethod = new Method(readMethodToken, "", readMethodType);
-
+        Method readMethod = new Method(readMethodToken, "", readMethodType, concreteClass.getClassName());
+        readMethod.setReturnIsChecked();
         concreteClass.insertMethod(readMethod);
     }
 
@@ -302,10 +333,10 @@ public class SymbolTable {
         Token parameterBToken = new Token("idMV", "b", 0);
         Type printBMethodType = new PrimitiveType(voidToken);
         Token printBMethodToken = new Token("idMV", "printB", 0);
-        Method printBMethod = new Method(printBMethodToken, "static", printBMethodType);
+        Method printBMethod = new Method(printBMethodToken, "static", printBMethodType, concreteClass.getClassName());
         Type printBMethodParameterType = new PrimitiveType(booleanToken);
         Parameter parameterB = new Parameter(parameterBToken, printBMethodParameterType);
-
+        printBMethod.setReturnIsChecked();
         printBMethod.insertParameter(parameterB);
         concreteClass.insertMethod(printBMethod);
     }
@@ -316,10 +347,10 @@ public class SymbolTable {
         Token parameterCToken = new Token("idMV", "c", 0);
         Type printCMethodType = new PrimitiveType(voidToken);
         Token printCMethodToken = new Token("idMV", "printC", 0);
-        Method printCMethod = new Method(printCMethodToken, "static", printCMethodType);
+        Method printCMethod = new Method(printCMethodToken, "static", printCMethodType, concreteClass.getClassName());
         Type printCMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterC = new Parameter(parameterCToken, printCMethodParameterType);
-
+        printCMethod.setReturnIsChecked();
         printCMethod.insertParameter(parameterC);
         concreteClass.insertMethod(printCMethod);
     }
@@ -330,10 +361,10 @@ public class SymbolTable {
         Token parameterIToken = new Token("idMV", "i", 0);
         Type printIMethodType = new PrimitiveType(voidToken);
         Token printIMethodToken = new Token("idMV", "printI", 0);
-        Method printIMethod = new Method(printIMethodToken, "static", printIMethodType);
+        Method printIMethod = new Method(printIMethodToken, "static", printIMethodType, concreteClass.getClassName());
         Type printIMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIMethodParameterType);
-
+        printIMethod.setReturnIsChecked();
         printIMethod.insertParameter(parameterI);
         concreteClass.insertMethod(printIMethod);
     }
@@ -344,10 +375,10 @@ public class SymbolTable {
         Token parameterSToken = new Token("idMV", "s", 0);
         Type printSMethodType = new PrimitiveType(voidToken);
         Token printSMethodToken = new Token("idMV", "printS", 0);
-        Method printSMethod = new Method(printSMethodToken, "static", printSMethodType);
+        Method printSMethod = new Method(printSMethodToken, "static", printSMethodType, concreteClass.getClassName());
         Type printIMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printIMethodParameterType);
-
+        printSMethod.setReturnIsChecked();
         printSMethod.insertParameter(parameterS);
         concreteClass.insertMethod(printSMethod);
     }
@@ -356,8 +387,8 @@ public class SymbolTable {
         Token voidToken = new Token("pr_void", "void", 0);
         Type printlnMethodType = new PrimitiveType(voidToken);
         Token printlnMethodToken = new Token("idMV", "println", 0);
-        Method printlnMethod = new Method(printlnMethodToken, "static", printlnMethodType);
-
+        Method printlnMethod = new Method(printlnMethodToken, "static", printlnMethodType, concreteClass.getClassName());
+        printlnMethod.setReturnIsChecked();
         concreteClass.insertMethod(printlnMethod);
     }
 
@@ -367,10 +398,10 @@ public class SymbolTable {
         Token parameterBToken = new Token("idMV", "b", 0);
         Type printBlnMethodType = new PrimitiveType(voidToken);
         Token printBlnMethodToken = new Token("idMV", "printBln", 0);
-        Method printBlnMethod = new Method(printBlnMethodToken, "static", printBlnMethodType);
+        Method printBlnMethod = new Method(printBlnMethodToken, "static", printBlnMethodType, concreteClass.getClassName());
         Type printBlnMethodParameterType = new PrimitiveType(booleanToken);
         Parameter parameterB = new Parameter(parameterBToken, printBlnMethodParameterType);
-
+        printBlnMethod.setReturnIsChecked();
         printBlnMethod.insertParameter(parameterB);
         concreteClass.insertMethod(printBlnMethod);
     }
@@ -381,10 +412,10 @@ public class SymbolTable {
         Token parameterCToken = new Token("idMV", "c", 0);
         Type printClnMethodType = new PrimitiveType(voidToken);
         Token printClnMethodToken = new Token("idMV", "printCln", 0);
-        Method printClnMethod = new Method(printClnMethodToken, "static", printClnMethodType);
+        Method printClnMethod = new Method(printClnMethodToken, "static", printClnMethodType, concreteClass.getClassName());
         Type printClnMethodParameterType = new PrimitiveType(charToken);
         Parameter parameterB = new Parameter(parameterCToken, printClnMethodParameterType);
-
+        printClnMethod.setReturnIsChecked();
         printClnMethod.insertParameter(parameterB);
         concreteClass.insertMethod(printClnMethod);
     }
@@ -395,10 +426,10 @@ public class SymbolTable {
         Token parameterIToken = new Token("idMV", "i", 0);
         Type printIlnMethodType = new PrimitiveType(voidToken);
         Token printIlnMethodToken = new Token("idMV", "printIln", 0);
-        Method printIlnMethod = new Method(printIlnMethodToken, "static", printIlnMethodType);
+        Method printIlnMethod = new Method(printIlnMethodToken, "static", printIlnMethodType, concreteClass.getClassName());
         Type printIlnMethodParameterType = new PrimitiveType(intToken);
         Parameter parameterI = new Parameter(parameterIToken, printIlnMethodParameterType);
-
+        printIlnMethod.setReturnIsChecked();
         printIlnMethod.insertParameter(parameterI);
         concreteClass.insertMethod(printIlnMethod);
     }
@@ -409,12 +440,13 @@ public class SymbolTable {
         Token parameterSToken = new Token("idMV", "s", 0);
         Type printSlnMethodType = new PrimitiveType(voidToken);
         Token printSlnMethodToken = new Token("idMV", "printSln", 0);
-        Method printSlnMethod = new Method(printSlnMethodToken, "static", printSlnMethodType);
+        Method printSlnMethod = new Method(printSlnMethodToken, "static", printSlnMethodType, concreteClass.getClassName());
         Type printSlnMethodParameterType = new PrimitiveType(stringToken);
         Parameter parameterS = new Parameter(parameterSToken, printSlnMethodParameterType);
-
+        printSlnMethod.setReturnIsChecked();
         printSlnMethod.insertParameter(parameterS);
         concreteClass.insertMethod(printSlnMethod);
         }
-    }
+
+}
 

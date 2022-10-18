@@ -13,9 +13,4 @@ public abstract class LiteralOperandNode extends OperandNode {
 
     public abstract void printExpression();
 
-    @Override
-    public void setType() {
-
-    }
-
 }

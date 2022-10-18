@@ -39,7 +39,7 @@ public class StaticMethodAccessNode extends AccessNode {
     }
 
     @Override
-    public void setType() {
-
+    public boolean isAssignable() {
+        return false;
     }
 }

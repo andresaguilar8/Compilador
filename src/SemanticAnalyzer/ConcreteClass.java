@@ -28,6 +28,13 @@ public class ConcreteClass extends Class {
         return null;
     }
 
+    public boolean hasAncestorInterface(String interfaceNameToCheckFor) {
+        for (Interface i: this.ancestorsInterfaces)
+            if (i.getClassName().equals(interfaceNameToCheckFor))
+                return true;
+        return false;
+    }
+
     public void addAncestorInterface(Interface interfaceToAdd) {
         String interfaceToAddName = interfaceToAdd.getClassName();
         String interfaceNameToCompare;
@@ -52,8 +59,10 @@ public class ConcreteClass extends Class {
     }
 
     public void insertAttribute(Attribute attribute) {
-        if (!this.attributes.containsKey(attribute.getAttributeName()))
-            this.attributes.put(attribute.getAttributeName(), attribute);
+        if (!this.attributes.containsKey(attribute.getAttributeName())) {
+            Attribute attributeToInsert = new Attribute(attribute.getAttributeToken(), attribute.getAttributeType(), attribute.getVisibility());
+            this.attributes.put(attributeToInsert.getAttributeName(), attributeToInsert);
+        }
         else
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(attribute.getAttributeToken(), "El atributo " + attribute.getAttributeToken().getLexeme() + " ya esta declarado en la clase " + this.classToken.getLexeme()));
     }
@@ -137,8 +146,10 @@ public class ConcreteClass extends Class {
     private void consolidateAttributes(ConcreteClass ancestorClass) {
         for (Attribute ancestorAttribute: ancestorClass.getAttributes().values()) {
             String ancestorAttributeName = ancestorAttribute.getAttributeName();
-            if (!this.getAttributes().containsKey(ancestorAttributeName))
+            if (!this.getAttributes().containsKey(ancestorAttributeName)) {
                 this.insertAttribute(ancestorAttribute);
+                this.setAttributeAsInherited(ancestorAttribute.getAttributeName());
+            }
             else {
                 Attribute thisClassAttribute = this.getAttributes().get(ancestorAttributeName);
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassAttribute.getAttributeToken(), "El atributo " + "\"" + thisClassAttribute.getAttributeName() + "\"" + " ya fue declarado en una clase ancestra"));
@@ -146,17 +157,35 @@ public class ConcreteClass extends Class {
         }
     }
 
+    private void setAttributeAsInherited(String attributeName) {
+        for (Attribute attribute: this.attributes.values())
+            if (attribute.getAttributeName().equals(attributeName)) {
+                attribute.setInherited();
+                break;
+            }
+    }
+
     public void consolidateMethods(Class classToConsolidateWith) {
         for (Method ancestorMethod: classToConsolidateWith.getMethods().values()) {
             String methodName = ancestorMethod.getMethodName();
-            if (!this.getMethods().containsKey(methodName))
-                    this.insertMethod(ancestorMethod);
+            if (!this.getMethods().containsKey(methodName)) {
+                this.insertMethod(ancestorMethod);
+                this.setMethodAsInherited(ancestorMethod.getMethodName());
+            }
             else {
                 Method thisClassMethod = this.getMethod(methodName);
                 if (!thisClassMethod.correctRedefinedMethodHeader(ancestorMethod))
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(thisClassMethod.getMethodToken(), "El metodo " + "\"" + thisClassMethod.getMethodName() + "\"" + " esta incorrectamente redefinido"));
             }
         }
+    }
+
+    private void setMethodAsInherited(String methodName) {
+        for (Method method: this.getMethods().values())
+            if (method.getMethodName().equals(methodName)) {
+                method.setInherited();
+                break;
+            }
     }
 
     public ConcreteClass getAncestorClass() {

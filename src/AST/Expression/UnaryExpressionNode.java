@@ -8,10 +8,9 @@ public class UnaryExpressionNode extends ExpressionNode {
     private ExpressionNode operandNode;
 
     //aca el token es el operador
-    public UnaryExpressionNode(Token token, ExpressionNode operandNode) {
+    public UnaryExpressionNode(Token token, OperandNode operandNode) {
         super(token);
         this.operandNode = operandNode;
-        this.setType();
     }
 
     @Override
@@ -28,15 +27,6 @@ public class UnaryExpressionNode extends ExpressionNode {
     public void printExpression() {
         System.out.print(this.token.getLexeme());
         operandNode.printExpression();
-    }
-
-    @Override
-    public void setType() {
-//        if (this.operandNode.token.getLexeme().equals("+"))
-            this.expressionType = new PrimitiveType(operandNode.token);
-//        else
-//            if (this.operandNode.token.getLexeme().equals("!"))
-//                this.expressionType = new PrimitiveType(operandNode.token);
     }
 
 }

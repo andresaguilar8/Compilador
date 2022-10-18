@@ -1,15 +1,16 @@
 package AST.Access;
 
-import AST.Expression.ExpressionNode;
+import AST.Expression.OperandNode;
 import LexicalAnalyzer.Token;
 
-public abstract class AccessNode extends ExpressionNode {
+public abstract class AccessNode extends OperandNode {
 
     protected Encadenado encadenado;
     protected boolean isAssignable;
 
     public AccessNode(Token token) {
         super(token);
+        this.isAssignable = true;
     }
 
     public void setEncadenado(Encadenado encadenado) {
@@ -20,9 +21,7 @@ public abstract class AccessNode extends ExpressionNode {
         return this.encadenado;
     }
 
-    public boolean isAssignable() {
-        return this.isAssignable;
-    }
+    public abstract boolean isAssignable();
 
     public void setIsNotAssignable() {
         this.isAssignable = false;

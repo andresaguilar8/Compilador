@@ -7,11 +7,13 @@ public class Attribute {
     private String visibility;
     private Token attributeToken;
     private Type attributeType;
+    private boolean isInherited;
 
     public Attribute(Token attributeToken, Type attributeType, String visibility) {
         this.attributeToken = attributeToken;
         this.attributeType = attributeType;
         this.visibility = visibility;
+        this.isInherited = false;
     }
 
     public String getAttributeName() {
@@ -37,5 +39,13 @@ public class Attribute {
 
     public String getVisibility() {
         return this.visibility;
+    }
+
+    public void setInherited() {
+        this.isInherited = true;
+    }
+
+    public boolean isInherited() {
+        return this.isInherited;
     }
 }

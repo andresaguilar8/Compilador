@@ -11,9 +11,12 @@ public class VarAccessNode extends AccessNode {
     }
 
     @Override
+    public boolean isAssignable() {
+        return true;
+    }
+
+    @Override
     public Type check() throws SemanticExceptionSimple {
-        if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
-            throw new SemanticExceptionSimple(this.token, "un metodo estatico no puede acceder a un atributo");
         Type varType;
         String varName = this.token.getLexeme();
         Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
@@ -23,14 +26,25 @@ public class VarAccessNode extends AccessNode {
             if (SymbolTable.getInstance().isCurrentBlockLocalVar(varName))
                 varType = SymbolTable.getInstance().retrieveLocalVarType(varName);
             else {
-                ConcreteClass currentClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
-                if (SymbolTable.getInstance().isAttribute(varName, currentClass) && SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals(""))
-                    varType = SymbolTable.getInstance().retrieveAttribute(varName, currentClass);
-                else
-                    throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + currentMethod.getMethodName() + " ni un atributo de la clase " + currentClass.getClassName());
+                ConcreteClass methodClass = currentMethod.getMethodClass();
+//                (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
+                    if (SymbolTable.getInstance().isAttribute(varName, methodClass)) {
+                        if (!SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
+                            varType = SymbolTable.getInstance().retrieveAttribute(varName, methodClass);
+                        else
+                            throw new SemanticExceptionSimple(this.token, "un metodo estatico no puede acceder a un atributo");
+                    }
+                    else
+                        if (!SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
+                            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + "\"" + currentMethod.getMethodName() + "\"" + " ni un atributo de la clase " + methodClass.getClassName());
+                        else
+                            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + "\"" + currentMethod.getMethodName() + "\"" );
             }
-        if (this.encadenado != null)
+        if (this.encadenado != null) {
+            if (varType.isPrimitive())
+                throw new SemanticExceptionSimple(this.token, varName + " no es de tipo clase y tiene un encadenado");
             return this.encadenado.check(varType);
+        }
         return varType;
     }
 
@@ -40,9 +54,5 @@ public class VarAccessNode extends AccessNode {
         System.out.print(this.token.getLexeme());
     }
 
-    @Override
-    public void setType() {
-
-    }
 
 }

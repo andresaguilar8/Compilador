@@ -10,6 +10,7 @@ public class ThisAccessNode extends AccessNode {
     public ThisAccessNode(Token token, String className) {
         super(token);
         this.className = className;
+        this.isAssignable = true;
     }
 
     @Override
@@ -32,11 +33,12 @@ public class ThisAccessNode extends AccessNode {
             System.out.print(" y tiene encadenado: ");
             encadenado.printExpression();
         }
+        else
+            System.out.print(" y no tiene encadenado");
     }
 
     @Override
-    public void setType() {
-
+    public boolean isAssignable() {
+        return this.encadenado != null;
     }
-
 }

@@ -7,6 +7,7 @@ class A extends B {
     }
 
     B y(String x) {
+        return new B();
     }
 }
 

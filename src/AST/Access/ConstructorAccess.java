@@ -10,6 +10,11 @@ public class ConstructorAccess extends AccessNode {
     }
 
     @Override
+    public boolean isAssignable() {
+        return false;
+    }
+
+    @Override
     public Type check() throws SemanticExceptionSimple {
         Type constructorType;
         if (this.encadenado == null) {
@@ -33,8 +38,4 @@ public class ConstructorAccess extends AccessNode {
 
     }
 
-    @Override
-    public void setType() {
-
-    }
 }

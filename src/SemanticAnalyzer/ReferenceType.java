@@ -2,6 +2,8 @@ package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
 
+import java.util.Arrays;
+
 public class ReferenceType extends Type {
 
     public ReferenceType(Token tokenType) {
@@ -18,7 +20,7 @@ public class ReferenceType extends Type {
     }
 
     public boolean isCompatibleWithOperator(String operator) {
-        return operator.equals("=");
+        return Arrays.asList("=", "==", "!=").contains(operator);
     }
 
     @Override
@@ -26,30 +28,42 @@ public class ReferenceType extends Type {
 
     }
 
-    public boolean isCompatibleWithType(Type rightSideAssignmentType) {
-        System.out.println(this.getClassName());
-        System.out.println(rightSideAssignmentType.getClassName());
-        if (this.tokenType.getLexeme().equals("null") && rightSideAssignmentType.isPrimitive())
+    public boolean isCompatibleWithType(Type typeToCompareWith) {
+        System.out.println("comparo " + this.getClassName() + " con " + typeToCompareWith.getClassName());
+        if (typeToCompareWith.isPrimitive())
             return false;
-        if (this.tokenType.getLexeme().equals("null") || rightSideAssignmentType.getClassName().equals("null"))
+        if (this.tokenType.getLexeme().equals("null") || typeToCompareWith.getClassName().equals("null"))
             return true;
-        if (this.tokenType.getLexeme().equals(rightSideAssignmentType.getClassName()))
+        if (this.tokenType.getLexeme().equals(typeToCompareWith.getClassName()))
             return true;
-        Interface interfaceInSymbolTable = SymbolTable.getInstance().getInterface(this.getClassName());
-        ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
-        if (interfaceInSymbolTable != null) {
-            System.out.println("jaua jus");
-            if (concreteClass != null)
-                //todo acomodar esto.. no anda
-                return concreteClass.getAncestorsInterfaces().contains(interfaceInSymbolTable.getClassName());
+        if (SymbolTable.getInstance().interfaceIsDeclared(typeToCompareWith.getClassName())) {
+            if (SymbolTable.getInstance().concreteClassIsDeclared(this.getClassName())) {
+                ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
+                if (concreteClass.hasAncestorInterface(typeToCompareWith.getClassName()))
+                    return true;
+                else {
+                    while (concreteClass.getAncestorClass() != null) {
+                        concreteClass = concreteClass.getAncestorClass();
+                        if (concreteClass.hasAncestorInterface(typeToCompareWith.getClassName()))
+                            return true;
+                    }
+                }
+            }
+            //todo.. en caso de que el tipo de retorno sea una interface que onda
         }
-        if (concreteClass != null) {
-//            if (concreteClass.getAncestorClass().equals(rightSideAssignmentType.getClassName()))
-//                return true;
-//            else
-                return concreteClass.getAncestorsInterfaces().contains(rightSideAssignmentType.getClassName());
-
+        else {
+            if (SymbolTable.getInstance().concreteClassIsDeclared(typeToCompareWith.getClassName())) {
+                if (SymbolTable.getInstance().concreteClassIsDeclared(this.getClassName())) {
+                    ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.getClassName());
+                    while (concreteClass.getAncestorClass() != null) {
+                        if (concreteClass.getAncestorClass().getClassName().equals(typeToCompareWith.getClassName()))
+                            return true;
+                        concreteClass = concreteClass.getAncestorClass();
+                    }
+                }
+            }
         }
         return false;
     }
+
 }

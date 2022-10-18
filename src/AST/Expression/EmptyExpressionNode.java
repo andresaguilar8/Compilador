@@ -5,9 +5,9 @@ import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
-public class EmptyExpression extends ExpressionNode {
+public class EmptyExpressionNode extends ExpressionNode {
 
-    public EmptyExpression(Token token) {
+    public EmptyExpressionNode(Token token) {
         super(token);
     }
 
@@ -21,8 +21,4 @@ public class EmptyExpression extends ExpressionNode {
         System.out.println("ahora se");
     }
 
-    @Override
-    public void setType() {
-
-    }
 }

@@ -14,7 +14,6 @@ public class ParenthesizedExpressionNode extends AccessNode {
         this.expression = expression;
     }
 
-    @Override
     public Type check() throws SemanticExceptionSimple {
         Type expressionType = this.expression.check();
         return expressionType;
@@ -26,8 +25,7 @@ public class ParenthesizedExpressionNode extends AccessNode {
     }
 
     @Override
-    public void setType() {
-
+    public boolean isAssignable() {
+        return false;
     }
-
 }

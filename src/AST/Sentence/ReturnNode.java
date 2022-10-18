@@ -18,13 +18,13 @@ public class ReturnNode extends SentenceNode {
 
     @Override
     public void printSentence() {
-    if (this.expressionNode != null) {
-        System.out.print(this.token.getLexeme() + " con expresion: ");
-        this.expressionNode.printExpression();
-        System.out.println();
-    }
-    else
-        System.out.println(this.token.getLexeme() + " sin expresion");
+        if (this.expressionNode != null) {
+            System.out.print(this.token.getLexeme() + " con expresion: ");
+            this.expressionNode.printExpression();
+            System.out.println();
+        }
+        else
+            System.out.println(this.token.getLexeme() + " sin expresion");
     }
 
     @Override
@@ -34,8 +34,9 @@ public class ReturnNode extends SentenceNode {
         Type returnMethodType = method.getReturnType();
         if (!expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
             throw new SemanticExceptionSimple(this.token, "El metodo " + method.getMethodName() + " no tiene un tipo de retorno");
-        if (!returnMethodType.isCompatibleWithType(expressionType))
+        if (!expressionType.isCompatibleWithType(returnMethodType))
             throw new SemanticExceptionSimple(this.token, "El metodo debe retornar una expresion de tipo " + returnMethodType.getClassName());
-        //todo preguntar si el token de error esta en el retun o en la expreson
+        method.setReturnNodeIsDeclared();
     }
+
 }

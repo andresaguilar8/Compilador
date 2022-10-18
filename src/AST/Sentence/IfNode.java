@@ -9,6 +9,7 @@ public class IfNode extends SentenceNode {
 
     private ExpressionNode condition;
     private SentenceNode sentence;
+    private SentenceNode elseSentence;
 
     public IfNode(Token token, ExpressionNode condition, SentenceNode sentence) {
         super(token);
@@ -24,6 +25,10 @@ public class IfNode extends SentenceNode {
         this.sentence.printSentence();
     }
 
+    public void setElseSentence(SentenceNode elseSentence) {
+        this.elseSentence = elseSentence;
+    }
+
     @Override
     public void check() throws SemanticExceptionSimple {
         Type conditionType = this.condition.check();
@@ -32,6 +37,8 @@ public class IfNode extends SentenceNode {
                 this.sentence.check();
             else
                throw new SemanticExceptionSimple(this.condition.getToken(), "La condicion del if debe ser de tipo primitivo boolean");
+        if (this.elseSentence != null)
+            elseSentence.check();
     }
 
 }

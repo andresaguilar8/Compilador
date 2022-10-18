@@ -20,10 +20,9 @@ public class MethodAccess extends AccessNode {
         ConcreteClass concreteClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
         if (!this.classContainsThisMethod(concreteClass))
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un metodo visible en la clase " + concreteClass.getClassName());
-        if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
-            throw new SemanticExceptionSimple(this.token, "no se puede llamar a un metodo dinamico dentro de un metodo con alcance estatico");
         Method method = concreteClass.getMethods().get(this.token.getLexeme());
-        System.out.println(expressionNodesList == null);
+        if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static") && !method.getStaticHeader().equals("static"))
+            throw new SemanticExceptionSimple(this.token, "no se puede llamar a un metodo dinamico dentro de un metodo con alcance estatico");
         if (method.getParametersList().size() > 0)
             this.checkArguments(method);
         if (this.encadenado == null)
@@ -62,7 +61,7 @@ public class MethodAccess extends AccessNode {
     }
 
     @Override
-    public void setType() {
-
+    public boolean isAssignable() {
+        return this.encadenado != null;
     }
 }
