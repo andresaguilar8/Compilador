@@ -1,5 +1,5 @@
-///[Error:a1|13]
-//condicion del while de tipo int
+///[Error:*|14]
+//
 class A {
 
     private int a1;

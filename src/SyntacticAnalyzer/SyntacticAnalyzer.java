@@ -427,9 +427,10 @@ public class SyntacticAnalyzer {
             this.match("pr_var");
             Token varNodeToken = this.currentToken;
             this.match("idMV");
+            Token operatorToken = this.currentToken;
             this.match("=");
             ExpressionNode expressionNode = this.expresion();
-            LocalVarDeclarationNode varNode = new LocalVarDeclarationNode(varNodeToken, expressionNode);
+            LocalVarDeclarationNode varNode = new LocalVarDeclarationNode(varNodeToken, expressionNode, operatorToken);
             return varNode;
         } else
             throw new SyntacticException(this.currentToken, "var");

@@ -1,11 +1,7 @@
 package Pruebas;
 
-public class C  implements Y {
+public interface C   {
 
-    public C x;
-    public int y;
-    @Override
-    public void metodoY() {
 
-    }
+
 }

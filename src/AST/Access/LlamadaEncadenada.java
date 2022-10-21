@@ -3,6 +3,8 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import SemanticAnalyzer.Class;
+
 import java.util.ArrayList;
 
 public class LlamadaEncadenada extends Encadenado {
@@ -19,20 +21,26 @@ public class LlamadaEncadenada extends Encadenado {
         //todo el chequeo de que la clase leftsidetype exista donde va?
         Type accessMethodType;
         //todo verificar con tipo void que ande
-        ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(leftSideType.getClassName());
-        if (!concreteClass.getMethods().containsKey(this.token.getLexeme()))
-            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un metodo clase " + concreteClass.getClassName());
-        else {
-            Method method = concreteClass.getMethods().get(this.token.getLexeme());
-            if (method.getParametersList().size() > 0 || this.expressionNodesList != null)
-                this.checkArguments(method);
-            accessMethodType = method.getReturnType();
-            if (this.encadenado != null) {
-                if (accessMethodType.isPrimitive())
-                    throw new SemanticExceptionSimple(this.token, "el metodo " + "\"" + this.token.getLexeme() + "\"" + " debe retornar un tipo que no sea int, boolean, char, ni void");
-                return this.encadenado.check(accessMethodType);
+        System.out.println("aca " + leftSideType.getClassName());
+        if (!leftSideType.isPrimitive()) {
+            Class classOrInterface = SymbolTable.getInstance().getClass(leftSideType.getClassName());
+//            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(leftSideType.getClassName());
+            if (!classOrInterface.getMethods().containsKey(this.token.getLexeme()))
+                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es metodo un de " + classOrInterface.getClassName());
+            else {
+                Method method = classOrInterface.getMethods().get(this.token.getLexeme());
+                if (method.getParametersList().size() > 0 || this.expressionNodesList != null)
+                    this.checkArguments(method);
+                accessMethodType = method.getReturnType();
+                if (this.encadenado != null) {
+                    if (accessMethodType.isPrimitive())
+                        throw new SemanticExceptionSimple(this.token, "el metodo " + "\"" + this.token.getLexeme() + "\"" + " debe retornar un tipo que no sea int, boolean, char, ni void");
+                    return this.encadenado.check(accessMethodType);
+                }
             }
         }
+        else
+            throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado es un tipo primitivo");
         return accessMethodType;
     }
 

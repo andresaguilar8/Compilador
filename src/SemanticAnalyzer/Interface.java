@@ -131,4 +131,21 @@ public class Interface extends Class {
         return this.consolidated;
     }
 
+    public boolean hasAncestorInterface(String interfaceName) {
+        boolean toReturn = false;
+        System.out.println("pregunto si "+this.getClassName() + " tiene un ancestro " + interfaceName);
+        System.out.println(this.ancestorsInterfaces.size());
+        for (Interface i: SymbolTable.getInstance().getInterface(this.getClassName()).getAncestorsInterfaces()) {
+            if (i.getClassName().equals(interfaceName)) {
+                return true;
+            }
+        }
+        System.out.println("no tiene");
+        for (Interface i: SymbolTable.getInstance().getInterface(this.getClassName()).getAncestorsInterfaces()) {
+            toReturn = SymbolTable.getInstance().getInterface(i.getClassName()).hasAncestorInterface(interfaceName);
+            if (toReturn == true)
+                return true;
+        }
+        return toReturn;
+    }
 }

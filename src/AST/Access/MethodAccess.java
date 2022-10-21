@@ -45,7 +45,7 @@ public class MethodAccess extends AccessNode {
             parameterType = parametersList.get(index).getParameterType();
             expressionType = expressionNode.check();
             index += 1;
-            if (!parameterType.isCompatibleWithType(expressionType))
+            if (!expressionType.isCompatibleWithType(parameterType))
                 throw new SemanticExceptionSimple(this.token, "tipos incompatibles en el pasaje de parametros");
         }
     }

@@ -44,6 +44,7 @@ public class PrimitiveType extends Type {
 
     @Override
     public boolean isCompatibleWithType(Type typeToCompareWith) {
+        System.out.println("comparo " +typeToCompareWith.getClassName() + " con " + this.className);
         if (!typeToCompareWith.isPrimitive())
             return false;
         if (this.className.equals("int"))

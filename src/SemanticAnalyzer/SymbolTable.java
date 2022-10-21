@@ -123,6 +123,16 @@ public class SymbolTable {
         return SymbolTable.getInstance().getInterfacesTable().containsKey(interfaceName);
     }
 
+    public Class getClass(String name) {
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values())
+            if (concreteClass.getClassName().equals(name))
+                return concreteClass;
+        for (Interface i: this.interfacesTable.values())
+            if (i.getClassName().equals(name))
+                return i;
+        return null;
+    }
+
     public ConcreteClass getConcreteClass(String concreteClassName) {
         return SymbolTable.getInstance().getConcreteClassesTable().get(concreteClassName);
     }

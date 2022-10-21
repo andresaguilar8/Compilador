@@ -36,7 +36,7 @@ public class IfNode extends SentenceNode {
             if (conditionType.isPrimitive() && conditionType.getClassName().equals("boolean"))
                 this.sentence.check();
             else
-               throw new SemanticExceptionSimple(this.condition.getToken(), "La condicion del if debe ser de tipo primitivo boolean");
+               throw new SemanticExceptionSimple(this.token, "La condicion del if debe ser de tipo primitivo boolean");
         if (this.elseSentence != null)
             elseSentence.check();
     }

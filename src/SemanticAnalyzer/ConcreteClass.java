@@ -29,10 +29,17 @@ public class ConcreteClass extends Class {
     }
 
     public boolean hasAncestorInterface(String interfaceNameToCheckFor) {
-        for (Interface i: this.ancestorsInterfaces)
+        boolean toReturn = false;
+        for (Interface i: this.ancestorsInterfaces) {
+//            System.out.println("comparo si " + i.getClassName() + " es igual a " + interfaceNameToCheckFor);
             if (i.getClassName().equals(interfaceNameToCheckFor))
                 return true;
-        return false;
+            if (i.hasAncestorInterface(interfaceNameToCheckFor))
+                toReturn =  true;
+//            if (this.getAncestorClass() != null)
+//                return this.getAncestorClass().hasAncestorInterface(interfaceNameToCheckFor);
+        }
+        return toReturn;
     }
 
     public void addAncestorInterface(Interface interfaceToAdd) {

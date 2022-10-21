@@ -29,6 +29,6 @@ public class WhileNode extends SentenceNode {
             if (conditionType.isPrimitive() && conditionType.getClassName().equals("boolean"))
                 this.sentence.check();
             else
-                throw new SemanticExceptionSimple(this.condition.getToken(), "La condicion del while debe ser de tipo primitivo boolean");
+                throw new SemanticExceptionSimple(this.token, "La condicion del while debe ser de tipo primitivo boolean");
     }
 }

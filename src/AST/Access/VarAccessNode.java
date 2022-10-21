@@ -41,9 +41,16 @@ public class VarAccessNode extends AccessNode {
                             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + "\"" + currentMethod.getMethodName() + "\"" );
             }
         if (this.encadenado != null) {
-            if (varType.isPrimitive())
-                throw new SemanticExceptionSimple(this.token, varName + " no es de tipo clase y tiene un encadenado");
-            return this.encadenado.check(varType);
+            System.out.println("var " + this.token.getLexeme() + " tiene encadenado");
+            System.out.println(varType.getClassName() + "juj");
+//            if (varType.isPrimitive())
+//                throw new SemanticExceptionSimple(this.token, varName + " no es de tipo clase y tiene un encadenado");
+//            Type encadenadoType = this.encadenado.check(varType);
+            if (!varType.isPrimitive())
+                return this.encadenado.check(varType);
+            else
+                throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado es un tipo primitivo");
+//            return this.encadenado.check(varType);
         }
         return varType;
     }

@@ -1,24 +1,30 @@
-class A extends B {
 
-    private B b;
+class A {
 
+    public A v1;
+    public B b1;
 
+    void m1(B p1) {
 
-}
-
-class B extends C{
-
-    public B aa;
-
-    static B metodoStatic(int x) {
-        var x = 3;
-        var y = 3;
-
-        return aa;
     }
 
 
-    static void main() {}
+
 }
 
-class C{}
+class B extends A{
+
+    void metodo() {
+        //var x = this.m1(new A());
+
+        this.b1 = new A();
+    }
+}
+
+
+class Init{
+    static void main()
+    { }
+}
+
+

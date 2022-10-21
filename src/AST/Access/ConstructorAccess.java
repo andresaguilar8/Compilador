@@ -26,7 +26,7 @@ public class ConstructorAccess extends AccessNode {
                     constructorType = new ReferenceType(this.token);
             }
             else
-                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase declarada");
+                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase concreta declarada");
         }
         else
             return this.encadenado.check(new ReferenceType(this.token));
