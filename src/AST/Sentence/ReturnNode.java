@@ -29,16 +29,10 @@ public class ReturnNode extends SentenceNode {
         Type expressionType = this.expressionNode.check();
         Method method = SymbolTable.getInstance().getCurrentMethod();
         Type returnMethodType = method.getReturnType();
-//        if (!expressionType.isPrimitive() && !expressionType.getClassName().equals("null")) {
-//            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(expressionType.getClassName());
-//            if (concreteClass == null)
-//                throw new SemanticExceptionSimple(this.token, "El retorno de un metodo con retorno de tipo no primitivo no puede del tipo de una interfaz");
-//        }
         if (!expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
             throw new SemanticExceptionSimple(this.token, "El metodo " + method.getMethodName() + " no tiene un tipo de retorno");
-        if (!expressionType.isCompatibleWithType(returnMethodType))// || !returnMethodType.isCompatibleWithType(expressionType))
+        if (!expressionType.isCompatibleWithType(returnMethodType))
             throw new SemanticExceptionSimple(this.token, "El metodo debe retornar una expresion de tipo " + returnMethodType.getClassName());
-        method.setReturnNodeIsDeclared();
     }
 
 }

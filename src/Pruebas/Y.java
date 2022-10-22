@@ -1,6 +1,6 @@
 package Pruebas;
 
-public interface Y extends X{
+public interface Y {
 
     void metodoY();
 }

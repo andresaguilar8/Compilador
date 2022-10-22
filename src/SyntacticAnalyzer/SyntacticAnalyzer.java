@@ -181,7 +181,6 @@ public class SyntacticAnalyzer {
     private void metodo() throws LexicalException, IOException, SyntacticException, SemanticException, SemanticExceptionSimple {
         if (Arrays.asList("pr_static", "pr_void", "idClase", "pr_boolean", "pr_char", "pr_int").contains(this.currentToken.getTokenId())) {
             this.encabezadoMetodo();
-            //todo no se que token va a tener el bloque.. si es que tiene.. no tiene
             BlockNode principalBlock = new BlockNode(null, null);
             SymbolTable.getInstance().getCurrentMethod().setPrincipalBlock(principalBlock);
             this.bloque(principalBlock);
@@ -405,6 +404,7 @@ public class SyntacticAnalyzer {
 
     private Token tipoAsignacion() throws LexicalException, SyntacticException, IOException {
         Token asignacionToken;
+        //todo testear esto
         if (this.currentToken.getTokenId().equals("=")) {
             asignacionToken = this.currentToken;
             this.match("=");
@@ -657,8 +657,8 @@ public class SyntacticAnalyzer {
         AccessNode primarioAccessNode;
         if (Arrays.asList("pr_this", "idMV", "pr_new", "idClase", "(").contains(this.currentToken.getTokenId())) {
             primarioAccessNode = this.primario();
-            Encadenado e = this.encadenadoOpt(null);
-            primarioAccessNode.setEncadenado(e);
+            Encadenado encadenado = this.encadenadoOpt(null);
+            primarioAccessNode.setEncadenado(encadenado);
         } else
             throw new SyntacticException(this.currentToken, "this, idMV, new, idClase o (");
         return primarioAccessNode;
@@ -724,7 +724,6 @@ public class SyntacticAnalyzer {
             this.match("(");
             ExpressionNode expression = this.expresion();
             this.match(")");
-            //todo el token de una expresion parentizada que seria?
             ParenthesizedExpressionNode parenthesizedExpressionNode = new ParenthesizedExpressionNode(null, expression);
             parenthesizedExpressionNode.setIsNotAssignable();
             return parenthesizedExpressionNode;
@@ -799,11 +798,8 @@ public class SyntacticAnalyzer {
             if (encadenadoParametro != null)
                 encadenadoParametro.setEncadenado(encadenado);
         }
-
-        else {
+        else
             return null;
-            // epsilon, no hago nada
-        }
         return encadenado;
     }
 

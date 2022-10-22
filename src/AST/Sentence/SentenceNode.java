@@ -1,6 +1,5 @@
 package AST.Sentence;
 
-
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 

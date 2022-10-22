@@ -19,8 +19,6 @@ public class BinaryExpressionNode extends ExpressionNode {
         Type leftSideTypeExpression = leftSide.check();
         Type rightSideTypeExpression = rightSide.check();
         String operator = this.token.getLexeme();
-        System.out.println("leftsidetype " + leftSideTypeExpression.getClassName());
-        System.out.println("rightsidetype " + rightSideTypeExpression.getClassName());
         if (leftSideTypeExpression.isCompatibleWithOperator(operator) && rightSideTypeExpression.isCompatibleWithOperator(operator)) {
             if (leftSideTypeExpression.isCompatibleWithType(rightSideTypeExpression) || rightSideTypeExpression.isCompatibleWithType(leftSideTypeExpression)) {
                 Type primitiveType = new PrimitiveType(this.token);

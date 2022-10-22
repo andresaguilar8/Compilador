@@ -27,10 +27,8 @@ public class BlockNode extends SentenceNode {
 
     public void insertLocalVar(LocalVarDeclarationNode localVarNode) throws SemanticExceptionSimple {
         if (this.ancestorBlock != null) {
-            for (LocalVarDeclarationNode localVarInAncestorBlock: ancestorBlock.getLocalVarTable().values()) {
-                System.out.println(localVarInAncestorBlock.token);
+            for (LocalVarDeclarationNode localVarInAncestorBlock: ancestorBlock.getLocalVarTable().values())
                 this.localVarTable.put(localVarInAncestorBlock.getVarName(), localVarInAncestorBlock);
-            }
         }
         Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
         if (!currentMethod.getParametersList().contains(localVarNode.getVarName())) {
@@ -45,7 +43,6 @@ public class BlockNode extends SentenceNode {
 
     @Override
     public void printSentence() {
-        System.out.println("bloque: sentencias dentro del bloque: "+this.sentencesList.size());
         for (SentenceNode sentenceNode: this.sentencesList)
             System.out.println(sentenceNode);
     }
@@ -53,11 +50,8 @@ public class BlockNode extends SentenceNode {
     @Override
     public void check() throws SemanticExceptionSimple {
         SymbolTable.getInstance().setCurrentBlock(this);
-        for (SentenceNode sentenceNode: this.sentencesList) {
-            System.out.print("chequeo sentencia: ");
-            sentenceNode.printSentence();
+        for (SentenceNode sentenceNode: this.sentencesList)
             sentenceNode.check();
-        }
         if (this.getAncestorBlock() != null)
             SymbolTable.getInstance().setCurrentBlock(this.ancestorBlock);
     }

@@ -18,10 +18,7 @@ public class LlamadaEncadenada extends Encadenado {
 
     @Override
     public Type check(Type leftSideType) throws SemanticExceptionSimple {
-        //todo el chequeo de que la clase leftsidetype exista donde va?
         Type accessMethodType;
-        //todo verificar con tipo void que ande
-        System.out.println("aca " + leftSideType.getClassName());
         if (!leftSideType.isPrimitive()) {
             Class classOrInterface = SymbolTable.getInstance().getClass(leftSideType.getClassName());
 //            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(leftSideType.getClassName());

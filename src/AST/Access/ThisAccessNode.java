@@ -15,12 +15,10 @@ public class ThisAccessNode extends AccessNode {
 
     @Override
     public Type check() throws SemanticExceptionSimple {
-        //todo revisar tokens
         if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
             throw new SemanticExceptionSimple(this.token, "un acceso dentro de un bloque de un metodo estatico no puede comenzar con this");
         ConcreteClass currentClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
         if (this.encadenado != null)
-            //todo ver que onda el token este
             return encadenado.check(new ReferenceType(new Token("idClase", this.className, 0)));
         else
             return new ReferenceType(currentClass.getToken());

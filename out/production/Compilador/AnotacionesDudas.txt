@@ -1,21 +1,7 @@
 
 
-acomodar:
-Error Semantico en linea 24: x no es compatible con &&
 
  {int x = 10; { int x = 10;}}  --> es un error?
-
-
-si hago var x = new C(); tengo que verificar que C este declarada? puede ser una interfaz? no upede ser interfaz
-
-
-
-si no hago el logro de tdoso los caminos llevan a retorno
-en los metodos hay que verificar que haya al menos un retorno_?
-
-el error cuando un metodo no tiene un retorno, puede ser en el nombre del metodo?
-
-si hago A.m2(); y A es una interfaz, el error está en que A es una interfaz?
 
 
 

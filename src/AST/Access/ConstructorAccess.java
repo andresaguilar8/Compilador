@@ -29,7 +29,10 @@ public class ConstructorAccess extends AccessNode {
                 throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase concreta declarada");
         }
         else
-            return this.encadenado.check(new ReferenceType(this.token));
+            if (SymbolTable.getInstance().concreteClassIsDeclared(this.token.getLexeme()))
+                return this.encadenado.check(new ReferenceType(this.token));
+            else
+                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase concreta declarada");
         return constructorType;
     }
 

@@ -18,14 +18,17 @@ public class VarEncadenada extends Encadenado {
     @Override
     public Type check(Type leftSideType) throws SemanticExceptionSimple {
         Type cadVarType;
-        //todo si tengo a1.m2(); y a1 es de tipo interfaz, tengo que tirar error..
         if (!leftSideType.isPrimitive()) {
             ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(leftSideType.getClassName());
             //si no es una clase es una interfaz (va a estar chequeado que esté declarada)
             if (concreteClass == null)
-                throw new SemanticExceptionSimple(this.token, "un atributo de tipo interfaz no puede acceder a un atributo");
+                throw new SemanticExceptionSimple(this.token, "una interfaz no tiene atributos");
             if (!SymbolTable.getInstance().isAttribute(this.token.getLexeme(), concreteClass))
                 throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable de instancia de la clase " + concreteClass.getClassName());
+            System.out.println(concreteClass.getClassName() + SymbolTable.getInstance().getCurrentClass().getClassName());
+            if (!SymbolTable.getInstance().getCurrentClass().getClassName().equals(concreteClass.getClassName()))
+                if (concreteClass.getAttributes().get(this.token.getLexeme()).getVisibility().equals("private"))
+                    throw new SemanticExceptionSimple(this.token,  "la variable " + this.token.getLexeme() + " esta declarada como privada");
             cadVarType = concreteClass.getAttributes().get(this.token.getLexeme()).getAttributeType();
             if (this.encadenado != null)
                 if (!cadVarType.isPrimitive())

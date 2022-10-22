@@ -1,24 +1,24 @@
 package Pruebas;
 
-public class A {
+public class A implements X{
 
+    private A a;
+    B b;
 
-    public C x;
-    public C y;
-
-    public A v1;
-
-
-    void otro() {
-//        var x = this.m1(new B());
-    }
-    void m1(B p1)
-
-    {
-        v1 = p1;
-        //p1 = v1;
-
+    static A met() {
+        //if (a ==  b);
+        A.met().metodox();
+        return new A();
     }
 
 
+    @Override
+    public void metodox() {
+
+    }
+
+    @Override
+    public void metodoY() {
+
+    }
 }

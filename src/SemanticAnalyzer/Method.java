@@ -16,8 +16,6 @@ public class Method {
     private BlockNode currentBlock;
     private BlockNode principalBlock;
     private boolean isInherited;
-    private boolean returnNodeIsDeclared;
-    private boolean returnIsChecked;
     private boolean principalBlockIsChecked;
     private String className;
 
@@ -28,8 +26,6 @@ public class Method {
         this.parametersList = new ArrayList<>();
         this.parametersTable = new Hashtable<>();
         this.isInherited = false;
-        this.returnNodeIsDeclared = false;
-        this.returnIsChecked = false;
         this.principalBlockIsChecked = false;
         this.className = className;
     }
@@ -41,14 +37,6 @@ public class Method {
         }
         else
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(parameterToInsert.getParameterToken(), "El parametro " + parameterToInsert.getParameterName() + " ya esta declarado en el metodo " + "\"" + this.methodToken.getLexeme() + "\""));
-    }
-
-    public void setReturnNodeIsDeclared() {
-        this.returnNodeIsDeclared = true;
-    }
-
-    public void setReturnIsChecked() {
-        this.returnIsChecked = true;
     }
 
     public String getMethodName() {
@@ -168,23 +156,12 @@ public class Method {
         return this.principalBlockIsChecked;
     }
 
-    public void checkReturn() throws SemanticExceptionSimple {
-        if (!this.isInherited)
-            if (!this.methodReturnType.getClassName().equals("void") && !this.returnNodeIsDeclared)
-                throw new SemanticExceptionSimple(this.methodToken, "falta declaracion de retorno");
-        this.returnIsChecked = true;
-    }
-
     public boolean isInherited() {
         return this.isInherited;
     }
 
     public void setInherited() {
         this.isInherited = true;
-    }
-
-    public boolean returnIsChecked() {
-        return this.returnIsChecked;
     }
 
     public ConcreteClass getMethodClass() {
