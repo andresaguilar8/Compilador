@@ -1,4 +1,4 @@
-package AST.Access;
+package AST.Encadenado;
 
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
@@ -49,6 +49,11 @@ public class LlamadaEncadenada extends Encadenado {
     @Override
     public boolean isAssignable() {
         return false;
+    }
+
+    @Override
+    public boolean isCallable() {
+        return true;
     }
 
     private void checkArguments(Method method) throws SemanticExceptionSimple {

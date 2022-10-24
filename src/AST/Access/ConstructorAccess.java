@@ -15,6 +15,11 @@ public class ConstructorAccess extends AccessNode {
     }
 
     @Override
+    public boolean isCallable() {
+        return true;
+    }
+
+    @Override
     public Type check() throws SemanticExceptionSimple {
         Type constructorType;
         if (this.encadenado == null) {

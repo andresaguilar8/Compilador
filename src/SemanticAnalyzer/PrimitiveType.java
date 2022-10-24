@@ -1,14 +1,12 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-
 import java.util.Arrays;
 
 public class PrimitiveType extends Type {
 
     public PrimitiveType(Token tokenType) {
         super(tokenType);
-//        this.setClassName(tokenType);
     }
 
     public boolean isPrimitive() {

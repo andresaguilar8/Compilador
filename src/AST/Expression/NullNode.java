@@ -12,7 +12,6 @@ public class NullNode extends LiteralOperandNode {
 
     @Override
     public Type check() {
-        System.out.println("nulazo");
         return new ReferenceType(new Token("idClase", "null", 0));
     }
 

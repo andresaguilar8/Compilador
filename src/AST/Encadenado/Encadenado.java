@@ -1,4 +1,4 @@
-package AST.Access;
+package AST.Encadenado;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
@@ -24,6 +24,10 @@ public abstract class Encadenado {
 
     public abstract boolean isAssignable();
 
+    public Token getToken() {
+        return this.token;
+    }
+
     public void setIsNotAssignable() {
         this.isAssignable = false;
     }
@@ -31,4 +35,6 @@ public abstract class Encadenado {
     public Encadenado getEncadenado() {
         return this.encadenado;
     }
+
+    public abstract boolean isCallable();
 }

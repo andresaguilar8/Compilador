@@ -36,7 +36,6 @@ public class StaticMethodAccessNode extends AccessNode {
             else
                 return this.encadenado.check(staticMethodType);
         }
-
         return staticMethodType;
     }
 
@@ -64,5 +63,10 @@ public class StaticMethodAccessNode extends AccessNode {
     @Override
     public boolean isAssignable() {
         return false;
+    }
+
+    @Override
+    public boolean isCallable() {
+        return true;
     }
 }

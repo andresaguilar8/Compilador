@@ -39,4 +39,9 @@ public class ThisAccessNode extends AccessNode {
     public boolean isAssignable() {
         return this.encadenado != null;
     }
+
+    @Override
+    public boolean isCallable() {
+        return false;
+    }
 }

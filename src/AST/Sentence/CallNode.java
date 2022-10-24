@@ -1,6 +1,7 @@
 package AST.Sentence;
 
 import AST.Access.AccessNode;
+import AST.Encadenado.Encadenado;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 
@@ -21,8 +22,17 @@ public class CallNode extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
-        System.out.println("caalll");
-        System.out.println(this.accessNode);
         this.accessNode.check();
+        Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
+        if (accessNodeEncadenado != null) {
+            while (accessNodeEncadenado.getEncadenado() != null)
+                accessNodeEncadenado = accessNodeEncadenado.getEncadenado();
+            if (!accessNodeEncadenado.isCallable())
+                throw new SemanticExceptionSimple(accessNodeEncadenado.getToken(), "llamada incorrecta");
+        }
+        else
+            if (!accessNode.isCallable())
+                throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
     }
+
 }

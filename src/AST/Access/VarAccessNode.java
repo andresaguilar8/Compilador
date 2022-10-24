@@ -16,6 +16,11 @@ public class VarAccessNode extends AccessNode {
     }
 
     @Override
+    public boolean isCallable() {
+        return false;
+    }
+
+    @Override
     public Type check() throws SemanticExceptionSimple {
         Type varType;
         String varName = this.token.getLexeme();
@@ -27,7 +32,6 @@ public class VarAccessNode extends AccessNode {
                 varType = SymbolTable.getInstance().retrieveLocalVarType(varName);
             else {
                 ConcreteClass methodClass = currentMethod.getMethodClass();
-//                (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
                     if (SymbolTable.getInstance().isAttribute(varName, methodClass)) {
                         if (!SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
                             varType = SymbolTable.getInstance().retrieveAttribute(varName, methodClass);
@@ -41,16 +45,10 @@ public class VarAccessNode extends AccessNode {
                             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable local ni un parametro del metodo " + "\"" + currentMethod.getMethodName() + "\"" );
             }
         if (this.encadenado != null) {
-            System.out.println("var " + this.token.getLexeme() + " tiene encadenado");
-            System.out.println(varType.getClassName() + "juj");
-//            if (varType.isPrimitive())
-//                throw new SemanticExceptionSimple(this.token, varName + " no es de tipo clase y tiene un encadenado");
-//            Type encadenadoType = this.encadenado.check(varType);
             if (!varType.isPrimitive())
                 return this.encadenado.check(varType);
             else
                 throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado es un tipo primitivo");
-//            return this.encadenado.check(varType);
         }
         return varType;
     }

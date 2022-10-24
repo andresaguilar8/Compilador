@@ -1,5 +1,6 @@
 package AST.Access;
 
+import AST.Encadenado.Encadenado;
 import AST.Expression.OperandNode;
 import LexicalAnalyzer.Token;
 
@@ -26,4 +27,6 @@ public abstract class AccessNode extends OperandNode {
     public void setIsNotAssignable() {
         this.isAssignable = false;
     }
+
+    public abstract boolean isCallable();
 }

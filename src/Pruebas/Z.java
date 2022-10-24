@@ -1,6 +1,6 @@
 package Pruebas;
 
-public interface Z extends Y{
+public interface Z{
 
-    void metodoz();
+
 }

@@ -1,7 +1,7 @@
 package AST.Sentence;
 
 import AST.Access.AccessNode;
-import AST.Access.Encadenado;
+import AST.Encadenado.Encadenado;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;

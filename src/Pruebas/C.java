@@ -1,7 +1,7 @@
 package Pruebas;
 
-public interface C   {
+public class C {
 
-
+    public int a2;
 
 }

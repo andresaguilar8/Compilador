@@ -1,4 +1,4 @@
-package AST.Access;
+package AST.Encadenado;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
@@ -25,7 +25,6 @@ public class VarEncadenada extends Encadenado {
                 throw new SemanticExceptionSimple(this.token, "una interfaz no tiene atributos");
             if (!SymbolTable.getInstance().isAttribute(this.token.getLexeme(), concreteClass))
                 throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable de instancia de la clase " + concreteClass.getClassName());
-            System.out.println(concreteClass.getClassName() + SymbolTable.getInstance().getCurrentClass().getClassName());
             if (!SymbolTable.getInstance().getCurrentClass().getClassName().equals(concreteClass.getClassName()))
                 if (concreteClass.getAttributes().get(this.token.getLexeme()).getVisibility().equals("private"))
                     throw new SemanticExceptionSimple(this.token,  "la variable " + this.token.getLexeme() + " esta declarada como privada");
@@ -36,9 +35,6 @@ public class VarEncadenada extends Encadenado {
                 else
                     throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado retorna un tipo primitivo");
         }
-
-//        if (this.encadenado != null && !leftSideType.isPrimitive())
-//            return this.encadenado.check(cadVarType);
         else
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " el lado izquierdo del encadenado retorna un tipo primitivo");
         return cadVarType;
@@ -52,6 +48,11 @@ public class VarEncadenada extends Encadenado {
     @Override
     public boolean isAssignable() {
         return true;
+    }
+
+    @Override
+    public boolean isCallable() {
+        return false;
     }
 
 }

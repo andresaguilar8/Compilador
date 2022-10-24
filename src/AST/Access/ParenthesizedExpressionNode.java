@@ -28,4 +28,9 @@ public class ParenthesizedExpressionNode extends AccessNode {
     public boolean isAssignable() {
         return false;
     }
+
+    @Override
+    public boolean isCallable() {
+        return false;
+    }
 }

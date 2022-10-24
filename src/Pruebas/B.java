@@ -1,22 +1,12 @@
 package Pruebas;
 
-public class B implements Y{
+public class B extends C{
 
-    public X x;
-    public Y y;
-    public B b;
+    private int a2;
 
-
-
-    @Override
-    public void metodoY() {
-
+    void metodo() {
+        this.a2 = '2';
     }
 
-
-    public void metodox() {
-    A a = new A();
-    //a.a = new A();
-    if (a != new A());
-    }
+    int m2(){return 3;}
 }

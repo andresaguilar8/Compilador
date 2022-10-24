@@ -1,6 +1,9 @@
 package SyntacticAnalyzer;
 
 import AST.Access.*;
+import AST.Encadenado.Encadenado;
+import AST.Encadenado.LlamadaEncadenada;
+import AST.Encadenado.VarEncadenada;
 import AST.Expression.*;
 import AST.Sentence.*;
 import LexicalAnalyzer.LexicalAnalyzer;

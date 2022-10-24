@@ -20,7 +20,4 @@ public class BooleanNode extends LiteralOperandNode {
         System.out.print(this.token.getLexeme());
     }
 
-    public void setType() {
-
-    }
 }

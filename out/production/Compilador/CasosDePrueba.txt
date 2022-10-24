@@ -1,26 +1,14 @@
+class A {
 
-
-class X {
-
-    public int z;
-    private Y y;
-
-    int m() {
-        Z.z().x;
+    int m1(A a){
+        this.m1(this);
     }
-    static void main() {}
-}
-class Z {
-    public X x;
-    static Z z() {
-    }
-}
-class Y {
-
-    public int x;
-
-    int getX(){
+    B m23() {
 
     }
-
+    static void main(){}
 }
+class B{
+    int m2() {}
+}
+
