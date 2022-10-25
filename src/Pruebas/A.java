@@ -2,31 +2,30 @@ package Pruebas;
 
 public class A implements X{
 
-    private A a;
-    B b;
-    private int x;
-    Y y;
-    Z z;
+    public X x;
 
-    static A met() {
-        //if (a ==  b);
-        A.met().metodox();
-        return new A();
+    void metodo() {
+        this.x = (X) new B();
     }
 
 
-    @Override
-    public void metodox() {
-        x = m23().m2();
-    }
+//    @Override
+//    public void metodox() {
+//        x = m23().m2();
+//    }
 
     public B m23() {
         return null;
     }
     public void metodoY() {
 
-        if (y == z) ;
-        if (z == y) ;
+//        if (y == z) ;
+//        if (z == y) ;
+
+    }
+
+    @Override
+    public void metodox() {
 
     }
 }

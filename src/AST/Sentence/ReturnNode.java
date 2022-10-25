@@ -29,10 +29,18 @@ public class ReturnNode extends SentenceNode {
         Type expressionType = this.expressionNode.check();
         Method method = SymbolTable.getInstance().getCurrentMethod();
         Type returnMethodType = method.getReturnType();
+        //todo acomodar esto, lo rompi
+        if (returnMethodType.equals("void") && !(expressionType == null))
+            if (!expressionType.equals("void"))
+                throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno " );
+        if (!(expressionType == null)) {
+        if (expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
+            throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno");
         if (!expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
             throw new SemanticExceptionSimple(this.token, "El metodo " + method.getMethodName() + " no tiene un tipo de retorno");
         if (!expressionType.isCompatibleWithType(returnMethodType))
             throw new SemanticExceptionSimple(this.token, "El metodo debe retornar una expresion de tipo " + returnMethodType.getClassName());
+    }
     }
 
 }

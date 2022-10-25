@@ -1,6 +1,6 @@
 package Pruebas;
 
-public class B extends C{
+public class B implements Z{
 
     private int a2;
 
@@ -8,5 +8,4 @@ public class B extends C{
         this.a2 = '2';
     }
 
-    int m2(){return 3;}
 }

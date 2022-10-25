@@ -1,7 +1,6 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-
 import java.util.Arrays;
 
 public class ReferenceType extends Type {

@@ -36,8 +36,8 @@ public class AssignmentNode extends SentenceNode {
         Type rightSideAssignmentType = this.rightSide.check();
         if (!rightSideAssignmentType.isCompatibleWithType(leftSideType))
             throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo de la asignacion " + "(" + leftSideType.getClassName() + ") no conforma con el tipo " + rightSideAssignmentType.getClassName());
-        if (!bothSidesAreCompatibleWithOperand(leftSideType, rightSideAssignmentType))
-            throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo y del lado derecho de la asignación no son compatibles con el operador " + this.token.getLexeme());
+        if (!bothSidesAreCompatibleWithOperator(leftSideType, rightSideAssignmentType))
+            throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo y del lado derecho de la asignación no son compatibles con el operador de asignacion " + this.token.getLexeme());
     }
 
     private boolean leftSideIsAssignable() {
@@ -56,7 +56,7 @@ public class AssignmentNode extends SentenceNode {
             return leftSide.isAssignable();
     }
 
-    private boolean bothSidesAreCompatibleWithOperand(Type leftSideAssignmentType, Type rightSideAssignmentType) {
+    private boolean bothSidesAreCompatibleWithOperator(Type leftSideAssignmentType, Type rightSideAssignmentType) {
         String operator = this.token.getLexeme();
         return leftSideAssignmentType.isCompatibleWithOperator(operator) && rightSideAssignmentType.isCompatibleWithOperator(operator);
     }

@@ -36,13 +36,11 @@ public class PrimitiveType extends Type {
             else
                 if (Arrays.asList("=", "==", "!=").contains(operator) && this.getClassName().equals("char"))
                     return true;
-                //todo puede que falten cosas
         return false;
     }
 
     @Override
     public boolean isCompatibleWithType(Type typeToCompareWith) {
-        System.out.println("comparo " +typeToCompareWith.getClassName() + " con " + this.className);
         if (!typeToCompareWith.isPrimitive())
             return false;
         if (this.className.equals("int"))
@@ -54,6 +52,5 @@ public class PrimitiveType extends Type {
         if (this.className.equals("void"))
             return typeToCompareWith.getClassName().equals("void");
         return false;
-            //todo terminar
     }
 }

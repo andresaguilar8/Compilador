@@ -13,7 +13,8 @@ public class EmptyExpressionNode extends ExpressionNode {
 
     @Override
     public Type check() throws SemanticExceptionSimple {
-        return new PrimitiveType(new Token("pr_void", "void", this.token.getLineNumber()));
+//        return new PrimitiveType(new Token("pr_void", "void", this.token.getLineNumber()));
+        return null;
     }
 
     @Override

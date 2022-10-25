@@ -1,9 +1,12 @@
 class A {
 
     int m1(A a){
-        this.m1(this);
+        var x = 3;
+        var y = (false == 3);
+        if (true != y);
     }
-    B m23() {
+
+    void m23() {
 
     }
     static void main(){}
