@@ -20,13 +20,6 @@ public class LocalVarDeclarationNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        System.out.print("variable: " + this.token.getLexeme() + " con expresion: ");
-        this.expressionNode.printExpression();
-        System.out.println();
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
         Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
         if (!SymbolTable.getInstance().isMethodParameter(this.token.getLexeme(), currentMethod)) {

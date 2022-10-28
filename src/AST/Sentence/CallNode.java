@@ -15,14 +15,7 @@ public class CallNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        System.out.println("la expresion del call node es: ");
-        this.accessNode.printExpression();
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
-        this.accessNode.check();
         Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
         if (accessNodeEncadenado != null) {
             while (accessNodeEncadenado.getEncadenado() != null)
@@ -33,6 +26,7 @@ public class CallNode extends SentenceNode {
         else
             if (!accessNode.isCallable())
                 throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
+        this.accessNode.check();
     }
 
 }

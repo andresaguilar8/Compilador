@@ -14,32 +14,18 @@ public class ReturnNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        if (this.expressionNode != null) {
-            System.out.print(this.token.getLexeme() + " con expresion: ");
-            this.expressionNode.printExpression();
-            System.out.println();
-        }
-        else
-            System.out.println(this.token.getLexeme() + " sin expresion");
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
         Type expressionType = this.expressionNode.check();
         Method method = SymbolTable.getInstance().getCurrentMethod();
         Type returnMethodType = method.getReturnType();
-        //todo acomodar esto en el informe (capaz)
-        if (returnMethodType.equals("void") && (expressionType != null))
-            if (!expressionType.equals("void"))
-                throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno");
-        if ((expressionType != null)) {
-//            if (expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
-//                throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno");
-            if (!expressionType.getClassName().equals("void") && returnMethodType.getClassName().equals("void"))
-                throw new SemanticExceptionSimple(this.token, "El metodo " + method.getMethodName() + " no tiene un tipo de retorno");
-            if (!expressionType.isCompatibleWithType(returnMethodType))
+        if (expressionType == null && !returnMethodType.getClassName().equals("void"))
                 throw new SemanticExceptionSimple(this.token, "El metodo debe retornar una expresion de tipo " + returnMethodType.getClassName());
+        if (expressionType != null) {
+            if (!expressionType.isCompatibleWithType(returnMethodType))
+                if (!returnMethodType.getClassName().equals("void"))
+                    throw new SemanticExceptionSimple(this.token, "El metodo debe retornar una expresion de tipo " + returnMethodType.getClassName());
+                else
+                    throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno");
         }
     }
 

@@ -17,12 +17,6 @@ public class WhileNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        System.out.println("while con condicion: " + this.condition + " y la/las sentencias es/son: ");
-        this.sentence.printSentence();
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
         Type conditionType = this.condition.check();
         if (conditionType != null)

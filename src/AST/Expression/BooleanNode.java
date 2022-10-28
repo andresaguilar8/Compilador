@@ -15,9 +15,4 @@ public class BooleanNode extends LiteralOperandNode {
         return new PrimitiveType(new Token("pr_boolean","boolean",0));
     }
 
-    @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
-
 }

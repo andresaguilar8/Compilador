@@ -15,8 +15,4 @@ public class CharNode extends LiteralOperandNode {
         return new PrimitiveType(new Token("pr_char","char",0));
     }
 
-    @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
 }

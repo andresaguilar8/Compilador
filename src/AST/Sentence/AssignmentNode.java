@@ -19,14 +19,6 @@ public class AssignmentNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        this.leftSide.printExpression();
-        System.out.print(token.getLexeme());
-        this.rightSide.printExpression();
-        System.out.println();
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
         Type leftSideType;
         if (this.leftSideIsAssignable())

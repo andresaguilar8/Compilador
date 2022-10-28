@@ -25,17 +25,6 @@ public class ThisAccessNode extends AccessNode {
     }
 
     @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme() + " de tipo clase " + this.className);
-        if (this.encadenado != null) {
-            System.out.print(" y tiene encadenado: ");
-            encadenado.printExpression();
-        }
-        else
-            System.out.print(" y no tiene encadenado");
-    }
-
-    @Override
     public boolean isAssignable() {
         return this.encadenado != null;
     }

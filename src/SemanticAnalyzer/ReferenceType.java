@@ -57,8 +57,10 @@ public class ReferenceType extends Type {
                         return true;
                 }
                 else {
-                    //comparo interfaz con clase
+                    //comparo interface con clase
                     ConcreteClass comparingConcreteClass = SymbolTable.getInstance().getConcreteClass(typeToCompareWith.getClassName());
+                    if (comparingConcreteClass.getClassName().equals("Object"))
+                        return true;
                     if (comparingConcreteClass.hasAncestorInterface(thisClassInterface.getClassName()))
                         return true;
                 }

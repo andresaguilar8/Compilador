@@ -19,31 +19,21 @@ public class LlamadaEncadenada extends Encadenado {
     @Override
     public Type check(Type leftSideType) throws SemanticExceptionSimple {
         Type accessMethodType;
-        if (!leftSideType.isPrimitive()) {
-            Class classOrInterface = SymbolTable.getInstance().getClass(leftSideType.getClassName());
-//            ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(leftSideType.getClassName());
-            if (!classOrInterface.getMethods().containsKey(this.token.getLexeme()))
-                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es metodo un de " + classOrInterface.getClassName());
-            else {
-                Method method = classOrInterface.getMethods().get(this.token.getLexeme());
-                if (method.getParametersList().size() > 0 || this.expressionNodesList != null)
-                    this.checkArguments(method);
-                accessMethodType = method.getReturnType();
-                if (this.encadenado != null) {
-                    if (accessMethodType.isPrimitive())
-                        throw new SemanticExceptionSimple(this.token, "el metodo " + "\"" + this.token.getLexeme() + "\"" + " debe retornar un tipo que no sea int, boolean, char, ni void");
-                    return this.encadenado.check(accessMethodType);
-                }
+        Class classOrInterface = SymbolTable.getInstance().getClass(leftSideType.getClassName());
+        if (!classOrInterface.getMethods().containsKey(this.token.getLexeme()))
+            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es metodo un de " + classOrInterface.getClassName());
+        else {
+            Method method = classOrInterface.getMethods().get(this.token.getLexeme());
+            if (method.getParametersList().size() > 0 || this.expressionNodesList != null)
+                this.checkArguments(method);
+            accessMethodType = method.getReturnType();
+            if (this.encadenado != null) {
+                if (accessMethodType.isPrimitive())
+                    throw new SemanticExceptionSimple(this.token, "el metodo " + "\"" + this.token.getLexeme() + "\"" + " debe retornar un tipo no primitivo porque tiene un encadenado");
+                return this.encadenado.check(accessMethodType);
             }
         }
-        else
-            throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado es un tipo primitivo");
         return accessMethodType;
-    }
-
-    @Override
-    public void printExpression() {
-        System.out.println(" llamada a metodo: " + this.token.getLexeme());
     }
 
     @Override

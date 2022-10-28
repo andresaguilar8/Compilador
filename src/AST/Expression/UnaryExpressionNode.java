@@ -23,10 +23,4 @@ public class UnaryExpressionNode extends ExpressionNode {
             throw new SemanticExceptionSimple(this.token, "El operador " + this.token.getLexeme() + " no es compatible con el tipo " + operandType.getClassName());
     }
 
-    @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-        operandNode.printExpression();
-    }
-
 }

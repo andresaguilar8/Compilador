@@ -41,9 +41,4 @@ public class ConstructorAccess extends AccessNode {
         return constructorType;
     }
 
-    @Override
-    public void printExpression() {
-
-    }
-
 }

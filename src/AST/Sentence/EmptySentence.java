@@ -10,12 +10,6 @@ public class EmptySentence extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
-
     }
 }

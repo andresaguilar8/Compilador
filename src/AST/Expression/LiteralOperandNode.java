@@ -11,6 +11,4 @@ public abstract class LiteralOperandNode extends OperandNode {
 
     public abstract Type check();
 
-    public abstract void printExpression();
-
 }

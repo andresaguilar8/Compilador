@@ -33,6 +33,10 @@ public class VarAccessNode extends AccessNode {
             else {
                 ConcreteClass methodClass = currentMethod.getMethodClass();
                     if (SymbolTable.getInstance().isAttribute(varName, methodClass)) {
+                        Attribute attribute = methodClass.getAttributes().get(this.token.getLexeme());
+                        if (attribute.isInherited())
+                            if (!SymbolTable.getInstance().isPublicAttribute(this.token.getLexeme(), methodClass))
+                                throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " tiene visibilidad privada y es un atributo heredado");
                         if (!SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static"))
                             varType = SymbolTable.getInstance().retrieveAttribute(varName, methodClass);
                         else
@@ -52,12 +56,5 @@ public class VarAccessNode extends AccessNode {
         }
         return varType;
     }
-
-
-    @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
-
 
 }

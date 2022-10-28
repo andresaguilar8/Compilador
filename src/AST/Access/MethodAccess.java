@@ -54,12 +54,6 @@ public class MethodAccess extends AccessNode {
     }
 
     @Override
-    public void printExpression() {
-        System.out.print("acceso a metodo");
-        System.out.println();
-    }
-
-    @Override
     public boolean isAssignable() {
         return this.encadenado != null;
     }

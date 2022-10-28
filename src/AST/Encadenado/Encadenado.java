@@ -20,8 +20,6 @@ public abstract class Encadenado {
 
     public abstract Type check(Type type) throws SemanticExceptionSimple;
 
-    public abstract void printExpression();
-
     public abstract boolean isAssignable();
 
     public Token getToken() {

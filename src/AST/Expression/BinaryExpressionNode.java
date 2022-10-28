@@ -35,11 +35,4 @@ public class BinaryExpressionNode extends ExpressionNode {
                 throw new SemanticExceptionSimple(this.token, "El operador " + this.token.getLexeme() + " no es compatible con el tipo " + leftSideTypeExpression.getClassName());
     }
 
-    @Override
-    public void printExpression() {
-        this.leftSide.printExpression();
-        System.out.print(this.token.getLexeme());
-        this.rightSide.printExpression();
-    }
-
 }

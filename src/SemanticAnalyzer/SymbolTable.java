@@ -1,9 +1,7 @@
 package SemanticAnalyzer;
 
 import AST.Sentence.BlockNode;
-import AST.Sentence.SentenceNode;
 import LexicalAnalyzer.Token;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -49,46 +47,6 @@ public class SymbolTable {
             this.interfacesTable.put(interfaceToInsert.getClassName(), interfaceToInsert);
         } else
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToInsert.getToken(), "El nombre " + interfaceToInsert.getClassName() + " ya esta declarado"));
-    }
-
-    public void imprimirTablaDeSimbolos() {
-        for (Interface interfaceToPrint: this.interfacesTable.values()) {
-            System.out.println();
-            System.out.println("Interface: "+interfaceToPrint.getClassName());
-            System.out.print("Metodos: ");
-            for (Method method: interfaceToPrint.getMethods().values())
-                System.out.print(method.getMethodName());
-            System.out.println();
-        }
-
-        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
-            System.out.println();
-            System.out.println("Clase: "+concreteClass.getClassName());
-            System.out.print("Atributos: ");
-            for (Attribute attribute: concreteClass.getAttributes().values())
-                System.out.print(attribute.getAttributeName() + ", ");
-            System.out.println();
-            System.out.println("Metodos: ");
-            for (Method method: concreteClass.getMethods().values()){
-                System.out.print("El metodo: " + "\"" + method.getMethodName() + "\"" + " retorna: " + method.getReturnTypeString());
-                if (method.getParametersList().size() > 0) {
-                    System.out.print(" sus parametros son: ");
-                    for (Parameter p : method.getParametersList())
-                        System.out.print(p.getParameterName() + " de tipo: " + p.getParameterType() + "");
-                    System.out.println();
-                }
-                else
-                    System.out.println(" y no tiene parametros ");
-                if (method.getPrincipalBlock() != null) {
-                    if (method.getPrincipalBlock().getSentencesList().size() > 0)
-                        System.out.println("Sentencias del metodo " + "\"" + method.getMethodName() + "\"" + ": "+method.getPrincipalBlock().getSentencesList().size());
-                    for (SentenceNode sentenceNode : method.getPrincipalBlock().getSentencesList())
-                        sentenceNode.printSentence();
-                    System.out.println();
-                }
-            }
-            System.out.println();
-        }
     }
 
     public Class getCurrentClass() {
@@ -164,7 +122,6 @@ public class SymbolTable {
             for (Method method : concreteClass.getMethods().values()) {
                 this.currentMethod = method;
                 if (!method.isChecked()) {
-                    System.out.println("chequeo metodo " + method.getMethodName() + " en clase " + currentClass.getClassName());
                     if (method.getPrincipalBlock() != null) {
                         this.setCurrentBlock(method.getPrincipalBlock());
                         method.getPrincipalBlock().check();
@@ -199,16 +156,17 @@ public class SymbolTable {
     }
 
     public boolean isAttribute(String varName, ConcreteClass concreteClass) {
+        if (concreteClass.getAttributes().containsKey(varName))
+            return true;
+        return false;
+    }
+
+    public boolean isPublicAttribute(String varName, ConcreteClass concreteClass) {
         if (concreteClass.getAttributes().containsKey(varName)) {
             Attribute attribute = concreteClass.getAttributes().get(varName);
-            System.out.println(varName + " es heredado: "+ attribute.isInherited() + " en clase: "+concreteClass.getClassName());
-            if (attribute.isInherited())
-                return attribute.getVisibility().equals("public");
-            else
-                return true;
+            return attribute.getVisibility().equals("public");
         }
         return false;
-
     }
 
     public Type retrieveAttribute(String varName, ConcreteClass concreteClass) {

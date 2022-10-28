@@ -56,11 +56,6 @@ public class StaticMethodAccessNode extends AccessNode {
     }
 
     @Override
-    public void printExpression() {
-
-    }
-
-    @Override
     public boolean isAssignable() {
         return false;
     }

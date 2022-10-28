@@ -15,8 +15,4 @@ public class NullNode extends LiteralOperandNode {
         return new ReferenceType(new Token("idClase", "null", 0));
     }
 
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
-
 }

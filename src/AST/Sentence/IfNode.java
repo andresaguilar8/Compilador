@@ -17,14 +17,6 @@ public class IfNode extends SentenceNode {
         this.sentence = sentence;
     }
 
-    @Override
-    public void printSentence() {
-        System.out.print(this.token.getLexeme() + " condicion: ");
-        this.condition.printExpression();
-        System.out.println(" sentencia: ");
-        this.sentence.printSentence();
-    }
-
     public void setElseSentence(SentenceNode elseSentence) {
         this.elseSentence = elseSentence;
     }

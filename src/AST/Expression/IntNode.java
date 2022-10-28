@@ -10,10 +10,6 @@ public class IntNode extends LiteralOperandNode {
         super(token);
     }
 
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
-
     public Type check() {
         return new PrimitiveType(new Token("pr_int","int",0));
     }

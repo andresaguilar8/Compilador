@@ -63,7 +63,6 @@ public class MainModule {
 
             SymbolTable.getInstance().checkDeclarations();
             SymbolTable.getInstance().consolidate();
-//            SymbolTable.getInstance().imprimirTablaDeSimbolos();
 
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());

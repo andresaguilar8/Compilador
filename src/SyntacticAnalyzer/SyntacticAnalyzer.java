@@ -407,7 +407,6 @@ public class SyntacticAnalyzer {
 
     private Token tipoAsignacion() throws LexicalException, SyntacticException, IOException {
         Token asignacionToken;
-        //todo testear esto
         if (this.currentToken.getTokenId().equals("=")) {
             asignacionToken = this.currentToken;
             this.match("=");

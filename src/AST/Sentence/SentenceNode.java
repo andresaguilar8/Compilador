@@ -11,8 +11,6 @@ public abstract class SentenceNode {
         this.token = token;
     }
 
-    public abstract void printSentence();
-
     public abstract void check() throws SemanticExceptionSimple;
 
 }

@@ -1,6 +1,6 @@
 ///[Error:A|7]
 
-//suma entre tipo int y boolean
+//A deberia ser una clase y f un metodo estatico
 class B {
 
     void m() {
@@ -10,7 +10,5 @@ class B {
 
 interface A  {
 
-    void f() {
-
-    }
+    void f();
 }

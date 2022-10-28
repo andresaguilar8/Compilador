@@ -15,9 +15,4 @@ public class StringNode extends LiteralOperandNode {
         return new ReferenceType(new Token("idClase", "String", 0));
     }
 
-    @Override
-    public void printExpression() {
-        System.out.print(this.token.getLexeme());
-    }
-
 }

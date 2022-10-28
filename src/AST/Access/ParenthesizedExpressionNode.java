@@ -20,11 +20,6 @@ public class ParenthesizedExpressionNode extends AccessNode {
     }
 
     @Override
-    public void printExpression() {
-        this.expression.printExpression();
-    }
-
-    @Override
     public boolean isAssignable() {
         return false;
     }

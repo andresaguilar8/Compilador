@@ -7,7 +7,7 @@ class B {
 
     void m() {
         var x = new A();
-        x.f().m().y;
+        x = x.f().m().y;
     }
 
     static void main() {}

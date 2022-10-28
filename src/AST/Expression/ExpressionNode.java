@@ -14,8 +14,6 @@ public abstract class ExpressionNode {
 
     public abstract Type check() throws SemanticExceptionSimple;
 
-    public abstract void printExpression();
-
     public Token getToken() {
         return this.token;
     }

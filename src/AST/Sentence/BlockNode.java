@@ -42,12 +42,6 @@ public class BlockNode extends SentenceNode {
     }
 
     @Override
-    public void printSentence() {
-        for (SentenceNode sentenceNode: this.sentencesList)
-            System.out.println(sentenceNode);
-    }
-
-    @Override
     public void check() throws SemanticExceptionSimple {
         SymbolTable.getInstance().setCurrentBlock(this);
         for (SentenceNode sentenceNode: this.sentencesList)
