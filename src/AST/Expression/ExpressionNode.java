@@ -4,6 +4,8 @@ import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
+import java.io.IOException;
+
 public abstract class ExpressionNode {
 
     protected Token token;
@@ -17,5 +19,7 @@ public abstract class ExpressionNode {
     public Token getToken() {
         return this.token;
     }
+
+    public abstract void generateCode() throws IOException;
 
 }

@@ -2,6 +2,9 @@ package AST.Expression;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
+
+import java.io.IOException;
 
 public class BinaryExpressionNode extends ExpressionNode {
 
@@ -33,6 +36,24 @@ public class BinaryExpressionNode extends ExpressionNode {
                 throw new SemanticExceptionSimple(this.token, "El operador " + this.token.getLexeme() + " no es compatible con el tipo " + rightSideTypeExpression.getClassName());
             else
                 throw new SemanticExceptionSimple(this.token, "El operador " + this.token.getLexeme() + " no es compatible con el tipo " + leftSideTypeExpression.getClassName());
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+        this.leftSide.generateCode();
+        this.rightSide.generateCode();
+        String expressionOperator = this.token.getLexeme();
+
+        switch (expressionOperator) {
+            case "+": {
+                Traductor.getInstance().gen("ADD");
+                break;
+            }
+            //todo terminar casos
+            case "=": {
+
+            }
+        }
     }
 
 }

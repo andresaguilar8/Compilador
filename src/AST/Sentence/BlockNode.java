@@ -5,6 +5,7 @@ import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -60,5 +61,10 @@ public class BlockNode extends SentenceNode {
 
     public BlockNode getAncestorBlock() {
         return this.ancestorBlock;
+    }
+
+    public void generateCode() throws IOException {
+        for (SentenceNode sentenceNode: this.sentencesList)
+            sentenceNode.generateCode();
     }
 }

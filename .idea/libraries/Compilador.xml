@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="Compilador">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/src/Compilador.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>

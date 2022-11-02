@@ -3,6 +3,9 @@ package SemanticAnalyzer;
 import AST.Sentence.BlockNode;
 import AST.Sentence.LocalVarDeclarationNode;
 import LexicalAnalyzer.Token;
+import Traductor.Traductor;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -166,5 +169,16 @@ public class Method {
 
     public ConcreteClass getMethodClass() {
         return SymbolTable.getInstance().getConcreteClass(this.className);
+    }
+
+    public void generateCode() throws IOException {
+        Traductor.getInstance().gen("LOADFP");
+        Traductor.getInstance().gen("LOADSP");
+        Traductor.getInstance().gen("STOREFP");
+
+        if (this.principalBlock != null)
+            this.principalBlock.generateCode();
+
+        //todo chequear si el metodo tiene retorno
     }
 }

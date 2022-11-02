@@ -4,7 +4,9 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 import SemanticAnalyzer.Class;
+import Traductor.Traductor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class LlamadaEncadenada extends Encadenado {
@@ -34,6 +36,16 @@ public class LlamadaEncadenada extends Encadenado {
             }
         }
         return accessMethodType;
+    }
+
+    public void generateCode() throws IOException {
+        System.out.println("genero codigo llamada encadenada");
+        if (this.token.getLexeme().equals("printIln")) {
+            expressionNodesList.get(0).generateCode();
+            Traductor.getInstance().gen("IPRINT");
+            Traductor.getInstance().gen("PRNLN");
+        }
+
     }
 
     @Override

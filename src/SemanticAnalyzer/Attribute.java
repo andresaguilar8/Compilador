@@ -8,6 +8,7 @@ public class Attribute {
     private Token attributeToken;
     private Type attributeType;
     private boolean isInherited;
+    private int offset;
 
     public Attribute(Token attributeToken, Type attributeType, String visibility) {
         this.attributeToken = attributeToken;
@@ -22,6 +23,10 @@ public class Attribute {
 
     public Token getAttributeToken() {
         return this.attributeToken;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public void checkDeclaration() {

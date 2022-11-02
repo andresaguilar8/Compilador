@@ -3,6 +3,8 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 
+import java.io.IOException;
+
 public class UnaryExpressionNode extends ExpressionNode {
 
     private ExpressionNode operandNode;
@@ -21,6 +23,11 @@ public class UnaryExpressionNode extends ExpressionNode {
             return operandType;
         else
             throw new SemanticExceptionSimple(this.token, "El operador " + this.token.getLexeme() + " no es compatible con el tipo " + operandType.getClassName());
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
 }

@@ -5,6 +5,8 @@ import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
+import java.io.IOException;
+
 public class EmptyExpressionNode extends ExpressionNode {
 
     public EmptyExpressionNode(Token token) {
@@ -14,6 +16,11 @@ public class EmptyExpressionNode extends ExpressionNode {
     @Override
     public Type check() throws SemanticExceptionSimple {
         return null;
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
 }

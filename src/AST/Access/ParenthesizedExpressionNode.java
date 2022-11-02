@@ -5,6 +5,8 @@ import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
+import java.io.IOException;
+
 public class ParenthesizedExpressionNode extends AccessNode {
 
     protected ExpressionNode expression;
@@ -17,6 +19,11 @@ public class ParenthesizedExpressionNode extends AccessNode {
     public Type check() throws SemanticExceptionSimple {
         Type expressionType = this.expression.check();
         return expressionType;
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
     @Override

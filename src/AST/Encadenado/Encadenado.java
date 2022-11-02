@@ -4,6 +4,8 @@ import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
+import java.io.IOException;
+
 public abstract class Encadenado {
 
     protected Token token;
@@ -35,4 +37,7 @@ public abstract class Encadenado {
     }
 
     public abstract boolean isCallable();
+
+    public void generateCode() throws IOException {
+    }
 }

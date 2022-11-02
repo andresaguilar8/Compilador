@@ -3,6 +3,8 @@ package AST.Access;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 
+import java.io.IOException;
+
 public class ConstructorAccess extends AccessNode {
 
     public ConstructorAccess(Token token) {
@@ -39,6 +41,11 @@ public class ConstructorAccess extends AccessNode {
             else
                 throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase concreta declarada");
         return constructorType;
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
 }

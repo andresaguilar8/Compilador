@@ -3,7 +3,9 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class StaticMethodAccessNode extends AccessNode {
@@ -53,6 +55,16 @@ public class StaticMethodAccessNode extends AccessNode {
             if (!parameterType.isCompatibleWithType(expressionType))
                 throw new SemanticExceptionSimple(this.methodNameToken, "tipos incompatibles en el pasaje de parametros");
         }
+    }
+
+    public void generateCode() throws IOException {
+        if (this.methodNameToken.getLexeme().equals("printIln")) {
+            expressionNodesList.get(0).generateCode();
+            Traductor.getInstance().gen("IPRINT");
+            Traductor.getInstance().gen("PRNLN");
+        }
+        if (this.encadenado != null)
+            encadenado.generateCode();
     }
 
     @Override

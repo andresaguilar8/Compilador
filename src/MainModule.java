@@ -6,6 +6,8 @@ import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
+import Traductor.Traductor;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,6 +18,8 @@ public class MainModule {
 
 
     public static void main (String [] args) {
+
+        String outputName = args[1];
 
         File file = new File(args[0]);
         FileHandler fileHandler = null;
@@ -67,16 +71,23 @@ public class MainModule {
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());
 
+
+
+
         } catch (IOException | LexicalException | SyntacticException | SemanticException | SemanticExceptionSimple exception) {
             System.out.println(exception.getMessage());
         }
 
         try {
             SymbolTable.getInstance().checkSentences();
+            Traductor.getInstance().setOutputFileName(outputName);
+            Traductor.getInstance().traducir();
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");
         } catch (SemanticExceptionSimple exceptionSimple) {
             System.out.println(exceptionSimple.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

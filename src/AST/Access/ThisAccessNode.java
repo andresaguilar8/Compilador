@@ -3,6 +3,8 @@ package AST.Access;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 
+import java.io.IOException;
+
 public class ThisAccessNode extends AccessNode {
 
     private String className;
@@ -22,6 +24,11 @@ public class ThisAccessNode extends AccessNode {
             return encadenado.check(new ReferenceType(new Token("idClase", this.className, 0)));
         else
             return new ReferenceType(currentClass.getToken());
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
     @Override

@@ -3,6 +3,8 @@ package AST.Access;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 
+import java.io.IOException;
+
 public class VarAccessNode extends AccessNode {
 
     public VarAccessNode(Token token) {
@@ -55,6 +57,11 @@ public class VarAccessNode extends AccessNode {
                 throw new SemanticExceptionSimple(this.token, "el lado izquierdo del encadenado es un tipo primitivo");
         }
         return varType;
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
 }

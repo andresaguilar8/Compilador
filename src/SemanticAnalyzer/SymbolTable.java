@@ -2,6 +2,8 @@ package SemanticAnalyzer;
 
 import AST.Sentence.BlockNode;
 import LexicalAnalyzer.Token;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -16,6 +18,7 @@ public class SymbolTable {
     private Token EOFToken;
     private ArrayList<SemanticError> semanticErrorsList;
     private BlockNode currentBlock;
+    private Method mainMethod;
 
     public static SymbolTable getInstance() {
         if (instance == null)
@@ -204,8 +207,10 @@ public class SymbolTable {
             if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnTypeString().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
                 if (this.mainMethodIsDeclared == true)
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(methodToCheck.getMethodToken(), "Ya existe un metodo main estatico y sin parametros"));
-                else
+                else {
                     this.mainMethodIsDeclared = true;
+                    this.mainMethod = methodToCheck;
+                }
     }
 
     public void consolidate() throws SemanticException {
@@ -401,7 +406,10 @@ public class SymbolTable {
         Parameter parameterS = new Parameter(parameterSToken, printSlnMethodParameterType);
         printSlnMethod.insertParameter(parameterS);
         concreteClass.insertMethod(printSlnMethod);
-        }
+    }
 
+    public Method getMainMethod() {
+        return this.mainMethod;
+    }
 }
 

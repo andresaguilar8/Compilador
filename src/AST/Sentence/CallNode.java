@@ -5,6 +5,8 @@ import AST.Encadenado.Encadenado;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 
+import java.io.IOException;
+
 public class CallNode extends SentenceNode {
 
     private AccessNode accessNode;
@@ -27,6 +29,11 @@ public class CallNode extends SentenceNode {
             if (!accessNode.isCallable())
                 throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
         this.accessNode.check();
+    }
+
+    public void generateCode() throws IOException {
+        System.out.println(this.token);
+        this.accessNode.generateCode();
     }
 
 }

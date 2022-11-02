@@ -1,20 +1,7 @@
-class A extends B {
+class A {
 
-    public X y;
-
-    void met() {
-
-        var x = new Object();
-
-
+    static void main() {
+        System.printIln(4+8);
     }
-
-static void main(){}
-}
-
-interface X {}
-
-class B {
-    public int z;
 
 }

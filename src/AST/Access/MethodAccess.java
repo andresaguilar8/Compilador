@@ -3,6 +3,8 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MethodAccess extends AccessNode {
@@ -31,6 +33,11 @@ public class MethodAccess extends AccessNode {
                 return this.encadenado.check(concreteClass.getMethods().get(this.token.getLexeme()).getReturnType());
             else
                 throw new SemanticExceptionSimple(this.token, "el metodo " + this.token.getLexeme() + " retorna un tipo primitivo y tiene un encadenado");
+    }
+
+    @Override
+    public void generateCode() throws IOException {
+
     }
 
     private void checkArguments(Method method) throws SemanticExceptionSimple {
