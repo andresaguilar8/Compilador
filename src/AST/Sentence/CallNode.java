@@ -18,17 +18,19 @@ public class CallNode extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
-        Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
-        if (accessNodeEncadenado != null) {
+        this.accessNode.check();
+//        Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
+        if (this.accessNode.getEncadenado() != null) {
+            Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
             while (accessNodeEncadenado.getEncadenado() != null)
                 accessNodeEncadenado = accessNodeEncadenado.getEncadenado();
+            System.out.println(accessNodeEncadenado.isCallable());
             if (!accessNodeEncadenado.isCallable())
                 throw new SemanticExceptionSimple(accessNodeEncadenado.getToken(), "llamada incorrecta");
         }
-        else
-            if (!accessNode.isCallable())
-                throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
-        this.accessNode.check();
+        System.out.println(accessNode.getToken());
+//        if (!accessNode.isCallable())
+//            throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
     }
 
     public void generateCode() throws IOException {

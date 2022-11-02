@@ -18,6 +18,11 @@ public class ParenthesizedExpressionNode extends AccessNode {
 
     public Type check() throws SemanticExceptionSimple {
         Type expressionType = this.expression.check();
+        if (this.encadenado != null) {
+            if (expressionType.isPrimitive())
+                throw new SemanticExceptionSimple(this.expression.getToken(), "El lado izquierdo del encadenado es un tipo primitivo");
+            return this.encadenado.check(expressionType);
+        }
         return expressionType;
     }
 

@@ -1,7 +1,9 @@
 class A {
 
-    static void main() {
-        System.printIln(4+8);
-    }
+
+ static void main() {
+    System.printIln(3);
+    Object.debugPrint(7+9);
+ }
 
 }

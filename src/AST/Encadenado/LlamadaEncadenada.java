@@ -69,8 +69,11 @@ public class LlamadaEncadenada extends Encadenado {
             parameterType = parametersList.get(index).getParameterType();
             expressionType = expressionNode.check();
             index += 1;
-            if (!parameterType.isCompatibleWithType(expressionType))
-                throw new SemanticExceptionSimple(this.token, "tipos incompatibles en el pasaje de parametros");
+            System.out.println(parameterType.getClassName());
+            System.out.println(expressionType.getClassName());
+            if (!parameterType.getClassName().equals(expressionType.getClassName()))
+                if (!parameterType.isCompatibleWithType(expressionType))
+                    throw new SemanticExceptionSimple(this.token, "tipos incompatibles en el pasaje de parametros");
         }
     }
 

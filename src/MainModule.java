@@ -71,9 +71,6 @@ public class MainModule {
             if (SymbolTable.getInstance().getSemanticErrorsList().size() > 0)
                 throw new SemanticException(SymbolTable.getInstance().getSemanticErrorsList());
 
-
-
-
         } catch (IOException | LexicalException | SyntacticException | SemanticException | SemanticExceptionSimple exception) {
             System.out.println(exception.getMessage());
         }

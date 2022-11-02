@@ -49,6 +49,8 @@ public class PrimitiveType extends Type {
             return typeToCompareWith.getClassName().equals("boolean");
         if (this.className.equals("char"))
             return typeToCompareWith.getClassName().equals("char");
+        if (this.className.equals("String"))
+            return typeToCompareWith.getClassName().equals("String");
         return false;
     }
 }

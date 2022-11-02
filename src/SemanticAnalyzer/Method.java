@@ -21,6 +21,7 @@ public class Method {
     private boolean isInherited;
     private boolean principalBlockIsChecked;
     private String className;
+    private boolean codeIsGenerated;
 
     public Method(Token methodToken, String staticScope, Type methodReturnType, String className) {
         this.staticScope = staticScope;
@@ -31,6 +32,7 @@ public class Method {
         this.isInherited = false;
         this.principalBlockIsChecked = false;
         this.className = className;
+        this.codeIsGenerated = false;
     }
 
     public void insertParameter(Parameter parameterToInsert) {
@@ -172,13 +174,27 @@ public class Method {
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen("LOADFP");
+        Traductor.getInstance().gen(this.getMethodName() + ": LOADFP");
         Traductor.getInstance().gen("LOADSP");
         Traductor.getInstance().gen("STOREFP");
 
-        if (this.principalBlock != null)
+        if (this.principalBlock != null) {
             this.principalBlock.generateCode();
-
+            this.codeIsGenerated = true;
+        }
         //todo chequear si el metodo tiene retorno
+    }
+
+    public boolean codeIsGenerated() {
+        return this.codeIsGenerated;
+    }
+
+    public String getMethodLabel() {
+        //todo seguro hay q acomodarlo
+        return this.getMethodName();
+    }
+
+    public void setCodeGenerated() {
+        this.codeIsGenerated = true;
     }
 }

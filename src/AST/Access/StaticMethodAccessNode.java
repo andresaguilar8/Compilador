@@ -63,6 +63,12 @@ public class StaticMethodAccessNode extends AccessNode {
             Traductor.getInstance().gen("IPRINT");
             Traductor.getInstance().gen("PRNLN");
         }
+        if (this.methodNameToken.getLexeme().equals("debugPrint")) {
+            expressionNodesList.get(0).generateCode();
+            Traductor.getInstance().gen("IPRINT");
+            Traductor.getInstance().gen("PRNLN");
+        }
+
         if (this.encadenado != null)
             encadenado.generateCode();
     }

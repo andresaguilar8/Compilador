@@ -40,7 +40,7 @@ public class Traductor {
     }
 
     private void generateMainMethodCall() throws IOException {
-        String mainMethodLabel = SymbolTable.getInstance().getMainMethod().toString();
+        String mainMethodLabel = SymbolTable.getInstance().getMainMethod().getMethodLabel();
         bufferedWriter.write(".CODE");
         bufferedWriter.newLine();
         bufferedWriter.write("PUSH " + mainMethodLabel);
@@ -54,7 +54,9 @@ public class Traductor {
     private void generateClassCode() throws IOException {
         for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values()) {
             for (Method method: concreteClass.getMethods().values()) {
-                method.generateCode();
+                if (!method.codeIsGenerated())
+                    method.generateCode();
+                method.setCodeGenerated();
             }
         }
     }

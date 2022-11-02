@@ -6,10 +6,15 @@ public class Parameter {
 
     private Token parameterToken;
     private Type parameterType;
+    private int offset;
 
     public Parameter(Token parameterToken, Type parameterType) {
         this.parameterToken = parameterToken;
         this.parameterType = parameterType;
+    }
+
+    public int getOffset() {
+        return this.offset;
     }
 
     public String getParameterName() {

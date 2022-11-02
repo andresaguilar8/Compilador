@@ -20,7 +20,7 @@ public class MethodAccess extends AccessNode {
     public Type check() throws SemanticExceptionSimple {
         ConcreteClass concreteClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
         if (!this.classContainsThisMethod(concreteClass))
-            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un de la clase " + concreteClass.getClassName());
+            throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un metodo de la clase " + concreteClass.getClassName());
         Method method = concreteClass.getMethods().get(this.token.getLexeme());
         if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static") && !method.getStaticHeader().equals("static"))
             throw new SemanticExceptionSimple(this.token, "no se puede llamar a un metodo dinamico dentro de un metodo con alcance estatico");
