@@ -15,6 +15,5 @@ public abstract class SentenceNode {
 
     public abstract void check() throws SemanticExceptionSimple;
 
-    protected void generateCode() throws IOException {
-    }
+    protected abstract void generateCode() throws IOException;
 }

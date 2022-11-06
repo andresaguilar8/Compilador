@@ -2,6 +2,7 @@ package AST.Expression;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
 
 import java.io.IOException;
 
@@ -27,7 +28,11 @@ public class UnaryExpressionNode extends ExpressionNode {
 
     @Override
     public void generateCode() throws IOException {
-
+        this.operandNode.generateCode();
+        if (this.token.getLexeme().equals("!"))
+            Traductor.getInstance().gen("NOT");
+        if (this.token.getLexeme().equals("-"))
+            Traductor.getInstance().gen("NEG");
     }
 
 }

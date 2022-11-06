@@ -3,6 +3,8 @@ package AST.Sentence;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 
+import java.io.IOException;
+
 public class EmptySentence extends SentenceNode {
 
     public EmptySentence(Token token) {
@@ -11,5 +13,10 @@ public class EmptySentence extends SentenceNode {
 
     @Override
     public void check() throws SemanticExceptionSimple {
+    }
+
+    @Override
+    protected void generateCode() throws IOException {
+
     }
 }

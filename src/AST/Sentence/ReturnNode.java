@@ -4,6 +4,8 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 
+import java.io.IOException;
+
 public class ReturnNode extends SentenceNode {
 
     private ExpressionNode expressionNode;
@@ -27,6 +29,11 @@ public class ReturnNode extends SentenceNode {
                 else
                     throw new SemanticExceptionSimple(this.token, "El metodo no tiene retorno");
         }
+    }
+
+    @Override
+    protected void generateCode() throws IOException {
+
     }
 
 }

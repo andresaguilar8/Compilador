@@ -1,43 +1,163 @@
 .CODE
-PUSH main
-CALL
-HALT
-main: LOADFP
-LOADSP
-STOREFP
-PUSH 3
-IPRINT
-PRNLN
-debugPrint: LOADFP
-LOADSP
-STOREFP
-read: LOADFP
-LOADSP
-STOREFP
-printBln: LOADFP
-LOADSP
-STOREFP
-printCln: LOADFP
-LOADSP
-STOREFP
-printI: LOADFP
-LOADSP
-STOREFP
-printIln: LOADFP
-LOADSP
-STOREFP
-printC: LOADFP
-LOADSP
-STOREFP
-println: LOADFP
-LOADSP
-STOREFP
-printB: LOADFP
-LOADSP
-STOREFP
-printSln: LOADFP
-LOADSP
-STOREFP
-printS: LOADFP
-LOADSP
-STOREFP
+                              PUSH mainA
+                              CALL
+                              HALT
+simple_malloc:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              LOADHL
+                              DUP
+                              PUSH 1
+                              ADD
+                              STORE 4
+                              LOAD 3
+                              ADD
+                              STOREHL
+                              STOREFP
+                              RET 1
+.DATA
+VT_ClaseA:
+                              DW metodoA
+VT_ClaseString:
+                              NOP
+VT_ClaseObject:
+                              NOP
+VT_ClaseSystem:
+                              NOP
+.CODE
+mainA:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              RMEM 1
+                              PUSH 1               ; Tamaño del CIR
+                              PUSH simple_malloc
+                              CALL
+                              DUP
+                              PUSH VT_ClaseA       ; Se apila la dirección del comienzo de la virtual table
+                              STOREREF 0           ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)
+                              DUP
+                              LOADFP
+                              LOADSP
+                              STOREFP
+
+                              STOREFP
+                              RET 0
+                              PUSH 2
+                              PUSH printIlnSystem
+                              CALL
+                              LOAD 0 ; Se apila el valor de la variable local o parametro a
+                              DUP ; Se duplica el this porque al hacer LOADREF se pierde
+                              LOADREF 0 ; Se carga la VT
+                              LOADREF 2
+                              CALL
+                              FMEM 1
+                              STOREFP
+                              RET 0
+metodoA:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              PUSH 55
+                              PUSH printIlnSystem
+                              CALL
+                              PUSH 5522
+                              PUSH printIlnSystem
+                              CALL
+                              FMEM 0
+                              STOREFP
+                              RET 0
+debugPrintObject:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+Constructor_A:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+Constructor_String:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+Constructor_Object:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+readSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+printBlnSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printClnSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printISystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printIlnSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              LOAD 3
+                              IPRINT
+                              PRNLN
+                              STOREFP
+                              RET 1
+printCSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printlnSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+printBSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printSlnSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+printSSystem:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 1
+Constructor_System:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0

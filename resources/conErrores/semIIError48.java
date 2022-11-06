@@ -1,4 +1,4 @@
-//[Error:m3|8]
+///[Error:m3|8]
 
 class A {
     public B a1;

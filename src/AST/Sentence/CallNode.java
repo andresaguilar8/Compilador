@@ -4,6 +4,7 @@ import AST.Access.AccessNode;
 import AST.Encadenado.Encadenado;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
+import Traductor.Traductor;
 
 import java.io.IOException;
 
@@ -19,7 +20,6 @@ public class CallNode extends SentenceNode {
     @Override
     public void check() throws SemanticExceptionSimple {
         this.accessNode.check();
-//        Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
         if (this.accessNode.getEncadenado() != null) {
             Encadenado accessNodeEncadenado = this.accessNode.getEncadenado();
             while (accessNodeEncadenado.getEncadenado() != null)
@@ -28,14 +28,26 @@ public class CallNode extends SentenceNode {
             if (!accessNodeEncadenado.isCallable())
                 throw new SemanticExceptionSimple(accessNodeEncadenado.getToken(), "llamada incorrecta");
         }
-        System.out.println(accessNode.getToken());
-//        if (!accessNode.isCallable())
-//            throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
+        else {
+            if (!accessNode.isCallable())
+                throw new SemanticExceptionSimple(accessNode.getToken(), "llamada incorrecta");
+        }
     }
 
     public void generateCode() throws IOException {
-        System.out.println(this.token);
-        this.accessNode.generateCode();
+//        System.out.println(this.token);
+//        if (accessNode.getEncadenado() == null) {
+            this.accessNode.generateCode();
+//            if (!accessNode.ge)
+
+//        }
+//        else
+//        if (accessNode.getEncadenado() != null) {
+//            this.accessNode.getEncadenado().generateCode();
+//        }
+        //Traductor.getInstance().gen("CALL");
+        //todo
+        // encadenado
     }
 
 }

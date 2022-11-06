@@ -1,4 +1,4 @@
-//[Error:return|19]
+///[Error:return|19]
 
 class A {
 

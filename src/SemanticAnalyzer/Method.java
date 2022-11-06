@@ -22,6 +22,8 @@ public class Method {
     private boolean principalBlockIsChecked;
     private String className;
     private boolean codeIsGenerated;
+    private int offset;
+    private boolean hasOffset;
 
     public Method(Token methodToken, String staticScope, Type methodReturnType, String className) {
         this.staticScope = staticScope;
@@ -33,6 +35,7 @@ public class Method {
         this.principalBlockIsChecked = false;
         this.className = className;
         this.codeIsGenerated = false;
+        this.hasOffset = false;
     }
 
     public void insertParameter(Parameter parameterToInsert) {
@@ -174,7 +177,8 @@ public class Method {
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen(this.getMethodName() + ": LOADFP");
+        Traductor.getInstance().gen(this.getMethodLabel() + ":");
+        Traductor.getInstance().gen("LOADFP");
         Traductor.getInstance().gen("LOADSP");
         Traductor.getInstance().gen("STOREFP");
 
@@ -182,7 +186,34 @@ public class Method {
             this.principalBlock.generateCode();
             this.codeIsGenerated = true;
         }
+        else
+            generateCodeForPredefinedMethods();
+
+        Traductor.getInstance().gen("STOREFP");
+        Traductor.getInstance().gen("RET "+ this.getReturnOffset());
         //todo chequear si el metodo tiene retorno
+    }
+
+    private void generateCodeForPredefinedMethods() throws IOException {
+        if (this.getMethodName().equals("printIln")) {
+            Traductor.getInstance().gen("LOAD 3");
+            Traductor.getInstance().gen("IPRINT");
+            Traductor.getInstance().gen("PRNLN");
+        }
+//        if (this.getMethodName().equals("debugPrint")) {
+//            Traductor.getInstance().gen("LOAD 3");
+//            Traductor.getInstance().gen("IPRINT");
+//            Traductor.getInstance().gen("PRNLN");
+//        }
+    }
+
+    private int getReturnOffset() {
+        //todo
+        //si el metodo es dinamico, retornar lista + 1 por el this
+        if (parametersList != null)
+            return this.parametersList.size();
+        else
+            return 0; //todo chequear
     }
 
     public boolean codeIsGenerated() {
@@ -191,10 +222,26 @@ public class Method {
 
     public String getMethodLabel() {
         //todo seguro hay q acomodarlo
-        return this.getMethodName();
+        return this.getMethodName() + this.className;
     }
 
     public void setCodeGenerated() {
         this.codeIsGenerated = true;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
+
+    public void setOffsetIsSet() {
+        this.hasOffset = true;
+    }
+
+    public boolean hasOffset() {
+        return this.hasOffset;
     }
 }

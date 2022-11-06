@@ -1,9 +1,22 @@
 class A {
 
+    //public int y;
 
- static void main() {
-    System.printIln(3);
-    Object.debugPrint(7+9);
- }
+    static void main() {
+        var a = new A();
+        //var x = a;
+        System.printIln(2);
+        //a.metodo();
+    }
+
+    void metodo() {
+        System.printIln(55);
+        System.printIln(5522);
+    }
+
 
 }
+
+
+
+

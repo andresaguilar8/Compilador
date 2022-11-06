@@ -45,13 +45,19 @@ public class BinaryExpressionNode extends ExpressionNode {
         String expressionOperator = this.token.getLexeme();
 
         switch (expressionOperator) {
+
+            //todo terminar casos
+            case "==": {
+                Traductor.getInstance().gen("EQ");
+                break;
+            }
+            case "!=": {
+                Traductor.getInstance().gen("NE");
+                break;
+            }
             case "+": {
                 Traductor.getInstance().gen("ADD");
                 break;
-            }
-            //todo terminar casos
-            case "=": {
-
             }
         }
     }

@@ -1,7 +1,6 @@
 package Traductor;
 
 import SemanticAnalyzer.ConcreteClass;
-import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SymbolTable;
 
 import java.io.BufferedWriter;
@@ -14,8 +13,7 @@ public class Traductor {
     private BufferedWriter bufferedWriter;
     private String outputFileName;
     private File outputFile;
-    private String codeMode;
-
+    private String currentCodeMode;
     private static Traductor instance = null;
 
     private Traductor() {
@@ -32,8 +30,10 @@ public class Traductor {
         outputFile = new File(outputFileName);
         FileWriter fileWriter = new FileWriter(outputFile);
         bufferedWriter = new BufferedWriter(fileWriter);
-        //bufferedWriter.write(".CODE");
+        this.currentCodeMode = ".";
+        this.setCodeMode();
         this.generateMainMethodCall();
+        this.initSimpleMallocRoutine();
         this.generateClassCode();
         //...
         bufferedWriter.close();
@@ -41,24 +41,34 @@ public class Traductor {
 
     private void generateMainMethodCall() throws IOException {
         String mainMethodLabel = SymbolTable.getInstance().getMainMethod().getMethodLabel();
-        bufferedWriter.write(".CODE");
-        bufferedWriter.newLine();
-        bufferedWriter.write("PUSH " + mainMethodLabel);
-        bufferedWriter.newLine();
-        bufferedWriter.write("CALL");
-        bufferedWriter.newLine();
-        bufferedWriter.write("HALT");
-        bufferedWriter.newLine();
+        this.gen("PUSH " + mainMethodLabel);
+        this.gen("CALL");
+        this.gen("HALT");
+    }
+
+    private void initSimpleMallocRoutine() throws IOException {
+        this.gen("simple_malloc:");
+        this.gen("LOADFP");
+        this.gen("LOADSP");
+        this.gen("STOREFP");
+        this.gen("LOADHL");
+        this.gen("DUP");
+        this.gen("PUSH 1");
+        this.gen("ADD");
+        this.gen("STORE 4");
+        this.gen("LOAD 3");
+        this.gen("ADD");
+        this.gen("STOREHL");
+        this.gen("STOREFP");
+        this.gen("RET 1");
     }
 
     private void generateClassCode() throws IOException {
-        for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values()) {
-            for (Method method: concreteClass.getMethods().values()) {
-                if (!method.codeIsGenerated())
-                    method.generateCode();
-                method.setCodeGenerated();
-            }
-        }
+        for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values())
+            concreteClass.generateVT();
+        for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values())
+            concreteClass.generateCode();
+
     }
 
     public void setOutputFileName(String outputFileName) {
@@ -66,14 +76,31 @@ public class Traductor {
     }
 
     public void gen(String instruction) throws IOException {
-        bufferedWriter.write(instruction);
-        bufferedWriter.newLine();
+        if (instruction.contains(":")) {
+            bufferedWriter.write(instruction);
+            bufferedWriter.newLine();
+        }
+        else {
+            bufferedWriter.write("                              " + instruction);
+            bufferedWriter.newLine();
+        }
     }
 
 
     //todo va a haber un metodo para setar modo .code .data .stack y
+    public void setDataMode() throws IOException {
+        if (!this.currentCodeMode.equals(".DATA")) {
+            this.bufferedWriter.write(".DATA");
+            this.bufferedWriter.newLine();
+            this.currentCodeMode = ".DATA";
+        }
+    }
+
     public void setCodeMode() throws IOException {
-//        this.codeMode = ".CODE";
-        this.bufferedWriter.write(".CODE");
+        if (!this.currentCodeMode.equals(".CODE")) {
+            this.bufferedWriter.write(".CODE");
+            this.bufferedWriter.newLine();
+            this.currentCodeMode = ".CODE";
+        }
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class LlamadaEncadenada extends Encadenado {
 
     private ArrayList<ExpressionNode> expressionNodesList;
+    private Method method;
 
     public LlamadaEncadenada(Token token, ArrayList<ExpressionNode> expressionNodesList) {
         super(token);
@@ -25,7 +26,7 @@ public class LlamadaEncadenada extends Encadenado {
         if (!classOrInterface.getMethods().containsKey(this.token.getLexeme()))
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es metodo un de " + classOrInterface.getClassName());
         else {
-            Method method = classOrInterface.getMethods().get(this.token.getLexeme());
+            method = classOrInterface.getMethods().get(this.token.getLexeme());
             if (method.getParametersList().size() > 0 || this.expressionNodesList != null)
                 this.checkArguments(method);
             accessMethodType = method.getReturnType();
@@ -39,13 +40,32 @@ public class LlamadaEncadenada extends Encadenado {
     }
 
     public void generateCode() throws IOException {
-        System.out.println("genero codigo llamada encadenada");
-        if (this.token.getLexeme().equals("printIln")) {
-            expressionNodesList.get(0).generateCode();
-            Traductor.getInstance().gen("IPRINT");
-            Traductor.getInstance().gen("PRNLN");
-        }
 
+        if (!method.getStaticHeader().equals("static")) {
+            if (!method.getReturnType().getClassName().equals("void")) {
+                Traductor.getInstance().gen("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
+                Traductor.getInstance().gen("SWAP 1");
+            }
+
+            //genero codigo de parametros
+            if (this.expressionNodesList != null)
+                for (ExpressionNode expressionNode: this.expressionNodesList) {
+                    expressionNode.generateCode();  //genero codigo de cada parametro
+                    Traductor.getInstance().gen("SWAP");
+                }
+
+            Traductor.getInstance().gen("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
+            Traductor.getInstance().gen("LOADREF 0 ; Se carga la VT");
+            Traductor.getInstance().gen("LOADREF " + method.getOffset());
+            System.out.println(method.getMethodName() + " offset: " + method.getOffset());
+            Traductor.getInstance().gen("CALL");
+    }
+    else {
+        //metodo es estatico
+    }
+
+        if (this.getEncadenado() != null)
+            encadenado.generateCode();
     }
 
     @Override

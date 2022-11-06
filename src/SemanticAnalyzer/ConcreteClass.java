@@ -1,6 +1,9 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
+import Traductor.Traductor;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -10,12 +13,20 @@ public class ConcreteClass extends Class {
     private Hashtable<String, Attribute> attributes;
     private Constructor classConstructor;
     private boolean hasRepeatedInterfaces;
+    private boolean methodFffsetsGenerated;
+    private boolean attributeOffsetsGenerated;
+    private int cirSize;
+    private int vtSize;
 
     public ConcreteClass(Token classToken, Token ancestorToken) {
         super(classToken);
         this.attributes = new Hashtable<>();
         this.ancestorClassToken = ancestorToken;
         this.hasRepeatedInterfaces = false;
+        this.attributeOffsetsGenerated = false;
+        this.methodFffsetsGenerated = false;
+        this.cirSize = 1; //el 0 es para la VT
+        this.vtSize = 0;
     }
 
     public Hashtable<String, Attribute> getAttributes() {
@@ -220,5 +231,163 @@ public class ConcreteClass extends Class {
         return SymbolTable.getInstance().interfaceIsDeclared(interfaceName);
     }
 
+    public boolean hasAttributeOffsetsGenerated() {
+        return this.attributeOffsetsGenerated;
+    }
+
+    public boolean hasMethodOffsetsGenerated() {
+        return this.methodFffsetsGenerated;
+    }
+
+    public int getCirSize() {
+        return this.cirSize;
+    }
+
+    public int getVtSize() {
+        return this.vtSize;
+    }
+
+    public void generateOffsets() {
+        this.generateAttributesOffsets();
+        this.generateMethodsOffsets();
+        this.methodFffsetsGenerated = true;
+    }
+
+    public String getVTLabel() {
+        return "VT_Clase" + this.getClassName();
+    }
+
+    private void generateAttributesOffsets() {
+        if (this.getAncestorClass() != null)
+            if (!this.getAncestorClass().getClassName().equals("Object")) {
+                if (!this.getAncestorClass().hasAttributeOffsetsGenerated()) //todo chequear capaz es ver si tiene los offset de atributos generados
+                    this.getAncestorClass().generateOffsets();
+            }
+        if (this.getAncestorClass() != null) {
+            for (Attribute ancestorAttribute: this.getAncestorClass().getAttributes().values()) {
+                for (Attribute attribute: this.attributes.values())
+                    if (ancestorAttribute.getAttributeName().equals(attribute.getAttributeName())) {
+                        attribute.setOffset(ancestorAttribute.getOffset());
+                    }
+            }
+            this.cirSize = this.getAncestorClass().getCirSize();
+        }
+        for (Attribute attribute: this.attributes.values()) {
+            if (!attribute.isInherited()) {
+                attribute.setOffset(this.getCirSize());
+                this.cirSize += 1;
+            }
+        }
+        this.attributeOffsetsGenerated = true;
+    }
+
+    public void generateMethodsOffsets() {
+        if (this.getAncestorClass() != null)
+            if (!this.getAncestorClass().hasMethodOffsetsGenerated())
+                this.getAncestorClass().generateMethodsOffsets();
+        if (this.getAncestorClass() != null) {
+            for (Method ancestorMethod: this.getAncestorClass().getMethods().values())
+                for (Method method: this.methods.values())
+                    if (ancestorMethod.getMethodName().equals(method.getMethodName())) {
+                        method.setOffset(ancestorMethod.getOffset());
+                        method.setOffsetIsSet();
+                    }
+            this.vtSize = this.getAncestorClass().getVtSize();
+        }
+        for (Method method: this.methods.values()) {
+            if (!method.hasOffset()) {
+                method.setOffset(this.vtSize);
+                method.setOffsetIsSet();
+                this.vtSize += 1;
+            }
+        }
+        this.methodFffsetsGenerated = true;
+    }
+
+    public void generateVT() throws IOException {
+        Traductor.getInstance().setDataMode();
+        Traductor.getInstance().gen("VT_Clase" + this.getClassName() + ":");
+
+        String instruction = "DW";
+        boolean classHasDynamicMethod = false;
+        for (Method method: this.methods.values()) {
+            //todo acomodar, metodos estaticos van a ir en la VT??
+            System.out.println("cant metodos clase: " + this.getClassName() + " : " + this.methods.size());
+            if (!method.getStaticHeader().equals("static")) {
+                classHasDynamicMethod = true;
+                instruction += " " + method.getMethodLabel() + ",";
+            }
+        }
+        if (!classHasDynamicMethod) {
+            instruction = instruction.substring(0, instruction.length() - 2);
+            Traductor.getInstance().gen("NOP");
+        }
+        else {
+            instruction = instruction.substring(0, instruction.length() - 1);
+            Traductor.getInstance().gen(instruction);
+        }
+    }
+
+    public void generateCode() throws IOException {
+//        this.generateVT();
+//        String instruction = "VT_Clase" + this.getClassName() + ": DW";
+//        boolean classHasDynamicMethod = false;
+//        for (Method method: this.methods.values()) {
+////            if (!method.codeIsGenerated()) {
+//                Traductor.getInstance().setCodeMode();
+////                method.generateCode();
+//                if (!method.getStaticHeader().equals("static")) {
+//                    classHasDynamicMethod = true;
+//                    instruction += " " + method.getMethodLabel() + ",";
+//                }
+////            }
+////            method.setCodeGenerated();
+//        }
+//        Traductor.getInstance().setDataMode();
+//        if (!classHasDynamicMethod) {
+//            instruction = instruction.substring(0, instruction.length() - 4);
+//            Traductor.getInstance().gen(instruction + ":");
+//            Traductor.getInstance().gen("NOP");
+//        }
+//        else {
+//            instruction = instruction.substring(0, instruction.length() - 1);
+//            Traductor.getInstance().gen(instruction);
+//        }
+//
+////        Traductor.getInstance().setDataMode();
+////        Traductor.getInstance().gen(instruction);
+        Traductor.getInstance().setCodeMode();
+        for (Method method: this.methods.values())
+            if (!method.codeIsGenerated()) {
+                method.generateCode();
+                method.setCodeGenerated();
+            }
+
+
+
+        Traductor.getInstance().setCodeMode();
+        //todo hacer mtods dinamicos
+        this.classConstructor.generateCode();
+
+    }
+
+    public void imprimirOffsets() {
+        System.out.println("clase: " + this.getClassName() + " tiene estos atributos: " );
+        for (Attribute attribute: this.attributes.values()) {
+            System.out.println(attribute.getAttributeName() + " con offset: " + attribute.getOffset());
+        }
+    }
+
+    public void imprimirOffsetsMetodos() {
+
+        if (!this.getClassName().equals("System")) {
+            System.out.println();
+            System.out.println("clase: " + this.getClassName() + " tiene estos metodos: ");
+            for (Method method : this.methods.values()) {
+                System.out.println(method.getMethodName() + " con offset: " + method.getOffset());
+            }
+            System.out.println();
+        }
+    }
 }
 

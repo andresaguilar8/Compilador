@@ -53,4 +53,8 @@ public class Attribute {
     public boolean isInherited() {
         return this.isInherited;
     }
+
+    public int getOffset() {
+        return this.offset;
+    }
 }

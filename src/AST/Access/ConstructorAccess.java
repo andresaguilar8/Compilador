@@ -2,6 +2,7 @@ package AST.Access;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
 
 import java.io.IOException;
 
@@ -45,7 +46,23 @@ public class ConstructorAccess extends AccessNode {
 
     @Override
     public void generateCode() throws IOException {
+        ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme());
+        int CIR_Size = concreteClass.getCirSize();
 
+        Traductor.getInstance().gen("RMEM 1");
+        Traductor.getInstance().gen("PUSH " + CIR_Size + "       ; Tamaño del CIR");
+        Traductor.getInstance().gen("PUSH simple_malloc");
+        Traductor.getInstance().gen("CALL");
+        Traductor.getInstance().gen("DUP");
+        Traductor.getInstance().gen("PUSH " + concreteClass.getVTLabel() + "       ; Se apila la dirección del comienzo de la virtual table");
+        Traductor.getInstance().gen("STOREREF 0        ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)" );
+        Traductor.getInstance().gen("DUP");
+        //todo generar codigo argumentos e ir haciendo swap
+        Traductor.getInstance().gen("PUSH Constructor_" + this.token.getLexeme());
+        Traductor.getInstance().gen("CALL");
+
+        if (this.encadenado != null)
+            encadenado.generateCode();
     }
 
 }

@@ -5,6 +5,8 @@ import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
 
+import java.io.IOException;
+
 public class WhileNode extends SentenceNode {
 
     private ExpressionNode condition;
@@ -24,5 +26,10 @@ public class WhileNode extends SentenceNode {
                 this.sentence.check();
             else
                 throw new SemanticExceptionSimple(this.token, "La condicion del while debe ser de tipo primitivo boolean");
+    }
+
+    @Override
+    protected void generateCode() throws IOException {
+
     }
 }

@@ -28,7 +28,8 @@ public class ParenthesizedExpressionNode extends AccessNode {
 
     @Override
     public void generateCode() throws IOException {
-
+        this.expression.generateCode();
+        //todo encadenado
     }
 
     @Override

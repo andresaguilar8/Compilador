@@ -58,16 +58,13 @@ public class StaticMethodAccessNode extends AccessNode {
     }
 
     public void generateCode() throws IOException {
-        if (this.methodNameToken.getLexeme().equals("printIln")) {
-            expressionNodesList.get(0).generateCode();
-            Traductor.getInstance().gen("IPRINT");
-            Traductor.getInstance().gen("PRNLN");
-        }
-        if (this.methodNameToken.getLexeme().equals("debugPrint")) {
-            expressionNodesList.get(0).generateCode();
-            Traductor.getInstance().gen("IPRINT");
-            Traductor.getInstance().gen("PRNLN");
-        }
+        System.out.println("jajaa");
+        for (ExpressionNode expressionNode: expressionNodesList)
+            expressionNode.generateCode();
+        Method method = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme()).getMethod(this.methodNameToken.getLexeme());
+        Traductor.getInstance().gen("PUSH " + method.getMethodLabel());
+        Traductor.getInstance().gen("CALL");
+
 
         if (this.encadenado != null)
             encadenado.generateCode();

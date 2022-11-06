@@ -8,10 +8,12 @@ public abstract class AccessNode extends OperandNode {
 
     protected Encadenado encadenado;
     protected boolean isAssignable;
+    private boolean isLeftSide;
 
     public AccessNode(Token token) {
         super(token);
         this.isAssignable = true;
+        this.isLeftSide = false;
     }
 
     public void setEncadenado(Encadenado encadenado) {
@@ -29,4 +31,12 @@ public abstract class AccessNode extends OperandNode {
     }
 
     public abstract boolean isCallable();
+
+    public void setAsLeftSide() {
+        this.isLeftSide = true;
+    }
+
+    public boolean isLeftSide() {
+        return this.isLeftSide;
+    }
 }

@@ -1,4 +1,4 @@
-//[Error:v1|7]
+///[Error:v1|7]
 
 class A {
     void met() {

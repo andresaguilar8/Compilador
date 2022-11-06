@@ -1,6 +1,7 @@
 package SemanticAnalyzer;
 
 import AST.Sentence.BlockNode;
+import AST.Sentence.LocalVarDeclarationNode;
 import LexicalAnalyzer.Token;
 
 import java.io.IOException;
@@ -189,6 +190,19 @@ public class SymbolTable {
         return false;
     }
 
+    public LocalVarDeclarationNode retrieveLocalVar(String varName) {
+        BlockNode currentBlockAncestor = this.currentBlock;
+        if (!currentBlockAncestor.getLocalVarTable().containsKey(varName))
+            while (currentBlockAncestor.getAncestorBlock() != null) {
+                currentBlockAncestor = currentBlockAncestor.getAncestorBlock();
+                if (currentBlockAncestor.getLocalVarTable().containsKey(varName))
+                    return currentBlockAncestor.getLocalVarTable().get(varName);
+            }
+        else
+            return currentBlockAncestor.getLocalVarTable().get(varName);
+        return null;
+    }
+
     public Type retrieveLocalVarType(String varName) {
         BlockNode currentBlockAncestor = this.currentBlock;
         if (!currentBlockAncestor.getLocalVarTable().containsKey(varName))
@@ -218,6 +232,10 @@ public class SymbolTable {
             interfaceToConsolidate.consolidate();
         for (ConcreteClass classToConsolidate : this.concreteClassesTable.values())
             classToConsolidate.consolidate();
+        for (ConcreteClass concreteClass : this.concreteClassesTable.values()) {
+            concreteClass.generateOffsets();
+//            concreteClass.imprimirOffsetsMetodos();
+        }
         if (!this.mainMethodIsDeclared)
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase"));
     }
@@ -292,7 +310,7 @@ public class SymbolTable {
         Token intToken = new Token("pr_int", "int", 0);
         Type readMethodType = new PrimitiveType(intToken);
         Token readMethodToken = new Token("idMV", "read", 0);
-        Method readMethod = new Method(readMethodToken, "", readMethodType, concreteClass.getClassName());
+        Method readMethod = new Method(readMethodToken, "static", readMethodType, concreteClass.getClassName());
         concreteClass.insertMethod(readMethod);
     }
 

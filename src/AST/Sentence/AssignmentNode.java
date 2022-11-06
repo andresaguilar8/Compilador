@@ -6,6 +6,9 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
+import Traductor.Traductor;
+
+import java.io.IOException;
 
 public class AssignmentNode extends SentenceNode {
 
@@ -30,6 +33,24 @@ public class AssignmentNode extends SentenceNode {
             throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo de la asignacion " + "(" + leftSideType.getClassName() + ") no conforma con el tipo " + rightSideAssignmentType.getClassName());
         if (!bothSidesAreCompatibleWithOperator(leftSideType, rightSideAssignmentType))
             throw new SemanticExceptionSimple(this.token, "el tipo del lado izquierdo y del lado derecho de la asignación no son compatibles con el operador de asignacion " + this.token.getLexeme());
+    }
+
+    @Override
+    protected void generateCode() throws IOException {
+        //primero se genera el codigo para la expresion (parte derecha de la asignacion)
+        this.rightSide.generateCode();
+        this.leftSide.setAsLeftSide();
+        this.leftSide.generateCode();
+        if (this.token.getLexeme().equals("=")) {
+            //todo creo q no hago nada
+//            Traductor.getInstance().gen("PUSH 1 ; Se incrementa el valor de la variable en 1");
+//            Traductor.getInstance().gen("ADD");
+        }
+        if (this.token.getLexeme().equals("+=")) {
+            Traductor.getInstance().gen("PUSH 1 ; Se incrementa el valor de la variable en 1");
+            Traductor.getInstance().gen("ADD");
+        }
+
     }
 
     private boolean leftSideIsAssignable() {

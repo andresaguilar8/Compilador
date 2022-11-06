@@ -6,12 +6,16 @@ import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 import SemanticAnalyzer.Type;
+import Traductor.Traductor;
+
+import java.io.IOException;
 
 public class LocalVarDeclarationNode extends SentenceNode {
 
     private ExpressionNode expressionNode;
     private Type localVarType;
     private Token operatorToken;
+    private int offset;
 
     public LocalVarDeclarationNode(Token nodeToken, ExpressionNode expressionNode, Token operatorToken) {
         super(nodeToken);
@@ -33,6 +37,14 @@ public class LocalVarDeclarationNode extends SentenceNode {
             throw new SemanticExceptionSimple(this.token, "el nombre para la variable ya esta utilizado en un parametro");
     }
 
+    @Override
+    protected void generateCode() throws IOException {
+       // Traductor.getInstance().gen("RMEM 1 ; Se reserva espacio para una variable local");
+        //todo chequear
+        this.expressionNode.generateCode();
+        //Traductor.getInstance().gen("STORE " + this.offset + " ; Se almacena el valor de la expresion en la variable local " + this.token.getLexeme());
+    }
+
     public Type getLocalVarType() {
         return this.localVarType;
     }
@@ -47,5 +59,13 @@ public class LocalVarDeclarationNode extends SentenceNode {
 
     public Token getVarToken() {
         return this.token;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public int getOffset() {
+        return this.offset;
     }
 }
