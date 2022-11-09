@@ -16,6 +16,7 @@ public class BlockNode extends SentenceNode {
     private Hashtable<String, LocalVarDeclarationNode> localVarTable;
     private BlockNode ancestorBlock;
     private int availableLocalVarOffset;
+    private int totalVars;
 
     public BlockNode(Token token, BlockNode ancestorBlock) {
         super(token);
@@ -23,6 +24,7 @@ public class BlockNode extends SentenceNode {
         this.localVarTable = new Hashtable<>();
         this.ancestorBlock = ancestorBlock;
         this.availableLocalVarOffset = 1;
+        this.totalVars = 0;
     }
 
     public Hashtable<String, LocalVarDeclarationNode> getLocalVarTable() {
@@ -40,8 +42,10 @@ public class BlockNode extends SentenceNode {
         }
         Method currentMethod = SymbolTable.getInstance().getCurrentMethod();
         if (!currentMethod.getParametersList().contains(localVarNode.getVarName())) {
-            if (!this.localVarTable.containsKey(localVarNode.getVarName()))
+            if (!this.localVarTable.containsKey(localVarNode.getVarName())) {
                 this.localVarTable.put(localVarNode.getVarName(), localVarNode);
+                this.totalVars += 1;
+            }
             else
                 throw new SemanticExceptionSimple(localVarNode.getVarToken(), "Ya existe una variable local con nombre " + localVarNode.getVarName() + " dentro del alcance");
         }
@@ -92,6 +96,20 @@ public class BlockNode extends SentenceNode {
     }
 
     private void freeMem() throws IOException {
-        Traductor.getInstance().gen("FMEM " + ((this.availableLocalVarOffset * -1) + 1));
+//        Traductor.getInstance().gen("FMEM " + ((this.availableLocalVarOffset * -1) + 1));
+        Traductor.getInstance().gen("FMEM " + this.totalVars);
+//        getTotalVarsOfBlock
+    }
+
+    public int getTotalVarsOfBlock() {
+        return this.totalVars;
+    }
+
+    public int getTotalVars() {
+        if (this.ancestorBlock != null) {
+            return this.ancestorBlock.getTotalVars() + this.totalVars;
+        }
+        else
+            return this.totalVars;
     }
 }

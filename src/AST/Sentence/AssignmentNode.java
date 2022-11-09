@@ -38,19 +38,38 @@ public class AssignmentNode extends SentenceNode {
     @Override
     protected void generateCode() throws IOException {
         //primero se genera el codigo para la expresion (parte derecha de la asignacion)
-        this.rightSide.generateCode();
-        this.leftSide.setAsLeftSide();
-        this.leftSide.generateCode();
         if (this.token.getLexeme().equals("=")) {
-            //todo creo q no hago nada
-//            Traductor.getInstance().gen("PUSH 1 ; Se incrementa el valor de la variable en 1");
-//            Traductor.getInstance().gen("ADD");
+            this.rightSide.generateCode();
+            this.setLeftSideAsLeftSide();
+            this.leftSide.generateCode();
         }
         if (this.token.getLexeme().equals("+=")) {
-            Traductor.getInstance().gen("PUSH 1 ; Se incrementa el valor de la variable en 1");
-            Traductor.getInstance().gen("ADD");
+            //aca se va a hacer un LOAD
+            this.leftSide.generateCode();
+            this.rightSide.generateCode();
+            Traductor.getInstance().gen("ADD            ; Se realiza la suma");
+            this.setLeftSideAsLeftSide();
+            //aca se va a hacer un STORE
+            this.leftSide.generateCode();
+        }
+        if (this.token.getLexeme().equals("-=")) {
+            //aca se va a hacer un LOAD
+            this.leftSide.generateCode();
+            this.rightSide.generateCode();
+            Traductor.getInstance().gen("SUB            ; Se realiza la suma");
+            this.setLeftSideAsLeftSide();
+            //aca se va a hacer un STORE
+            this.leftSide.generateCode();
         }
 
+    }
+
+    private void setLeftSideAsLeftSide() {
+        if (this.leftSide.getEncadenado() != null) {
+            this.leftSide.getEncadenado().setAsLeftSide();
+        }
+        else
+            this.leftSide.setAsLeftSide();
     }
 
     private boolean leftSideIsAssignable() {

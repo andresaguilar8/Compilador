@@ -40,6 +40,7 @@ public class BinaryExpressionNode extends ExpressionNode {
 
     @Override
     public void generateCode() throws IOException {
+
         this.leftSide.generateCode();
         this.rightSide.generateCode();
         String expressionOperator = this.token.getLexeme();
@@ -57,6 +58,32 @@ public class BinaryExpressionNode extends ExpressionNode {
             }
             case "+": {
                 Traductor.getInstance().gen("ADD");
+                break;
+            }
+            case "<=": {
+                Traductor.getInstance().gen("LE");
+                break;
+            }
+            case ">=": {
+                Traductor.getInstance().gen("GE");
+                break;
+            }
+            case "<": {
+                Traductor.getInstance().gen("LT");
+                break;
+            }
+            case ">": {
+                Traductor.getInstance().gen("GT");
+                break;
+            }
+            //todo hacer op aritmeticas
+
+            case "||": {
+                Traductor.getInstance().gen("OR");
+                break;
+            }
+            case "&&": {
+                Traductor.getInstance().gen("AND");
                 break;
             }
         }

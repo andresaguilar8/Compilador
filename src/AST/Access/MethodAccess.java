@@ -3,6 +3,7 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 public class MethodAccess extends AccessNode {
 
     ArrayList<ExpressionNode> expressionNodesList;
+    private Method method;
 
     public MethodAccess(Token token, ArrayList<ExpressionNode> expressionNodesList) {
         super(token);
@@ -21,10 +23,10 @@ public class MethodAccess extends AccessNode {
         ConcreteClass concreteClass = (ConcreteClass) SymbolTable.getInstance().getCurrentClass();
         if (!this.classContainsThisMethod(concreteClass))
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es un metodo de la clase " + concreteClass.getClassName());
-        Method method = concreteClass.getMethods().get(this.token.getLexeme());
+        this.method = concreteClass.getMethods().get(this.token.getLexeme());
         if (SymbolTable.getInstance().getCurrentMethod().getStaticHeader().equals("static") && !method.getStaticHeader().equals("static"))
             throw new SemanticExceptionSimple(this.token, "no se puede llamar a un metodo dinamico dentro de un metodo con alcance estatico");
-        if (method.getParametersList().size() > 0)
+        if (this.method.getParametersList().size() > 0)
             this.checkArguments(method);
         if (this.encadenado == null)
             return method.getReturnType();
@@ -37,7 +39,24 @@ public class MethodAccess extends AccessNode {
 
     @Override
     public void generateCode() throws IOException {
+        Traductor.getInstance().gen("LOAD 3        ; Se apila el this");
+        if (!this.method.getReturnType().getClassName().equals("void")) {
+            Traductor.getInstance().gen("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
+            Traductor.getInstance().gen("SWAP");
+        }
+        this.generateParametersCode();
+        Traductor.getInstance().gen("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
+        Traductor.getInstance().gen("LOADREF 0 ; Se carga la VT");
+        Traductor.getInstance().gen("LOADREF " + method.getOffset());
+        Traductor.getInstance().gen("CALL");
+    }
 
+    private void generateParametersCode() throws IOException {
+        if (this.expressionNodesList != null)
+            for (int index = this.expressionNodesList.size() - 1; index >= 0; index--) {
+                this.expressionNodesList.get(index).generateCode();  //genero codigo de cada parametro
+                Traductor.getInstance().gen("SWAP");
+            }
     }
 
     private void checkArguments(Method method) throws SemanticExceptionSimple {

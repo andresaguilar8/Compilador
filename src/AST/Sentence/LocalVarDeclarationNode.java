@@ -39,10 +39,10 @@ public class LocalVarDeclarationNode extends SentenceNode {
 
     @Override
     protected void generateCode() throws IOException {
-       // Traductor.getInstance().gen("RMEM 1 ; Se reserva espacio para una variable local");
         //todo chequear
+        Traductor.getInstance().gen("RMEM 1 ; Se reserva espacio para una variable local");
         this.expressionNode.generateCode();
-        //Traductor.getInstance().gen("STORE " + this.offset + " ; Se almacena el valor de la expresion en la variable local " + this.token.getLexeme());
+        Traductor.getInstance().gen("STORE " + this.offset + " ; Se almacena el valor de la expresion en la variable local " + this.token.getLexeme());
     }
 
     public Type getLocalVarType() {

@@ -143,6 +143,21 @@ public class SymbolTable {
         return false;
     }
 
+    public Parameter retrieveParameter(String varName, Method method) {
+        boolean foundParameter = false;
+        ArrayList<Parameter> methodParameterList = method.getParametersList();
+        int listIndex = 0;
+        while (!foundParameter) {
+            Parameter parameter = methodParameterList.get(listIndex);
+            if (parameter.getParameterName().equals(varName)) {
+                foundParameter = true;
+                return parameter;
+            }
+            listIndex += 1;
+        }
+        return null;
+    }
+
     public Type retrieveParameterType(String varName, Method method) {
         boolean foundParameter = false;
         ArrayList<Parameter> methodParameterList = method.getParametersList();

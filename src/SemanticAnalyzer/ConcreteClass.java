@@ -13,10 +13,11 @@ public class ConcreteClass extends Class {
     private Hashtable<String, Attribute> attributes;
     private Constructor classConstructor;
     private boolean hasRepeatedInterfaces;
-    private boolean methodFffsetsGenerated;
+    private boolean methodOffsetsGenerated;
     private boolean attributeOffsetsGenerated;
     private int cirSize;
     private int vtSize;
+    private Hashtable<Integer, Method> methodsOffsetMap;
 
     public ConcreteClass(Token classToken, Token ancestorToken) {
         super(classToken);
@@ -24,9 +25,10 @@ public class ConcreteClass extends Class {
         this.ancestorClassToken = ancestorToken;
         this.hasRepeatedInterfaces = false;
         this.attributeOffsetsGenerated = false;
-        this.methodFffsetsGenerated = false;
+        this.methodOffsetsGenerated = false;
         this.cirSize = 1; //el 0 es para la VT
         this.vtSize = 0;
+        this.methodsOffsetMap = new Hashtable<>();
     }
 
     public Hashtable<String, Attribute> getAttributes() {
@@ -236,7 +238,7 @@ public class ConcreteClass extends Class {
     }
 
     public boolean hasMethodOffsetsGenerated() {
-        return this.methodFffsetsGenerated;
+        return this.methodOffsetsGenerated;
     }
 
     public int getCirSize() {
@@ -250,7 +252,6 @@ public class ConcreteClass extends Class {
     public void generateOffsets() {
         this.generateAttributesOffsets();
         this.generateMethodsOffsets();
-        this.methodFffsetsGenerated = true;
     }
 
     public String getVTLabel() {
@@ -282,6 +283,7 @@ public class ConcreteClass extends Class {
     }
 
     public void generateMethodsOffsets() {
+        //todo testear invocando diferentes metodos dinamicos
         if (this.getAncestorClass() != null)
             if (!this.getAncestorClass().hasMethodOffsetsGenerated())
                 this.getAncestorClass().generateMethodsOffsets();
@@ -294,81 +296,49 @@ public class ConcreteClass extends Class {
                     }
             this.vtSize = this.getAncestorClass().getVtSize();
         }
-        for (Method method: this.methods.values()) {
-            if (!method.hasOffset()) {
-                method.setOffset(this.vtSize);
-                method.setOffsetIsSet();
-                this.vtSize += 1;
+
+        for (Method method: this.getMethods().values()) {
+            if (!method.getStaticHeader().equals("static")) {
+                if (!method.hasOffset()) {
+                    method.setOffset(this.vtSize);
+                    method.setOffsetIsSet();
+                    this.vtSize += 1;
+                }
+                this.methodsOffsetMap.put(method.getOffset(), method);
             }
         }
-        this.methodFffsetsGenerated = true;
+        this.methodOffsetsGenerated = true;
     }
 
     public void generateVT() throws IOException {
         Traductor.getInstance().setDataMode();
         Traductor.getInstance().gen("VT_Clase" + this.getClassName() + ":");
-
-        String instruction = "DW";
-        boolean classHasDynamicMethod = false;
-        for (Method method: this.methods.values()) {
-            //todo acomodar, metodos estaticos van a ir en la VT??
-            System.out.println("cant metodos clase: " + this.getClassName() + " : " + this.methods.size());
-            if (!method.getStaticHeader().equals("static")) {
-                classHasDynamicMethod = true;
-                instruction += " " + method.getMethodLabel() + ",";
+        String VTInstruction = "DW";
+        if (this.methodsOffsetMap.size() != 0) {
+            //la clase tiene metodos dinamicos
+            for (int offset = 0; offset < this.methodsOffsetMap.size(); offset++) {
+                Method method = this.methodsOffsetMap.get(offset);
+                VTInstruction += " " + method.getMethodLabel() + ",";
             }
-        }
-        if (!classHasDynamicMethod) {
-            instruction = instruction.substring(0, instruction.length() - 2);
-            Traductor.getInstance().gen("NOP");
+            VTInstruction = VTInstruction.substring(0, VTInstruction.length() - 1);  //elimino la , dps del ultimo metodo
+            Traductor.getInstance().gen(VTInstruction);
         }
         else {
-            instruction = instruction.substring(0, instruction.length() - 1);
-            Traductor.getInstance().gen(instruction);
+            //la clase no tiene metodos dinamicos
+            Traductor.getInstance().gen("NOP");
         }
     }
 
     public void generateCode() throws IOException {
-//        this.generateVT();
-//        String instruction = "VT_Clase" + this.getClassName() + ": DW";
-//        boolean classHasDynamicMethod = false;
-//        for (Method method: this.methods.values()) {
-////            if (!method.codeIsGenerated()) {
-//                Traductor.getInstance().setCodeMode();
-////                method.generateCode();
-//                if (!method.getStaticHeader().equals("static")) {
-//                    classHasDynamicMethod = true;
-//                    instruction += " " + method.getMethodLabel() + ",";
-//                }
-////            }
-////            method.setCodeGenerated();
-//        }
-//        Traductor.getInstance().setDataMode();
-//        if (!classHasDynamicMethod) {
-//            instruction = instruction.substring(0, instruction.length() - 4);
-//            Traductor.getInstance().gen(instruction + ":");
-//            Traductor.getInstance().gen("NOP");
-//        }
-//        else {
-//            instruction = instruction.substring(0, instruction.length() - 1);
-//            Traductor.getInstance().gen(instruction);
-//        }
-//
-////        Traductor.getInstance().setDataMode();
-////        Traductor.getInstance().gen(instruction);
         Traductor.getInstance().setCodeMode();
         for (Method method: this.methods.values())
             if (!method.codeIsGenerated()) {
                 method.generateCode();
                 method.setCodeGenerated();
             }
-
-
-
+        //todo creo que es innecesario esto de abajo
         Traductor.getInstance().setCodeMode();
-        //todo hacer mtods dinamicos
         this.classConstructor.generateCode();
-
     }
 
     public void imprimirOffsets() {

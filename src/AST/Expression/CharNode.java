@@ -3,6 +3,7 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.Type;
+import Traductor.Traductor;
 
 import java.io.IOException;
 
@@ -19,7 +20,7 @@ public class CharNode extends LiteralOperandNode {
 
     @Override
     public void generateCode() throws IOException {
-
+        Traductor.getInstance().gen("PUSH " + this.token.getLexeme() + "           ; Se apila un caracter");
     }
 
 }

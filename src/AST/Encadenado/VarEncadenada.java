@@ -2,8 +2,13 @@ package AST.Encadenado;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
+import Traductor.Traductor;
+
+import java.io.IOException;
 
 public class VarEncadenada extends Encadenado {
+
+    protected Attribute attribute;
 
     public VarEncadenada(Token token) {
         super(token);
@@ -25,8 +30,8 @@ public class VarEncadenada extends Encadenado {
         if (!SymbolTable.getInstance().isAttribute(this.token.getLexeme(), concreteClass))
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una variable de instancia de la clase " + concreteClass.getClassName());
         else {
-            Attribute attribute = concreteClass.getAttributes().get(this.token.getLexeme());
-            if (attribute.isInherited())
+            this.attribute = concreteClass.getAttributes().get(this.token.getLexeme());
+            if (this.attribute.isInherited())
                 if (!SymbolTable.getInstance().isPublicAttribute(this.token.getLexeme(), concreteClass))
                     throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " tiene visibilidad privada y es un atributo heredado");
         }
@@ -51,5 +56,21 @@ public class VarEncadenada extends Encadenado {
     public boolean isCallable() {
         return false;
     }
+
+    @Override
+    public void generateCode() throws IOException {
+        if (!this.isLeftSide || this.encadenado != null) {
+            Traductor.getInstance().gen("LOADREF " + this.attribute.getOffset() + "       ; Se apila el valor del atributo de instancia " + this.attribute.getAttributeName());
+        }
+        else {
+            Traductor.getInstance().gen("SWAP");
+            Traductor.getInstance().gen("STOREREF " + this.attribute.getOffset() + "      ; Se guarda el valor en el atributo");
+        }
+
+        if (this.encadenado != null) {
+            this.encadenado.generateCode();
+        }
+    }
+
 
 }

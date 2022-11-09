@@ -182,6 +182,18 @@ public class Method {
         Traductor.getInstance().gen("LOADSP");
         Traductor.getInstance().gen("STOREFP");
 
+        if (this.parametersList.size() > 0) {
+            int parameterOffset;
+            if (!this.staticScope.equals("static")) //es dinamico
+                parameterOffset = 3;
+            else
+                parameterOffset = 2;
+            for (Parameter parameter : this.parametersList) {
+                parameterOffset += 1;
+                parameter.setOffset(parameterOffset);
+            }
+        }
+
         if (this.principalBlock != null) {
             this.principalBlock.generateCode();
             this.codeIsGenerated = true;
@@ -191,14 +203,23 @@ public class Method {
 
         Traductor.getInstance().gen("STOREFP");
         Traductor.getInstance().gen("RET "+ this.getReturnOffset());
-        //todo chequear si el metodo tiene retorno
+
+
     }
 
     private void generateCodeForPredefinedMethods() throws IOException {
         if (this.getMethodName().equals("printIln")) {
-            Traductor.getInstance().gen("LOAD 3");
+            Traductor.getInstance().gen("LOAD 3");   //LOAD 3 porque tiene un solo parametro
             Traductor.getInstance().gen("IPRINT");
             Traductor.getInstance().gen("PRNLN");
+        }
+        if (this.getMethodName().equals("printC")) {
+            Traductor.getInstance().gen("LOAD 3");
+            Traductor.getInstance().gen("CPRINT");
+        }
+        if (this.getMethodName().equals("printS")) {
+            Traductor.getInstance().gen("LOAD 3");
+            Traductor.getInstance().gen("SPRINT");
         }
 //        if (this.getMethodName().equals("debugPrint")) {
 //            Traductor.getInstance().gen("LOAD 3");
@@ -207,13 +228,26 @@ public class Method {
 //        }
     }
 
-    private int getReturnOffset() {
-        //todo
-        //si el metodo es dinamico, retornar lista + 1 por el this
-        if (parametersList != null)
-            return this.parametersList.size();
+    public int getStoringValueInReturnOffset() {
+        if (this.getStaticHeader().equals("static"))
+            return 3 + this.parametersList.size();
         else
-            return 0; //todo chequear
+            return 3 + this.parametersList.size() + 1;
+    }
+
+    public int getReturnOffset() {
+        //si el metodo es dinamico, retornar lista + 1 por el this
+        if (this.staticScope.equals("static")) {
+            if (parametersList != null)
+                return this.parametersList.size();
+            else
+                return 0;
+        }
+        else
+            if (parametersList != null)
+                return this.parametersList.size() + 1;
+            else
+                return 1;
     }
 
     public boolean codeIsGenerated() {
@@ -222,7 +256,7 @@ public class Method {
 
     public String getMethodLabel() {
         //todo seguro hay q acomodarlo
-        return this.getMethodName() + this.className;
+        return this.getMethodName() + "_Clase" + this.className;
     }
 
     public void setCodeGenerated() {
@@ -243,5 +277,9 @@ public class Method {
 
     public boolean hasOffset() {
         return this.hasOffset;
+    }
+
+    public boolean isStatic() {
+        return this.staticScope.equals("static");
     }
 }

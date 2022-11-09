@@ -17,6 +17,10 @@ public class Parameter {
         return this.offset;
     }
 
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     public String getParameterName() {
         return this.parameterToken.getLexeme();
     }

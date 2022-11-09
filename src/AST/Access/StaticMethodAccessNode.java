@@ -12,6 +12,7 @@ public class StaticMethodAccessNode extends AccessNode {
 
     protected Token methodNameToken;
     protected ArrayList<ExpressionNode> expressionNodesList;
+    private Method staticMethod;
 
     public StaticMethodAccessNode(Token classNameToken, Token methodNameToken, ArrayList<ExpressionNode> expressionNodesList) {
         super(classNameToken);
@@ -24,13 +25,13 @@ public class StaticMethodAccessNode extends AccessNode {
         ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme());
         if (concreteClass == null)
             throw new SemanticExceptionSimple(this.token, this.token.getLexeme() + " no es una clase concreta declarada");
-        Method staticMethod = concreteClass.getMethod(this.methodNameToken.getLexeme());
-        if (staticMethod == null)
+        this.staticMethod = concreteClass.getMethod(this.methodNameToken.getLexeme());
+        if (this.staticMethod == null)
             throw new SemanticExceptionSimple(this.methodNameToken, "El metodo " + this.methodNameToken.getLexeme() + " no esta declarado en la clase " + concreteClass.getClassName());
-        if (!staticMethod.getStaticHeader().equals("static"))
+        if (!this.staticMethod.getStaticHeader().equals("static"))
             throw new SemanticExceptionSimple(this.methodNameToken, "El metodo " + this.methodNameToken.getLexeme() + " no tiene alcance estatico");
-        Type staticMethodType = staticMethod.getReturnType();
-        if (staticMethod.getParametersList().size() > 0 || this.expressionNodesList != null)
+        Type staticMethodType = this.staticMethod.getReturnType();
+        if (this.staticMethod.getParametersList().size() > 0 || this.expressionNodesList != null)
             this.checkArguments(staticMethod);
         if (this.encadenado != null) {
             if (staticMethodType.isPrimitive())
@@ -52,22 +53,30 @@ public class StaticMethodAccessNode extends AccessNode {
             parameterType = parametersList.get(index).getParameterType();
             expressionType = expressionNode.check();
             index += 1;
-            if (!parameterType.isCompatibleWithType(expressionType))
-                throw new SemanticExceptionSimple(this.methodNameToken, "tipos incompatibles en el pasaje de parametros");
+            if (!parameterType.getClassName().equals(expressionType.getClassName()))
+                if (!parameterType.isCompatibleWithType(expressionType))
+                    throw new SemanticExceptionSimple(this.methodNameToken, "tipos incompatibles en el pasaje de parametros");
         }
     }
 
     public void generateCode() throws IOException {
-        System.out.println("jajaa");
-        for (ExpressionNode expressionNode: expressionNodesList)
-            expressionNode.generateCode();
-        Method method = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme()).getMethod(this.methodNameToken.getLexeme());
-        Traductor.getInstance().gen("PUSH " + method.getMethodLabel());
-        Traductor.getInstance().gen("CALL");
+//        Traductor.getInstance().gen("POP"); //TODO ver esto
+        if (!this.staticMethod.getReturnType().getClassName().equals("void"))
+            Traductor.getInstance().gen("RMEM 1        ; Se reserva lugar para el retorno");
 
+        this.generateParametersCode();
+
+        Traductor.getInstance().gen("PUSH " + this.staticMethod.getMethodLabel());
+        Traductor.getInstance().gen("CALL");
 
         if (this.encadenado != null)
             encadenado.generateCode();
+    }
+
+    private void generateParametersCode() throws IOException {
+        if (this.expressionNodesList != null)
+            for (int index = this.expressionNodesList.size() - 1; index >= 0; index--)
+                this.expressionNodesList.get(index).generateCode();  //genero codigo de cada parametro
     }
 
     @Override

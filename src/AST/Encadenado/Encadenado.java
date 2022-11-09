@@ -11,9 +11,11 @@ public abstract class Encadenado {
     protected Token token;
     protected Encadenado encadenado;
     protected boolean isAssignable;
+    protected boolean isLeftSide;
 
     public Encadenado(Token token) {
         this.token = token;
+        this.isLeftSide = false;
     }
 
     public void setEncadenado(Encadenado encadenado) {
@@ -38,6 +40,16 @@ public abstract class Encadenado {
 
     public abstract boolean isCallable();
 
-    public void generateCode() throws IOException {
+    public abstract void generateCode() throws IOException;
+
+    public boolean isLeftSide() {
+        return this.isLeftSide;
+    }
+
+    public void setAsLeftSide() {
+        if (this.encadenado != null)
+            this.encadenado.setAsLeftSide();
+        else
+            this.isLeftSide = true;
     }
 }

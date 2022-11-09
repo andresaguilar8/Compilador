@@ -37,6 +37,9 @@ public abstract class AccessNode extends OperandNode {
     }
 
     public boolean isLeftSide() {
-        return this.isLeftSide;
+        if (this.encadenado != null)
+            return this.encadenado.isLeftSide();
+        else
+            return this.isLeftSide;
     }
 }

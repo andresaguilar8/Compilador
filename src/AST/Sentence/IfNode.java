@@ -44,7 +44,6 @@ public class IfNode extends SentenceNode {
     protected void generateCode() throws IOException {
         String ifEndLabel = this.newIfEndLabel();
         String elseLabel = this.newElseLabel();
-
         this.condition.generateCode();
 
         //no hay else

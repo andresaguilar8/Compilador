@@ -28,6 +28,7 @@ public class UnaryExpressionNode extends ExpressionNode {
 
     @Override
     public void generateCode() throws IOException {
+        System.out.println("q");
         this.operandNode.generateCode();
         if (this.token.getLexeme().equals("!"))
             Traductor.getInstance().gen("NOT");

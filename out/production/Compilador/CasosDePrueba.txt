@@ -1,22 +1,25 @@
 class A {
 
-    //public int y;
+    public int y;
 
-    static void main() {
-        var a = new A();
-        //var x = a;
-        System.printIln(2);
-        //a.metodo();
+    static void main(){
+        var x = 3;
+        x -= -(1+3);
+        System.printIln(x);
     }
 
-    void metodo() {
-        System.printIln(55);
-        System.printIln(5522);
+    static A crearObjeto(){
+        return new A();
     }
+
+    int m1(int x, A a) {
+        this.m2(a);
+    }
+
+    void m2(A a) {
+
+    }
+
 
 
 }
-
-
-
-

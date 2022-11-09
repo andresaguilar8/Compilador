@@ -6,6 +6,7 @@ class A {
         var x = "hoola";
         s.printSln(x);
         s.printS("aaaa");
+        System.printS("x");
     }
 
     static void main() {}
