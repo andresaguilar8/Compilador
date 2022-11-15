@@ -2,7 +2,7 @@ package AST.Expression;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -46,44 +46,56 @@ public class BinaryExpressionNode extends ExpressionNode {
         String expressionOperator = this.token.getLexeme();
 
         switch (expressionOperator) {
-
-            //todo terminar casos
             case "==": {
-                Traductor.getInstance().gen("EQ");
+                InstructionGenerator.getInstance().generateInstruction("EQ");
                 break;
             }
             case "!=": {
-                Traductor.getInstance().gen("NE");
+                InstructionGenerator.getInstance().generateInstruction("NE");
                 break;
             }
             case "+": {
-                Traductor.getInstance().gen("ADD");
+                InstructionGenerator.getInstance().generateInstruction("ADD");
+                break;
+            }
+            case "-": {
+                InstructionGenerator.getInstance().generateInstruction("SUB");
+                break;
+            }
+            case "*": {
+                InstructionGenerator.getInstance().generateInstruction("MUL");
+                break;
+            }
+            case "/": {
+                InstructionGenerator.getInstance().generateInstruction("DIV");
+                break;
+            }
+            case "%": {
+                InstructionGenerator.getInstance().generateInstruction("MOD");
                 break;
             }
             case "<=": {
-                Traductor.getInstance().gen("LE");
+                InstructionGenerator.getInstance().generateInstruction("LE");
                 break;
             }
             case ">=": {
-                Traductor.getInstance().gen("GE");
+                InstructionGenerator.getInstance().generateInstruction("GE");
                 break;
             }
             case "<": {
-                Traductor.getInstance().gen("LT");
+                InstructionGenerator.getInstance().generateInstruction("LT");
                 break;
             }
             case ">": {
-                Traductor.getInstance().gen("GT");
+                InstructionGenerator.getInstance().generateInstruction("GT");
                 break;
             }
-            //todo hacer op aritmeticas
-
             case "||": {
-                Traductor.getInstance().gen("OR");
+                InstructionGenerator.getInstance().generateInstruction("OR");
                 break;
             }
             case "&&": {
-                Traductor.getInstance().gen("AND");
+                InstructionGenerator.getInstance().generateInstruction("AND");
                 break;
             }
         }

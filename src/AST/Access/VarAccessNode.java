@@ -3,7 +3,7 @@ package AST.Access;
 import AST.Sentence.LocalVarDeclarationNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -75,28 +75,28 @@ public class VarAccessNode extends AccessNode {
         //genero codigo para una variable local
         if (this.localVar != null) {
             if (!this.isLeftSide() || this.encadenado != null) //si el acceso a var es lado derecho..
-                Traductor.getInstance().gen("LOAD " + this.localVar.getOffset() + " ; Se apila el valor de la variable local o parametro " + this.localVar.getVarName());
+                InstructionGenerator.getInstance().generateInstruction("LOAD " + this.localVar.getVarOffset() + " ; Se apila el valor de la variable local o parametro " + this.localVar.getVarName());
             else
-                Traductor.getInstance().gen("STORE " + this.localVar.getOffset());
+                InstructionGenerator.getInstance().generateInstruction("STORE " + this.localVar.getVarOffset());
         }
 
         //genero codigo para un parametro
         if (this.parameter != null) {
             if (!this.isLeftSide() || this.encadenado != null)
-                Traductor.getInstance().gen("LOAD " + this.parameter.getOffset() + " ; Se apila el valor del parametro " + this.parameter.getParameterName());
+                InstructionGenerator.getInstance().generateInstruction("LOAD " + this.parameter.getOffset() + " ; Se apila el valor del parametro " + this.parameter.getParameterName());
             else
-                Traductor.getInstance().gen("STORE " + this.parameter.getOffset());
+                InstructionGenerator.getInstance().generateInstruction("STORE " + this.parameter.getOffset());
         }
 
         //genero codigo para un atributo
         if (this.attribute != null) {
-            Traductor.getInstance().gen("LOAD 3");
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");
             if (!this.isLeftSide() || this.encadenado != null) {
-                Traductor.getInstance().gen("LOADREF " + this.attribute.getOffset() + "              ; Se apila el valor del atributo " + this.attribute.getAttributeName());
+                InstructionGenerator.getInstance().generateInstruction("LOADREF " + this.attribute.getOffset() + "              ; Se apila el valor del atributo " + this.attribute.getAttributeName());
             }
             else {
-                Traductor.getInstance().gen("SWAP");
-                Traductor.getInstance().gen("STOREREF " + this.attribute.getOffset());
+                InstructionGenerator.getInstance().generateInstruction("SWAP");
+                InstructionGenerator.getInstance().generateInstruction("STOREREF " + this.attribute.getOffset());
             }
         }
 

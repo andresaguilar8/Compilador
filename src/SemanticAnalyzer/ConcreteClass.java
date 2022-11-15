@@ -1,7 +1,7 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,8 @@ public class ConcreteClass extends Class {
     private boolean attributeOffsetsGenerated;
     private int cirSize;
     private int vtSize;
-    private Hashtable<Integer, Method> methodsOffsetMap;
+    private Hashtable<Integer, Method> dynamicMethodsOffsetsMap;
+    private boolean vtSizeIsSet;
 
     public ConcreteClass(Token classToken, Token ancestorToken) {
         super(classToken);
@@ -27,8 +28,18 @@ public class ConcreteClass extends Class {
         this.attributeOffsetsGenerated = false;
         this.methodOffsetsGenerated = false;
         this.cirSize = 1; //el 0 es para la VT
+        this.dynamicMethodsOffsetsMap = new Hashtable<>();
+        this.vtSizeIsSet = false;
         this.vtSize = 0;
-        this.methodsOffsetMap = new Hashtable<>();
+    }
+
+    public int getTotalOfDynamicMethods() {
+        int totalOfDynamicMethods = 0;
+        for (Method method: this.methods.values()) {
+            if (!method.isStatic())
+                totalOfDynamicMethods++;
+        }
+        return totalOfDynamicMethods;
     }
 
     public Hashtable<String, Attribute> getAttributes() {
@@ -249,21 +260,21 @@ public class ConcreteClass extends Class {
         return this.vtSize;
     }
 
-    public void generateOffsets() {
-        this.generateAttributesOffsets();
-        this.generateMethodsOffsets();
-    }
-
     public String getVTLabel() {
         return "VT_Clase" + this.getClassName();
     }
 
-    private void generateAttributesOffsets() {
+    public void generateOffsets() {
+        this.generateAttributesOffsets();
+        this.generateClassMethodsOffsets();
+    }
+
+    public void generateAttributesOffsets() {
         if (this.getAncestorClass() != null)
-            if (!this.getAncestorClass().getClassName().equals("Object")) {
-                if (!this.getAncestorClass().hasAttributeOffsetsGenerated()) //todo chequear capaz es ver si tiene los offset de atributos generados
+            if (!this.getAncestorClass().getClassName().equals("Object"))
+                if (!this.getAncestorClass().hasAttributeOffsetsGenerated())
                     this.getAncestorClass().generateOffsets();
-            }
+
         if (this.getAncestorClass() != null) {
             for (Attribute ancestorAttribute: this.getAncestorClass().getAttributes().values()) {
                 for (Attribute attribute: this.attributes.values())
@@ -282,82 +293,109 @@ public class ConcreteClass extends Class {
         this.attributeOffsetsGenerated = true;
     }
 
-    public void generateMethodsOffsets() {
-        //todo testear invocando diferentes metodos dinamicos
+    public void generateClassMethodsOffsets() {
         if (this.getAncestorClass() != null)
             if (!this.getAncestorClass().hasMethodOffsetsGenerated())
-                this.getAncestorClass().generateMethodsOffsets();
-        if (this.getAncestorClass() != null) {
-            for (Method ancestorMethod: this.getAncestorClass().getMethods().values())
-                for (Method method: this.methods.values())
-                    if (ancestorMethod.getMethodName().equals(method.getMethodName())) {
-                        method.setOffset(ancestorMethod.getOffset());
-                        method.setOffsetIsSet();
-                    }
+                this.getAncestorClass().generateClassMethodsOffsets();
+
+        if (this.getAncestorClass() != null)
+            if (!this.getAncestorClass().getClassName().equals("Object")) {
+                for (Method ancestorMethod: this.getAncestorClass().getMethods().values())
+                    for (Method method: this.methods.values())
+                        if (!method.isInterfaceMethod())
+                            if (ancestorMethod.getMethodName().equals(method.getMethodName())) {
+                                method.setOffset(ancestorMethod.getOffset());
+                                method.setOffsetIsSet();
+                            }
             this.vtSize = this.getAncestorClass().getVtSize();
         }
 
-        for (Method method: this.getMethods().values()) {
-            if (!method.getStaticHeader().equals("static")) {
-                if (!method.hasOffset()) {
-                    method.setOffset(this.vtSize);
-                    method.setOffsetIsSet();
-                    this.vtSize += 1;
+        for (Method method: this.methods.values()) {
+            if (!method.getStaticHeader().equals("static"))
+                if (!method.isInterfaceMethod()) {
+                    if (!method.hasOffset()) {
+                        method.setOffset(this.vtSize);
+                        method.setOffsetIsSet();
+                        this.vtSize += 1;
+                    }
+                    this.dynamicMethodsOffsetsMap.put(method.getOffset(), method);
                 }
-                this.methodsOffsetMap.put(method.getOffset(), method);
-            }
         }
+
         this.methodOffsetsGenerated = true;
     }
 
+    public void generateInterfaceMethodsOffsets() {
+        for (Method interfaceMethodToSetOffset : this.methods.values()) {
+            if (interfaceMethodToSetOffset.isInterfaceMethod()) {
+                Interface interfaceMethod = interfaceMethodToSetOffset.getInterfaceMethod();
+                Method methodInInterface = interfaceMethod.getMethod(interfaceMethodToSetOffset.getMethodName());
+                interfaceMethodToSetOffset.setOffset(methodInInterface.getOffset());
+                this.dynamicMethodsOffsetsMap.put(interfaceMethodToSetOffset.getOffset(), interfaceMethodToSetOffset);
+                interfaceMethodToSetOffset.setOffsetIsSet();
+            }
+        }
+        this.vtSize = this.getGreatestOffset();
+    }
+
+    //genera offsets de aquellos metodos heredados de una clase
+    //con igual nombre que uno de una interface
+    //para poder usar en la VT
+    public void generateInheritedMethodsOffsetsForVt() {
+        if (this.getAncestorClass() != null && !this.getAncestorClass().getClassName().equals("Object"))
+            for (Method method: this.getAncestorClass().getMethods().values()) {
+                if (!method.isStatic()) {
+                    int ancestorMethodOffset = method.getOffset();
+                    if (!this.dynamicMethodsOffsetsMap.containsKey(ancestorMethodOffset)) {
+                        Method thisClassMethod = SymbolTable.getInstance().getConcreteClass(this.getClassName()).getMethod(method.getMethodName());
+                        this.dynamicMethodsOffsetsMap.put(ancestorMethodOffset, thisClassMethod);
+                    }
+                }
+            }
+    }
+
+    private int getGreatestOffset() {
+        int greatestMethodOffset = 0;
+        for (Method method: this.methods.values()) {
+            if (method.getOffset() > greatestMethodOffset)
+                greatestMethodOffset = method.getOffset();
+        }
+        return greatestMethodOffset;
+    }
+
     public void generateVT() throws IOException {
-        Traductor.getInstance().setDataMode();
-        Traductor.getInstance().gen("VT_Clase" + this.getClassName() + ":");
+        InstructionGenerator.getInstance().setDataMode();
+        InstructionGenerator.getInstance().generateInstruction("VT_Clase" + this.getClassName() + ":");
         String VTInstruction = "DW";
-        if (this.methodsOffsetMap.size() != 0) {
+
+        if (this.dynamicMethodsOffsetsMap.size() > 0) {
             //la clase tiene metodos dinamicos
-            for (int offset = 0; offset < this.methodsOffsetMap.size(); offset++) {
-                Method method = this.methodsOffsetMap.get(offset);
-                VTInstruction += " " + method.getMethodLabel() + ",";
+
+            for (int offset = 0; offset <= this.vtSize; offset++) {
+                Method method = this.dynamicMethodsOffsetsMap.get(offset);
+                if (method != null)
+                    VTInstruction += " " + method.getMethodLabel() + ",";
+                else
+                    VTInstruction += " 0,";
             }
             VTInstruction = VTInstruction.substring(0, VTInstruction.length() - 1);  //elimino la , dps del ultimo metodo
-            Traductor.getInstance().gen(VTInstruction);
+            InstructionGenerator.getInstance().generateInstruction(VTInstruction);
         }
-        else {
+        else
             //la clase no tiene metodos dinamicos
-            Traductor.getInstance().gen("NOP");
-        }
+            InstructionGenerator.getInstance().generateInstruction("NOP");
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().setCodeMode();
+        InstructionGenerator.getInstance().setCodeMode();
         for (Method method: this.methods.values())
             if (!method.codeIsGenerated()) {
                 method.generateCode();
                 method.setCodeGenerated();
             }
-        //todo creo que es innecesario esto de abajo
-        Traductor.getInstance().setCodeMode();
+        InstructionGenerator.getInstance().setCodeMode();
         this.classConstructor.generateCode();
     }
 
-    public void imprimirOffsets() {
-        System.out.println("clase: " + this.getClassName() + " tiene estos atributos: " );
-        for (Attribute attribute: this.attributes.values()) {
-            System.out.println(attribute.getAttributeName() + " con offset: " + attribute.getOffset());
-        }
-    }
-
-    public void imprimirOffsetsMetodos() {
-
-        if (!this.getClassName().equals("System")) {
-            System.out.println();
-            System.out.println("clase: " + this.getClassName() + " tiene estos metodos: ");
-            for (Method method : this.methods.values()) {
-                System.out.println(method.getMethodName() + " con offset: " + method.getOffset());
-            }
-            System.out.println();
-        }
-    }
 }
 

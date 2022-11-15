@@ -1,25 +1,9 @@
 class A {
 
-    public int y;
-
-    static void main(){
-        var x = 3;
-        x -= -(1+3);
+    static void main() {
+        var x = System.read();
         System.printIln(x);
     }
-
-    static A crearObjeto(){
-        return new A();
-    }
-
-    int m1(int x, A a) {
-        this.m2(a);
-    }
-
-    void m2(A a) {
-
-    }
-
 
 
 }

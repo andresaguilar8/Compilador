@@ -3,7 +3,7 @@ package AST.Sentence;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -41,19 +41,18 @@ public class ReturnNode extends SentenceNode {
 
     @Override
     protected void generateCode() throws IOException {
-        //libero memoria de las variables
-        //todo acomodar, tiene uqe ser el total de variables del bloque
-        Traductor.getInstance().gen("FMEM " + this.blockOfReturn.getTotalVars());
-//        + this.method.getReturnOffset());
-        if (this.method.getReturnType().equals("void")) {
-            Traductor.getInstance().gen("STOREFP");
-            Traductor.getInstance().gen("RET " + this.method.getReturnOffset());
+        //libero memoria de las variables locales
+        InstructionGenerator.getInstance().generateInstruction("FMEM " + this.blockOfReturn.getTotalVars() + "         ; Se libera memoria de variables locales despues de un return");
+
+        if (this.method.getReturnType().getClassName().equals("void")) {
+            InstructionGenerator.getInstance().generateInstruction("STOREFP            ; Nodo return, se actualiza el FP para que ahora apunte al RA llamador");
+            InstructionGenerator.getInstance().generateInstruction("RET " + this.method.getReturnOffset() + "       ; Se liberan " + this.method.getReturnOffset() + " lugares de la pila");
         }
         else {
             this.expressionNode.generateCode();
-            Traductor.getInstance().gen("STORE " + this.method.getStoringValueInReturnOffset() + "       ; Se coloca el valor de la expresion del return en la locacion que fue reservada para el retorno del metodo");
-            Traductor.getInstance().gen("STOREFP");
-            Traductor.getInstance().gen("RET " + this.method.getReturnOffset() + "       ; Se liberan " + this.method.getReturnOffset() + " lugares de la pila");
+            InstructionGenerator.getInstance().generateInstruction("STORE " + this.method.getStoringValueInReturnOffset() + "       ; Se coloca el valor de la expresion del return en la locacion que fue reservada para el retorno del metodo");
+            InstructionGenerator.getInstance().generateInstruction("STOREFP           ; Nodo return, se actualiza el FP para que ahora apunte al RA llamador");
+            InstructionGenerator.getInstance().generateInstruction("RET " + this.method.getReturnOffset() + "       ; Se liberan " + this.method.getReturnOffset() + " lugares de la pila");
         }
     }
 

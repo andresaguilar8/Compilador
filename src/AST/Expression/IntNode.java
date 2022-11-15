@@ -3,7 +3,7 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -18,6 +18,6 @@ public class IntNode extends LiteralOperandNode {
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen("PUSH " + this.token.getLexeme());
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + this.token.getLexeme());
     }
 }

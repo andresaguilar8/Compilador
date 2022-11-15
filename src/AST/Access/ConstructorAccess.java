@@ -2,7 +2,7 @@ package AST.Access;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -49,17 +49,15 @@ public class ConstructorAccess extends AccessNode {
         ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme());
         int CIR_Size = concreteClass.getCirSize();
 
-        Traductor.getInstance().gen("RMEM 1");
-        Traductor.getInstance().gen("PUSH " + CIR_Size + "       ; Tamaño del CIR (cant atributos + 1)");
-        Traductor.getInstance().gen("PUSH simple_malloc");
-        Traductor.getInstance().gen("CALL");
-        Traductor.getInstance().gen("DUP");
-        Traductor.getInstance().gen("PUSH " + concreteClass.getVTLabel() + "       ; Se apila la dirección del comienzo de la virtual table");
-        Traductor.getInstance().gen("STOREREF 0        ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)" );
-        //Traductor.getInstance().gen("DUP");
-        //todo generar codigo argumentos e ir haciendo swap
-        Traductor.getInstance().gen("PUSH Constructor_" + this.token.getLexeme());
-        Traductor.getInstance().gen("CALL");
+        InstructionGenerator.getInstance().generateInstruction("RMEM 1         ; Retorno acceso constructor");
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + CIR_Size + "       ; Tamaño del CIR (cant atributos + 1)");
+        InstructionGenerator.getInstance().generateInstruction("PUSH simple_malloc");
+        InstructionGenerator.getInstance().generateInstruction("CALL            ; Se realiza la llamada a la rutina malloc");
+        InstructionGenerator.getInstance().generateInstruction("DUP");
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + concreteClass.getVTLabel() + "       ; Se apila la dirección del comienzo de la virtual table");
+        InstructionGenerator.getInstance().generateInstruction("STOREREF 0        ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)" );
+        InstructionGenerator.getInstance().generateInstruction("PUSH Constructor_" + this.token.getLexeme());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
 
         if (this.encadenado != null)
             encadenado.generateCode();

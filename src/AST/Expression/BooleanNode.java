@@ -3,7 +3,7 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.PrimitiveType;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -21,9 +21,9 @@ public class BooleanNode extends LiteralOperandNode {
     @Override
     public void generateCode() throws IOException {
         if (this.token.getLexeme().equals("true"))
-            Traductor.getInstance().gen("PUSH 1");
+            InstructionGenerator.getInstance().generateInstruction("PUSH 1");
         else
-            Traductor.getInstance().gen("PUSH 0");
+            InstructionGenerator.getInstance().generateInstruction("PUSH 0");
     }
 
 }

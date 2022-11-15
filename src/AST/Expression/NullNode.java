@@ -3,6 +3,7 @@ package AST.Expression;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.ReferenceType;
 import SemanticAnalyzer.Type;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -19,7 +20,7 @@ public class NullNode extends LiteralOperandNode {
 
     @Override
     public void generateCode() throws IOException {
-
+        InstructionGenerator.getInstance().generateInstruction("PUSH 0           ; Se apila un null");
     }
 
 }

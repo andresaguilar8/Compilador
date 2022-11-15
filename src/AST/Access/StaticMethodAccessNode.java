@@ -3,7 +3,7 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,14 +60,13 @@ public class StaticMethodAccessNode extends AccessNode {
     }
 
     public void generateCode() throws IOException {
-//        Traductor.getInstance().gen("POP"); //TODO ver esto
         if (!this.staticMethod.getReturnType().getClassName().equals("void"))
-            Traductor.getInstance().gen("RMEM 1        ; Se reserva lugar para el retorno");
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1        ; Se reserva lugar para el retorno");
 
         this.generateParametersCode();
 
-        Traductor.getInstance().gen("PUSH " + this.staticMethod.getMethodLabel());
-        Traductor.getInstance().gen("CALL");
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + this.staticMethod.getMethodLabel());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
 
         if (this.encadenado != null)
             encadenado.generateCode();

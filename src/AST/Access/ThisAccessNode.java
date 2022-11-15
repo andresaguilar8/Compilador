@@ -2,7 +2,7 @@ package AST.Access;
 
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ public class ThisAccessNode extends AccessNode {
 
     @Override
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen("LOAD 3              ; Se apila this");
+        InstructionGenerator.getInstance().generateInstruction("LOAD 3              ; Se apila this");
         if (this.encadenado != null)
             this.encadenado.generateCode();
     }

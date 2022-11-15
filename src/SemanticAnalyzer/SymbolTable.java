@@ -20,6 +20,7 @@ public class SymbolTable {
     private ArrayList<SemanticError> semanticErrorsList;
     private BlockNode currentBlock;
     private Method mainMethod;
+    private int interfaceMethodOffset;
 
     public static SymbolTable getInstance() {
         if (instance == null)
@@ -218,19 +219,6 @@ public class SymbolTable {
         return null;
     }
 
-    public Type retrieveLocalVarType(String varName) {
-        BlockNode currentBlockAncestor = this.currentBlock;
-        if (!currentBlockAncestor.getLocalVarTable().containsKey(varName))
-            while (currentBlockAncestor.getAncestorBlock() != null) {
-                currentBlockAncestor = currentBlockAncestor.getAncestorBlock();
-                if (currentBlockAncestor.getLocalVarTable().containsKey(varName))
-                    return currentBlockAncestor.getLocalVarTable().get(varName).getLocalVarType();
-            }
-        else
-            return currentBlockAncestor.getLocalVarTable().get(varName).getLocalVarType();
-        return null;
-    }
-
     private void checkMainMethod(ConcreteClass classToCheck) {
         for (Method methodToCheck : classToCheck.getMethods().values())
             if (methodToCheck.getStaticHeader().equals("static") && methodToCheck.getReturnTypeString().equals("void") && methodToCheck.getMethodName().equals("main") && !methodToCheck.hasParameters())
@@ -242,17 +230,116 @@ public class SymbolTable {
                 }
     }
 
-    public void consolidate() throws SemanticException {
-        for (Interface interfaceToConsolidate : this.interfacesTable.values())
-            interfaceToConsolidate.consolidate();
-        for (ConcreteClass classToConsolidate : this.concreteClassesTable.values())
-            classToConsolidate.consolidate();
-        for (ConcreteClass concreteClass : this.concreteClassesTable.values()) {
-            concreteClass.generateOffsets();
-//            concreteClass.imprimirOffsetsMetodos();
-        }
+    public void consolidate() throws SemanticException, IOException {
+        this.consolidateInterfaces();
+        this.consolidateConcreteClasses();
+        this.generateMethodsOffsets();
         if (!this.mainMethodIsDeclared)
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase"));
+    }
+
+    private void consolidateInterfaces() {
+        for (Interface interfaceToConsolidate : this.interfacesTable.values())
+            interfaceToConsolidate.consolidate();
+    }
+
+    private void consolidateConcreteClasses() {
+        for (ConcreteClass classToConsolidate : this.concreteClassesTable.values())
+            classToConsolidate.consolidate();
+    }
+
+    private void generateMethodsOffsets(){
+        for (ConcreteClass concreteClass : this.concreteClassesTable.values()) {
+            concreteClass.generateAttributesOffsets();
+            concreteClass.generateClassMethodsOffsets();
+        }
+
+        this.generateInterfaceMethodOffsets();
+
+        for (ConcreteClass concreteClass : this.concreteClassesTable.values())
+            concreteClass.generateInterfaceMethodsOffsets();
+
+        for (ConcreteClass concreteClass : this.concreteClassesTable.values())
+            concreteClass.generateInheritedMethodsOffsetsForVt();
+    }
+
+    private void generateInterfaceMethodOffsets() {
+        this.interfaceMethodOffset = this.getGreatestVtSize();
+
+        for (Interface interfaceWithoutAncestors: this.interfacesTable.values())
+            if (!interfaceWithoutAncestors.hasAncestors())
+                this.generateInterfaceMethodsOffsets(interfaceWithoutAncestors);
+
+        for (Interface interfaceWithAncestors: this.interfacesTable.values())
+            if (interfaceWithAncestors.hasAncestors())
+                this.generateInterfaceMethodsOffsetsForInterfaceWithAncestors(interfaceWithAncestors);
+    }
+
+    private int getGreatestVtSize() {
+        int greatestVtSize = 0;
+        for (ConcreteClass concreteClass: this.concreteClassesTable.values()) {
+            if (concreteClass.getAncestorsInterfaces().size() > 0)
+                if (concreteClass.getVtSize() > greatestVtSize)
+                    greatestVtSize = concreteClass.getVtSize();
+        }
+        return greatestVtSize + 1;
+    }
+
+    private void generateInterfaceMethodsOffsets(Interface interfaceToGenerateMethodsOffsets) {
+        for (Method interfaceMethod: interfaceToGenerateMethodsOffsets.getMethods().values()) {
+            if (!interfaceMethod.hasOffset()) {
+                interfaceMethod.setOffset(interfaceMethodOffset);
+                interfaceMethod.setOffsetIsSet();
+                interfaceMethodOffset = interfaceMethodOffset + 1;
+            }
+        }
+        interfaceToGenerateMethodsOffsets.setOffsetsAsSet();
+    }
+
+    private void generateInterfaceMethodsOffsetsForInterfaceWithAncestors(Interface interfaceWithAncestors) {
+        for (Interface ancestorInterface: interfaceWithAncestors.getAncestorsInterfaces()) {
+            Interface ancestorInterfaceInST = SymbolTable.instance.getInterface(ancestorInterface.getClassName());
+            if (ancestorInterfaceInST.hasOffsetsGenerated()) {
+                this.copyMethodOffsets(ancestorInterfaceInST, interfaceWithAncestors);
+            }
+            else {
+                generateInterfaceMethodsOffsetsForInterfaceWithAncestors(ancestorInterfaceInST);
+            }
+        }
+        this.generateInterfaceMethodsOffsets(interfaceWithAncestors);
+        interfaceWithAncestors.setOffsetsAsSet();
+    }
+
+    private void copyMethodOffsets(Interface interfaceWithOffsets, Interface interfaceToCopyOffsetsIn) {
+        for (Method methodInInterfaceWithOffsets: interfaceWithOffsets.getMethods().values()) {
+            Method methodToSetOffset = interfaceToCopyOffsetsIn.getMethod(methodInInterfaceWithOffsets.getMethodName());
+            methodToSetOffset.setOffset(methodInInterfaceWithOffsets.getOffset());
+            methodToSetOffset.setOffsetIsSet();
+        }
+    }
+
+    public void printClassesAndInterfacesMethodsOffsets() throws IOException {
+        System.out.println();
+        for (ConcreteClass concreteClass : this.concreteClassesTable.values()) {
+            if (!concreteClass.getClassName().equals("Object"))
+                if (!concreteClass.getClassName().equals("System"))
+                    if (!concreteClass.getClassName().equals("String")) {
+                        System.out.println();
+                        System.out.println("Clase: " + concreteClass.getClassName());
+                        for (Method method : concreteClass.getMethods().values()) {
+                            if (!method.isStatic())
+                                System.out.println("metodo: " + method.getMethodName() + " con offset: " + method.getOffset());
+                        }
+                    }
+
+        }
+        System.out.println();
+        for (Interface i: this.interfacesTable.values()) {
+            System.out.println();
+            System.out.println("Interface: " + i.getClassName());
+            for (Method method : i.getMethods().values())
+                System.out.println("metodo: " + method.getMethodName() + " con offset: " + method.getOffset());
+        }
     }
 
     private void initPredefinedClasses() {

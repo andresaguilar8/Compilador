@@ -4,7 +4,7 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
 import SemanticAnalyzer.Class;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,25 +50,29 @@ public class LlamadaEncadenada extends Encadenado {
     }
 
     private void generateStaticMethodCode() throws IOException {
+        //Se descarta la referencia en el tope de la pila ya que no se necesita para la llamada encadenada a un metodo estatico
+        InstructionGenerator.getInstance().generateInstruction("POP");
         if (!this.method.getReturnType().getClassName().equals("void"))
-            Traductor.getInstance().gen("RMEM 1        ; Se reserva lugar para el retorno");
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1        ; Se reserva lugar para el retorno");
 
         this.generateParametersCode();
 
-        Traductor.getInstance().gen("PUSH " + this.method.getMethodLabel());
-        Traductor.getInstance().gen("CALL");
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + this.method.getMethodLabel());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
     }
 
     private void generateDynamicMethodCode() throws IOException {
         if (!method.getReturnType().getClassName().equals("void")) {
-            Traductor.getInstance().gen("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
-            Traductor.getInstance().gen("SWAP");
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
+            InstructionGenerator.getInstance().generateInstruction("SWAP");
         }
+
         this.generateParametersCode();
-        Traductor.getInstance().gen("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
-        Traductor.getInstance().gen("LOADREF 0 ; Se carga la VT");
-        Traductor.getInstance().gen("LOADREF " + method.getOffset());
-        Traductor.getInstance().gen("CALL");
+
+        InstructionGenerator.getInstance().generateInstruction("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
+        InstructionGenerator.getInstance().generateInstruction("LOADREF 0 ; Se carga la VT");
+        InstructionGenerator.getInstance().generateInstruction("LOADREF " + method.getOffset());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
     }
 
     private void generateParametersCode() throws IOException {
@@ -76,7 +80,7 @@ public class LlamadaEncadenada extends Encadenado {
             for (int index = this.expressionNodesList.size() - 1; index >= 0; index--) {
                 this.expressionNodesList.get(index).generateCode();  //genero codigo de cada parametro
                 if (!this.method.isStatic())
-                    Traductor.getInstance().gen("SWAP");
+                    InstructionGenerator.getInstance().generateInstruction("SWAP");
             }
     }
 
@@ -101,8 +105,6 @@ public class LlamadaEncadenada extends Encadenado {
             parameterType = parametersList.get(index).getParameterType();
             expressionType = expressionNode.check();
             index += 1;
-            System.out.println(parameterType.getClassName());
-            System.out.println(expressionType.getClassName());
             if (!parameterType.getClassName().equals(expressionType.getClassName()))
                 if (!parameterType.isCompatibleWithType(expressionType))
                     throw new SemanticExceptionSimple(this.token, "tipos incompatibles en el pasaje de parametros");

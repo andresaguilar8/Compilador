@@ -4,7 +4,7 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -47,19 +47,19 @@ public class IfNode extends SentenceNode {
         this.condition.generateCode();
 
         //no hay else
-        if (this.elseSentence != null) {
-            Traductor.getInstance().gen("BF " + elseLabel + "      ; Si el tope de la pila es falso, salto a " + elseLabel);
+        if (this.elseSentence == null) {
+            InstructionGenerator.getInstance().generateInstruction("BF " + ifEndLabel + "       ; Si el tope de la fila es falso, salto a " + ifEndLabel);
             this.sentence.generateCode();
-            Traductor.getInstance().gen("JUMP " + ifEndLabel);
-            Traductor.getInstance().gen(elseLabel + ":");
-            this.elseSentence.generateCode();
         }
         else {
-            Traductor.getInstance().gen("BF " + ifEndLabel + "       ; Si el tope de la fila es falso, salto a " + ifEndLabel);
+            InstructionGenerator.getInstance().generateInstruction("BF " + elseLabel + "      ; Si el tope de la pila es falso, salto a " + elseLabel);
             this.sentence.generateCode();
+            InstructionGenerator.getInstance().generateInstruction("JUMP " + ifEndLabel);
+            InstructionGenerator.getInstance().generateInstruction(elseLabel + ":");
+            this.elseSentence.generateCode();
         }
-        Traductor.getInstance().gen(ifEndLabel + ":");
-        Traductor.getInstance().gen("NOP");
+        InstructionGenerator.getInstance().generateInstruction(ifEndLabel + ":");
+        InstructionGenerator.getInstance().generateInstruction("NOP");
     }
 
     private String newIfEndLabel() {

@@ -5,8 +5,11 @@ import java.util.ArrayList;
 
 public class Interface extends Class {
 
+    private boolean offsetsGenerated;
+
     public Interface(Token interfaceToken) {
         super(interfaceToken);
+        this.offsetsGenerated = false;
     }
 
     public void insertMethod(Method methodToInsert) {
@@ -32,6 +35,28 @@ public class Interface extends Class {
         }
         if (!nameExists)
             this.ancestorsInterfaces.add(interfaceToAdd);
+    }
+
+    public boolean hasAncestors() {
+        return this.ancestorsInterfaces.size() > 0;
+    }
+
+    public boolean hasOffsetsGenerated() {
+        return this.offsetsGenerated;
+    }
+
+    public void setOffsetsAsSet() {
+        this.offsetsGenerated = true;
+    }
+
+    public int getGreaterOffset() {
+        int greatestOffsetNumber = -1;
+        for (Method method: this.methods.values()) {
+            if (method.hasOffset())
+                if (method.getOffset() > greatestOffsetNumber)
+                    greatestOffsetNumber = method.getOffset();
+        }
+        return greatestOffsetNumber + 1;
     }
 
     public void checkDeclarations() {
@@ -117,8 +142,11 @@ public class Interface extends Class {
         for (Method method : this.methods.values()) {
             if (concreteClassToCheck.getMethods().containsKey(method.getMethodName())) {
                 String methodName = method.getMethodName();
-                if (!method.methodsHeadersAreEquals(concreteClassToCheck.getMethod(methodName)))
+                Method methodInConcreteClass = concreteClassToCheck.getMethod(methodName);
+                if (!method.methodsHeadersAreEquals(methodInConcreteClass))
                     SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(concreteClassToCheck.getMethod(method.getMethodName()).getMethodToken(), "El metodo " + "\"" + method.getMethodName() + "\"" + " no respeta el encabezado del metodo definido en la interface " +this.getClassName()));
+                methodInConcreteClass.setAsInterfaceMethod();
+                methodInConcreteClass.setInterface(this);
             }
             else {
                 SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(interfaceToken, "La clase " + concreteClassToCheck.getClassName() + " no implementa todos los metodos de la interface " + this.getClassName()));

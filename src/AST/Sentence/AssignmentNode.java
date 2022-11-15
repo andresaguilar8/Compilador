@@ -6,7 +6,7 @@ import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public class AssignmentNode extends SentenceNode {
             //aca se va a hacer un LOAD
             this.leftSide.generateCode();
             this.rightSide.generateCode();
-            Traductor.getInstance().gen("ADD            ; Se realiza la suma");
+            InstructionGenerator.getInstance().generateInstruction("ADD            ; Se realiza la suma");
             this.setLeftSideAsLeftSide();
             //aca se va a hacer un STORE
             this.leftSide.generateCode();
@@ -56,7 +56,7 @@ public class AssignmentNode extends SentenceNode {
             //aca se va a hacer un LOAD
             this.leftSide.generateCode();
             this.rightSide.generateCode();
-            Traductor.getInstance().gen("SUB            ; Se realiza la suma");
+            InstructionGenerator.getInstance().generateInstruction("SUB            ; Se realiza la resta");
             this.setLeftSideAsLeftSide();
             //aca se va a hacer un STORE
             this.leftSide.generateCode();

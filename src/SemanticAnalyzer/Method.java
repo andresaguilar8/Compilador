@@ -1,9 +1,8 @@
 package SemanticAnalyzer;
 
 import AST.Sentence.BlockNode;
-import AST.Sentence.LocalVarDeclarationNode;
 import LexicalAnalyzer.Token;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ public class Method {
     private boolean codeIsGenerated;
     private int offset;
     private boolean hasOffset;
+    private boolean isInterfaceMethod;
 
     public Method(Token methodToken, String staticScope, Type methodReturnType, String className) {
         this.staticScope = staticScope;
@@ -36,6 +36,7 @@ public class Method {
         this.className = className;
         this.codeIsGenerated = false;
         this.hasOffset = false;
+        this.isInterfaceMethod = false;
     }
 
     public void insertParameter(Parameter parameterToInsert) {
@@ -177,10 +178,10 @@ public class Method {
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen(this.getMethodLabel() + ":");
-        Traductor.getInstance().gen("LOADFP");
-        Traductor.getInstance().gen("LOADSP");
-        Traductor.getInstance().gen("STOREFP");
+        InstructionGenerator.getInstance().generateInstruction(this.getMethodLabel() + ":");
+        InstructionGenerator.getInstance().generateInstruction("LOADFP");
+        InstructionGenerator.getInstance().generateInstruction("LOADSP");
+        InstructionGenerator.getInstance().generateInstruction("STOREFP");
 
         if (this.parametersList.size() > 0) {
             int parameterOffset;
@@ -201,26 +202,62 @@ public class Method {
         else
             generateCodeForPredefinedMethods();
 
-        Traductor.getInstance().gen("STOREFP");
-        Traductor.getInstance().gen("RET "+ this.getReturnOffset());
-
-
+        InstructionGenerator.getInstance().generateInstruction("STOREFP");
+        InstructionGenerator.getInstance().generateInstruction("RET "+ this.getReturnOffset());
     }
 
     private void generateCodeForPredefinedMethods() throws IOException {
-        if (this.getMethodName().equals("printIln")) {
-            Traductor.getInstance().gen("LOAD 3");   //LOAD 3 porque tiene un solo parametro
-            Traductor.getInstance().gen("IPRINT");
-            Traductor.getInstance().gen("PRNLN");
+        if (this.getMethodName().equals("debugPrint")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("IPRINT");
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+        if (this.getMethodName().equals("read")) {
+            //lee el próximo byte del stream de entrada estándar
+            InstructionGenerator.getInstance().generateInstruction("READ");
+            InstructionGenerator.getInstance().generateInstruction("STORE 3");
+        }
+        if (this.getMethodName().equals("printB")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("BPRINT");
         }
         if (this.getMethodName().equals("printC")) {
-            Traductor.getInstance().gen("LOAD 3");
-            Traductor.getInstance().gen("CPRINT");
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");
+            InstructionGenerator.getInstance().generateInstruction("CPRINT");
+        }
+        if (this.getMethodName().equals("printI")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");
+            InstructionGenerator.getInstance().generateInstruction("IPRINT");
         }
         if (this.getMethodName().equals("printS")) {
-            Traductor.getInstance().gen("LOAD 3");
-            Traductor.getInstance().gen("SPRINT");
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");
+            InstructionGenerator.getInstance().generateInstruction("SPRINT");
         }
+        if (this.getMethodName().equals("println")) {
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+        if (this.getMethodName().equals("printBln")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("BPRINT");
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+        if (this.getMethodName().equals("printCln")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("CPRINT");
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+        if (this.getMethodName().equals("printIln")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("IPRINT");
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+        if (this.getMethodName().equals("printSln")) {
+            InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
+            InstructionGenerator.getInstance().generateInstruction("SPRINT");
+            InstructionGenerator.getInstance().generateInstruction("PRNLN");
+        }
+
+
 //        if (this.getMethodName().equals("debugPrint")) {
 //            Traductor.getInstance().gen("LOAD 3");
 //            Traductor.getInstance().gen("IPRINT");
@@ -255,7 +292,6 @@ public class Method {
     }
 
     public String getMethodLabel() {
-        //todo seguro hay q acomodarlo
         return this.getMethodName() + "_Clase" + this.className;
     }
 
@@ -281,5 +317,23 @@ public class Method {
 
     public boolean isStatic() {
         return this.staticScope.equals("static");
+    }
+
+    public boolean isInterfaceMethod() {
+        return this.isInterfaceMethod;
+    }
+
+    public void setAsInterfaceMethod() {
+        this.isInterfaceMethod = true;
+    }
+
+    private Interface interfaceMethod;
+
+    public void setInterface(Interface interfaceMethod) {
+        this.interfaceMethod = interfaceMethod;
+    }
+
+    public Interface getInterfaceMethod() {
+        return this.interfaceMethod;
     }
 }

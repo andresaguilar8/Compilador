@@ -1,7 +1,7 @@
 package SemanticAnalyzer;
 
 import LexicalAnalyzer.Token;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -18,18 +18,12 @@ public class Constructor {
     }
 
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen("Constructor_" + this.constructorToken.getLexeme() + ":");
-        Traductor.getInstance().gen("LOADFP");
-        Traductor.getInstance().gen("LOADSP");
-        Traductor.getInstance().gen("STOREFP");
-        Traductor.getInstance().gen("STOREFP");
-        Traductor.getInstance().gen("RET 0");
-//        + this.getReturnOffset());
-        //TODO CHEQUEAR
+        InstructionGenerator.getInstance().generateInstruction("Constructor_" + this.constructorToken.getLexeme() + ":");
+        InstructionGenerator.getInstance().generateInstruction("LOADFP");
+        InstructionGenerator.getInstance().generateInstruction("LOADSP");
+        InstructionGenerator.getInstance().generateInstruction("STOREFP");
+        InstructionGenerator.getInstance().generateInstruction("STOREFP");
+        InstructionGenerator.getInstance().generateInstruction("RET 0");
     }
 
-    private int getReturnOffset() {
-        ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.constructorToken.getLexeme());
-        return concreteClass.getCirSize();
-    }
 }

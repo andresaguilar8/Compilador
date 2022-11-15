@@ -1,32 +1,31 @@
-package Traductor;
+package InstructionGenerator;
 
 import SemanticAnalyzer.ConcreteClass;
 import SemanticAnalyzer.SymbolTable;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class Traductor {
+public class InstructionGenerator {
 
     private BufferedWriter bufferedWriter;
     private String outputFileName;
     private File outputFile;
     private String currentCodeMode;
-    private static Traductor instance = null;
+    private static InstructionGenerator instance = null;
 
-    private Traductor() {
+    private InstructionGenerator() {
 
     }
 
-    public static Traductor getInstance() {
+    public static InstructionGenerator getInstance() {
         if (instance == null)
-            instance = new Traductor();
+            instance = new InstructionGenerator();
         return instance;
     }
 
-    public void traducir() throws IOException {
+    public void generateInstructions() throws IOException {
         outputFile = new File(outputFileName);
         FileWriter fileWriter = new FileWriter(outputFile);
         bufferedWriter = new BufferedWriter(fileWriter);
@@ -34,48 +33,46 @@ public class Traductor {
         this.setCodeMode();
         this.generateMainMethodCall();
         this.initSimpleMallocRoutine();
-        this.generateClassCode();
-        //...
+        this.generateClassesCode();
         bufferedWriter.close();
     }
 
     private void generateMainMethodCall() throws IOException {
         String mainMethodLabel = SymbolTable.getInstance().getMainMethod().getMethodLabel();
-        this.gen("PUSH " + mainMethodLabel);
-        this.gen("CALL");
-        this.gen("HALT");
+        this.generateInstruction("PUSH " + mainMethodLabel);
+        this.generateInstruction("CALL");
+        this.generateInstruction("HALT");
     }
 
     private void initSimpleMallocRoutine() throws IOException {
-        this.gen("simple_malloc:");
-        this.gen("LOADFP");
-        this.gen("LOADSP");
-        this.gen("STOREFP");
-        this.gen("LOADHL");
-        this.gen("DUP");
-        this.gen("PUSH 1");
-        this.gen("ADD");
-        this.gen("STORE 4");
-        this.gen("LOAD 3");
-        this.gen("ADD");
-        this.gen("STOREHL");
-        this.gen("STOREFP");
-        this.gen("RET 1");
+        this.generateInstruction("simple_malloc:");
+        this.generateInstruction("LOADFP");
+        this.generateInstruction("LOADSP");
+        this.generateInstruction("STOREFP");
+        this.generateInstruction("LOADHL");
+        this.generateInstruction("DUP");
+        this.generateInstruction("PUSH 1");
+        this.generateInstruction("ADD");
+        this.generateInstruction("STORE 4");
+        this.generateInstruction("LOAD 3");
+        this.generateInstruction("ADD");
+        this.generateInstruction("STOREHL");
+        this.generateInstruction("STOREFP");
+        this.generateInstruction("RET 1");
     }
 
-    private void generateClassCode() throws IOException {
+    private void generateClassesCode() throws IOException {
         for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values())
             concreteClass.generateVT();
         for (ConcreteClass concreteClass: SymbolTable.getInstance().getConcreteClassesTable().values())
             concreteClass.generateCode();
-
     }
 
     public void setOutputFileName(String outputFileName) {
         this.outputFileName = outputFileName;
     }
 
-    public void gen(String instruction) throws IOException {
+    public void generateInstruction(String instruction) throws IOException {
         if (instruction.contains(":")) {
             bufferedWriter.write(instruction);
             bufferedWriter.newLine();
@@ -86,8 +83,6 @@ public class Traductor {
         }
     }
 
-
-    //todo va a haber un metodo para setar modo .code .data .stack y
     public void setDataMode() throws IOException {
         if (!this.currentCodeMode.equals(".DATA")) {
             this.bufferedWriter.write(".DATA");

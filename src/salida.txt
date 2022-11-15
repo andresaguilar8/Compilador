@@ -18,7 +18,7 @@ simple_malloc:
                               RET 1
 .DATA
 VT_ClaseA:
-                              DW m2_ClaseA, m1_ClaseA
+                              NOP
 VT_ClaseString:
                               NOP
 VT_ClaseObject:
@@ -31,68 +31,25 @@ main_ClaseA:
                               LOADSP
                               STOREFP
                               RMEM 1 ; Se reserva espacio para una variable local
-                              PUSH 3
+                              RMEM 1        ; Se reserva lugar para el retorno
+                              PUSH read_ClaseSystem
+                              CALL
                               STORE 0 ; Se almacena el valor de la expresion en la variable local x
-                              LOAD 0 ; Se apila el valor de la variable local o parametro x
-                              PUSH 1
-                              PUSH 3
-                              ADD
-                              NEG
-                              SUB            ; Se realiza la suma
-                              STORE 0
                               LOAD 0 ; Se apila el valor de la variable local o parametro x
                               PUSH printIln_ClaseSystem
                               CALL
                               FMEM 1
                               STOREFP
                               RET 0
-m2_ClaseA:
-                              LOADFP
-                              LOADSP
-                              STOREFP
-                              FMEM 0
-                              STOREFP
-                              RET 2
-m1_ClaseA:
-                              LOADFP
-                              LOADSP
-                              STOREFP
-                              LOAD 3              ; Se apila this
-                              LOAD 5 ; Se apila el valor del parametro a
-                              SWAP
-                              DUP ; Se duplica el this porque al hacer LOADREF se pierde
-                              LOADREF 0 ; Se carga la VT
-                              LOADREF 0
-                              CALL
-                              FMEM 0
-                              STOREFP
-                              RET 3
 debugPrint_ClaseObject:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              IPRINT
+                              PRNLN
                               STOREFP
                               RET 1
-crearObjeto_ClaseA:
-                              LOADFP
-                              LOADSP
-                              STOREFP
-                              FMEM 0
-                              RMEM 1
-                              PUSH 2       ; Tamaño del CIR (cant atributos + 1)
-                              PUSH simple_malloc
-                              CALL
-                              DUP
-                              PUSH VT_ClaseA       ; Se apila la dirección del comienzo de la virtual table
-                              STOREREF 0        ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)
-                              PUSH Constructor_A
-                              CALL
-                              STORE 3       ; Se coloca el valor de la expresion del return en la locacion que fue reservada para el retorno del metodo
-                              STOREFP
-                              RET 0       ; Se liberan 0 lugares de la pila
-                              FMEM 0
-                              STOREFP
-                              RET 0
 Constructor_A:
                               LOADFP
                               LOADSP
@@ -115,24 +72,34 @@ read_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              READ
+                              STORE 3
                               STOREFP
                               RET 0
 printBln_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              BPRINT
+                              PRNLN
                               STOREFP
                               RET 1
 printCln_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              CPRINT
+                              PRNLN
                               STOREFP
                               RET 1
 printI_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              IPRINT
                               STOREFP
                               RET 1
 printIln_ClaseSystem:
@@ -156,18 +123,24 @@ println_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              PRNLN
                               STOREFP
                               RET 0
 printB_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              BPRINT
                               STOREFP
                               RET 1
 printSln_ClaseSystem:
                               LOADFP
                               LOADSP
                               STOREFP
+                              LOAD 3
+                              SPRINT
+                              PRNLN
                               STOREFP
                               RET 1
 printS_ClaseSystem:

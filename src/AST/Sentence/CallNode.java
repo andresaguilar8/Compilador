@@ -5,7 +5,7 @@ import AST.Encadenado.Encadenado;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class CallNode extends SentenceNode {
     public void generateCode() throws IOException {
         this.accessNode.generateCode();
         if (!this.callType.getClassName().equals("void"))
-            Traductor.getInstance().gen("POP       ; El retorno del metodo invocado no es void por lo que el valor retornado no es asignado a ninguna variable entonces se descarta");
+            InstructionGenerator.getInstance().generateInstruction("POP       ; El retorno del metodo invocado no es void por lo que el valor retornado no es asignado a ninguna variable entonces se descarta");
     }
 
 }

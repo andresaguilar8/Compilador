@@ -31,7 +31,6 @@ public class ParenthesizedExpressionNode extends AccessNode {
         this.expression.generateCode();
         if (this.encadenado != null)
             this.encadenado.generateCode();
-        //todo encadenado
     }
 
     @Override

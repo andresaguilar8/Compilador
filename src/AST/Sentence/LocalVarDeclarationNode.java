@@ -6,7 +6,7 @@ import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
 import SemanticAnalyzer.Type;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 
@@ -15,7 +15,8 @@ public class LocalVarDeclarationNode extends SentenceNode {
     private ExpressionNode expressionNode;
     private Type localVarType;
     private Token operatorToken;
-    private int offset;
+    private int varOffset;
+    private BlockNode blockNode;
 
     public LocalVarDeclarationNode(Token nodeToken, ExpressionNode expressionNode, Token operatorToken) {
         super(nodeToken);
@@ -31,7 +32,8 @@ public class LocalVarDeclarationNode extends SentenceNode {
             if (localVarType.getClassName().equals("null") || localVarType.getClassName().equals("void"))
                 throw new SemanticExceptionSimple(this.operatorToken, "no se puede inferir el tipo de la variable");
             this.setType(localVarType);
-            SymbolTable.getInstance().getCurrentBlock().insertLocalVar(this);
+            this.blockNode = SymbolTable.getInstance().getCurrentBlock();
+            this.blockNode.insertLocalVar(this);
         }
         else
             throw new SemanticExceptionSimple(this.token, "el nombre para la variable ya esta utilizado en un parametro");
@@ -39,10 +41,12 @@ public class LocalVarDeclarationNode extends SentenceNode {
 
     @Override
     protected void generateCode() throws IOException {
-        //todo chequear
-        Traductor.getInstance().gen("RMEM 1 ; Se reserva espacio para una variable local");
+        InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva espacio para una variable local");
         this.expressionNode.generateCode();
-        Traductor.getInstance().gen("STORE " + this.offset + " ; Se almacena el valor de la expresion en la variable local " + this.token.getLexeme());
+        InstructionGenerator.getInstance().generateInstruction("STORE " + this.varOffset + " ; Se almacena el valor de la expresion en la variable local " + this.token.getLexeme());
+
+        //incremento la cantidad de variables del bloque asociado a la declaracion de la variable, para saber cuanta memoria liberar luego
+        this.blockNode.increaseTotalBlockVars();
     }
 
     public Type getLocalVarType() {
@@ -61,11 +65,11 @@ public class LocalVarDeclarationNode extends SentenceNode {
         return this.token;
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
+    public void setVarOffset(int varOffset) {
+        this.varOffset = varOffset;
     }
 
-    public int getOffset() {
-        return this.offset;
+    public int getVarOffset() {
+        return this.varOffset;
     }
 }

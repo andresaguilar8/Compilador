@@ -28,7 +28,6 @@ public class ReferenceType extends Type {
     }
 
     public boolean isCompatibleWithType(Type typeToCompareWith) {
-        System.out.println("a");
         if (typeToCompareWith.isPrimitive())
             return false;
         if (this.tokenType.getLexeme().equals("null") || typeToCompareWith.getClassName().equals("null"))

@@ -4,7 +4,7 @@ import LexicalAnalyzer.Token;
 import SemanticAnalyzer.Method;
 import SemanticAnalyzer.SemanticExceptionSimple;
 import SemanticAnalyzer.SymbolTable;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class BlockNode extends SentenceNode {
         if (!currentMethod.getParametersList().contains(localVarNode.getVarName())) {
             if (!this.localVarTable.containsKey(localVarNode.getVarName())) {
                 this.localVarTable.put(localVarNode.getVarName(), localVarNode);
-                this.totalVars += 1;
+//                this.totalVars += 1;
             }
             else
                 throw new SemanticExceptionSimple(localVarNode.getVarToken(), "Ya existe una variable local con nombre " + localVarNode.getVarName() + " dentro del alcance");
@@ -53,18 +53,29 @@ public class BlockNode extends SentenceNode {
             throw new SemanticExceptionSimple(localVarNode.getVarToken(), "El nombre " + localVarNode.getVarName() + " ya esta utilizado en un parametro dentro del metodo " + "\"" + currentMethod.getMethodName() + "\"");
 
         this.setLocalVarOffset(localVarNode);
-        System.out.println("localvar: " + localVarNode.getVarName() + " offset: " + localVarNode.getOffset());
+    }
+
+    public void increaseTotalBlockVars() {
+        this.totalVars += 1;
+    }
+
+    private int getAncestorAvailableOffset() {
+        BlockNode ancBlock = this.ancestorBlock;
+        while (ancBlock != null) {
+            if (ancBlock.getAvailableLocalVarOffset() != 1)
+                return ancBlock.getAvailableLocalVarOffset();
+            ancBlock = ancBlock.getAncestorBlock();
+        }
+        return 1;
     }
 
     private void setLocalVarOffset(LocalVarDeclarationNode localVarNode) {
-        if (this.ancestorBlock != null) {
-            localVarNode.setOffset(this.ancestorBlock.getAvailableLocalVarOffset() - 1);
-            this.availableLocalVarOffset = this.ancestorBlock.getAvailableLocalVarOffset() - 1;
-        }
-        else {
-            localVarNode.setOffset(this.availableLocalVarOffset - 1);
-            this.availableLocalVarOffset -= 1;
-        }
+        //si tiene bloque padre y es la primer variable del bloque actual que voy a insertar
+        if (this.ancestorBlock != null && this.availableLocalVarOffset == 1)
+                this.availableLocalVarOffset = this.getAncestorAvailableOffset();
+
+        localVarNode.setVarOffset(this.availableLocalVarOffset - 1);
+        this.availableLocalVarOffset -= 1;
     }
 
     @Override
@@ -80,36 +91,27 @@ public class BlockNode extends SentenceNode {
         this.sentencesList.add(sentenceNode);
     }
 
-    public ArrayList<SentenceNode> getSentencesList() {
-        return this.sentencesList;
-    }
-
     public BlockNode getAncestorBlock() {
         return this.ancestorBlock;
     }
 
     public void generateCode() throws IOException {
-        //todo hay que liberar memoria de las var locales de un bloque
         for (SentenceNode sentenceNode: this.sentencesList)
             sentenceNode.generateCode();
         this.freeMem();
     }
 
     private void freeMem() throws IOException {
-//        Traductor.getInstance().gen("FMEM " + ((this.availableLocalVarOffset * -1) + 1));
-        Traductor.getInstance().gen("FMEM " + this.totalVars);
-//        getTotalVarsOfBlock
-    }
-
-    public int getTotalVarsOfBlock() {
-        return this.totalVars;
+        InstructionGenerator.getInstance().generateInstruction("FMEM " + this.totalVars);
     }
 
     public int getTotalVars() {
+        int total;
         if (this.ancestorBlock != null) {
-            return this.ancestorBlock.getTotalVars() + this.totalVars;
+            total = this.ancestorBlock.getTotalVars() + this.totalVars;
         }
         else
-            return this.totalVars;
+            total = this.totalVars;
+        return total;
     }
 }

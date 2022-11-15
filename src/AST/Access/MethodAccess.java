@@ -3,7 +3,7 @@ package AST.Access;
 import AST.Expression.ExpressionNode;
 import LexicalAnalyzer.Token;
 import SemanticAnalyzer.*;
-import Traductor.Traductor;
+import InstructionGenerator.InstructionGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,31 +31,56 @@ public class MethodAccess extends AccessNode {
         if (this.encadenado == null)
             return method.getReturnType();
         else
-            if (!concreteClass.getMethods().get(this.token.getLexeme()).getReturnType().isPrimitive())
-                return this.encadenado.check(concreteClass.getMethods().get(this.token.getLexeme()).getReturnType());
+            if (!this.method.getReturnType().isPrimitive())
+                return this.encadenado.check(this.method.getReturnType());
             else
                 throw new SemanticExceptionSimple(this.token, "el metodo " + this.token.getLexeme() + " retorna un tipo primitivo y tiene un encadenado");
     }
 
     @Override
     public void generateCode() throws IOException {
-        Traductor.getInstance().gen("LOAD 3        ; Se apila el this");
-        if (!this.method.getReturnType().getClassName().equals("void")) {
-            Traductor.getInstance().gen("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
-            Traductor.getInstance().gen("SWAP");
-        }
+        if (this.method.isStatic()) {
+            this.generateCodeForStaticMethod();
+        } else
+            this.generateCodeForDynamicMethod();
+
+        if (this.encadenado != null)
+            encadenado.generateCode();
+    }
+
+    private void generateCodeForStaticMethod() throws IOException {
+        if (!this.method.getReturnType().getClassName().equals("void"))
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
+
         this.generateParametersCode();
-        Traductor.getInstance().gen("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
-        Traductor.getInstance().gen("LOADREF 0 ; Se carga la VT");
-        Traductor.getInstance().gen("LOADREF " + method.getOffset());
-        Traductor.getInstance().gen("CALL");
+
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + this.method.getMethodLabel());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
+
+    }
+
+    private void generateCodeForDynamicMethod() throws IOException {
+        InstructionGenerator.getInstance().generateInstruction("LOAD 3        ; Se apila el this");
+
+        if (!this.method.getReturnType().getClassName().equals("void")) {
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva lugar para el valor de retorno del metodo");
+            InstructionGenerator.getInstance().generateInstruction("SWAP");
+        }
+
+        this.generateParametersCode();
+
+        InstructionGenerator.getInstance().generateInstruction("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
+        InstructionGenerator.getInstance().generateInstruction("LOADREF 0 ; Se carga la VT");
+        InstructionGenerator.getInstance().generateInstruction("LOADREF " + method.getOffset());
+        InstructionGenerator.getInstance().generateInstruction("CALL");
     }
 
     private void generateParametersCode() throws IOException {
         if (this.expressionNodesList != null)
             for (int index = this.expressionNodesList.size() - 1; index >= 0; index--) {
                 this.expressionNodesList.get(index).generateCode();  //genero codigo de cada parametro
-                Traductor.getInstance().gen("SWAP");
+                if (!this.method.isStatic())
+                    InstructionGenerator.getInstance().generateInstruction("SWAP");
             }
     }
 
