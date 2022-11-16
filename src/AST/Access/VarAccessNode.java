@@ -75,7 +75,7 @@ public class VarAccessNode extends AccessNode {
         //genero codigo para una variable local
         if (this.localVar != null) {
             if (!this.isLeftSide() || this.encadenado != null) //si el acceso a var es lado derecho..
-                InstructionGenerator.getInstance().generateInstruction("LOAD " + this.localVar.getVarOffset() + " ; Se apila el valor de la variable local o parametro " + this.localVar.getVarName());
+                InstructionGenerator.getInstance().generateInstruction("LOAD " + this.localVar.getVarOffset() + " ; Se apila el valor de la variable local " + this.localVar.getVarName());
             else
                 InstructionGenerator.getInstance().generateInstruction("STORE " + this.localVar.getVarOffset());
         }

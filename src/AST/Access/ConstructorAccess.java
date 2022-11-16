@@ -49,15 +49,15 @@ public class ConstructorAccess extends AccessNode {
         ConcreteClass concreteClass = SymbolTable.getInstance().getConcreteClass(this.token.getLexeme());
         int CIR_Size = concreteClass.getCirSize();
 
-        InstructionGenerator.getInstance().generateInstruction("RMEM 1         ; Retorno acceso constructor");
-        InstructionGenerator.getInstance().generateInstruction("PUSH " + CIR_Size + "       ; Tamaño del CIR (cant atributos + 1)");
-        InstructionGenerator.getInstance().generateInstruction("PUSH simple_malloc");
-        InstructionGenerator.getInstance().generateInstruction("CALL            ; Se realiza la llamada a la rutina malloc");
-        InstructionGenerator.getInstance().generateInstruction("DUP");
+        InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Retorno acceso constructor");
+        InstructionGenerator.getInstance().generateInstruction("PUSH " + CIR_Size + "; Tamaño del CIR (cant atributos + 1)");
+        InstructionGenerator.getInstance().generateInstruction("PUSH simple_malloc ; Se pone la dirección de la rutina malloc en el tope de la pila");
+        InstructionGenerator.getInstance().generateInstruction("CALL ; Se realiza la llamada a la rutina malloc");
+        InstructionGenerator.getInstance().generateInstruction("DUP ; Se duplica el tope de la pila");
         InstructionGenerator.getInstance().generateInstruction("PUSH " + concreteClass.getVTLabel() + "       ; Se apila la dirección del comienzo de la virtual table");
-        InstructionGenerator.getInstance().generateInstruction("STOREREF 0        ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)" );
-        InstructionGenerator.getInstance().generateInstruction("PUSH Constructor_" + this.token.getLexeme());
-        InstructionGenerator.getInstance().generateInstruction("CALL");
+        InstructionGenerator.getInstance().generateInstruction("STOREREF 0 ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)" );
+        InstructionGenerator.getInstance().generateInstruction("PUSH Constructor_" + this.token.getLexeme() + " ; Se apila la dirección del comienzo del constructor de clase " + this.token.getLexeme());
+        InstructionGenerator.getInstance().generateInstruction("CALL ; Se invoca la unidad en el tope de la pila (dirección de comienzo de generación de código del constructor de la clase " + this.token.getLexeme() + ") ");
 
         if (this.encadenado != null)
             encadenado.generateCode();

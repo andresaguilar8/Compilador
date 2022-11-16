@@ -383,7 +383,7 @@ public class ConcreteClass extends Class {
         }
         else
             //la clase no tiene metodos dinamicos
-            InstructionGenerator.getInstance().generateInstruction("NOP");
+            InstructionGenerator.getInstance().generateInstruction("NOP ; No se realiza ninguna operación ya que la clase en cuestión no tiene métodos dinámicos");
     }
 
     public void generateCode() throws IOException {

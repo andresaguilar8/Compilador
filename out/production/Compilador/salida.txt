@@ -1,0 +1,238 @@
+.CODE
+                              PUSH main_ClaseA
+                              CALL
+                              HALT
+simple_malloc:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              LOADHL
+                              DUP
+                              PUSH 1
+                              ADD
+                              STORE 4
+                              LOAD 3
+                              ADD
+                              STOREHL
+                              STOREFP
+                              RET 1
+.DATA
+VT_ClaseA:
+                              DW m2_ClaseA, m1_ClaseA
+VT_ClaseString:
+                              NOP                                ; No se realiza ninguna operación ya que la clase en cuestión no tiene métodos dinámicos
+VT_ClaseObject:
+                              NOP                                ; No se realiza ninguna operación ya que la clase en cuestión no tiene métodos dinámicos
+VT_ClaseSystem:
+                              NOP                                ; No se realiza ninguna operación ya que la clase en cuestión no tiene métodos dinámicos
+.CODE
+main_ClaseA:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              RMEM 1                             ; Se reserva espacio para una variable local
+                              RMEM 1                             ; Retorno acceso constructor
+                              PUSH 2                             ; Tamaño del CIR (cant atributos + 1)
+                              PUSH simple_malloc                 ; Se pone la dirección de la rutina malloc en el tope de la pila
+                              CALL                               ; Se realiza la llamada a la rutina malloc
+                              DUP                                ; Se duplica el tope de la pila
+                              PUSH VT_ClaseA                     ; Se apila la dirección del comienzo de la virtual table
+                              STOREREF 0                         ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)
+                              PUSH Constructor_A                 ; Se apila la dirección del comienzo del constructor de clase A
+                              CALL                               ; Se invoca la unidad en el tope de la pila (dirección de comienzo de generación de código del constructor de la clase A) 
+                              STORE 0                            ; Se almacena el valor de la expresion en la variable local x
+                              RMEM 1                             ; Se reserva espacio para una variable local
+                              LOAD 0                             ; Se apila el valor de la variable local x
+                              RMEM 1                             ; Se reserva lugar para el valor de retorno del metodo
+                              SWAP
+                              DUP                                ; Se duplica el this porque al hacer LOADREF se pierde
+                              LOADREF 0                          ; Se carga la VT
+                              LOADREF 1                          ; Se carga la dirección del metodo en la VT
+                              CALL
+                              RMEM 1                             ; Se reserva lugar para el valor de retorno del metodo
+                              SWAP
+                              DUP                                ; Se duplica el this porque al hacer LOADREF se pierde
+                              LOADREF 0                          ; Se carga la VT
+                              LOADREF 0                          ; Se carga la dirección del metodo en la VT
+                              CALL
+                              STORE -1                           ; Se almacena el valor de la expresion en la variable local y
+                              LOAD -1                            ; Se apila el valor de la variable local y
+                              PUSH printIln_ClaseSystem
+                              CALL
+                              RMEM 1                             ; Retorno acceso constructor
+                              PUSH 2                             ; Tamaño del CIR (cant atributos + 1)
+                              PUSH simple_malloc                 ; Se pone la dirección de la rutina malloc en el tope de la pila
+                              CALL                               ; Se realiza la llamada a la rutina malloc
+                              DUP                                ; Se duplica el tope de la pila
+                              PUSH VT_ClaseA                     ; Se apila la dirección del comienzo de la virtual table
+                              STOREREF 0                         ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)
+                              PUSH Constructor_A                 ; Se apila la dirección del comienzo del constructor de clase A
+                              CALL                               ; Se invoca la unidad en el tope de la pila (dirección de comienzo de generación de código del constructor de la clase A) 
+                              POP
+                              PUSH m3_ClaseA
+                              CALL
+                              FMEM 2
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 0                              ; Retorna el retorno de la unidad y libera 0 lugares de la pila
+m3_ClaseA:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+.DATA
+str_label_0:
+                              DW "llegue", 0
+.CODE
+                              PUSH str_label_0
+                              PUSH printSln_ClaseSystem
+                              CALL
+                              FMEM 0
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 0                              ; Retorna el retorno de la unidad y libera 0 lugares de la pila
+m2_ClaseA:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              FMEM 0                             ; Se libera memoria de variables locales despues de un return
+                              PUSH 3
+                              STORE 4                            ; Se coloca el valor de la expresion del return en la locacion que fue reservada para el retorno del metodo
+                              STOREFP                            ; Nodo return, se actualiza el FP para que ahora apunte al RA llamador
+                              RET 1                              ; Se liberan 1 lugares de la pila
+                              FMEM 0
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+m1_ClaseA:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              FMEM 0                             ; Se libera memoria de variables locales despues de un return
+                              RMEM 1                             ; Retorno acceso constructor
+                              PUSH 2                             ; Tamaño del CIR (cant atributos + 1)
+                              PUSH simple_malloc                 ; Se pone la dirección de la rutina malloc en el tope de la pila
+                              CALL                               ; Se realiza la llamada a la rutina malloc
+                              DUP                                ; Se duplica el tope de la pila
+                              PUSH VT_ClaseA                     ; Se apila la dirección del comienzo de la virtual table
+                              STOREREF 0                         ; Se guarda la referencia a la virtual table en el CIR creado (el offset es 0)
+                              PUSH Constructor_A                 ; Se apila la dirección del comienzo del constructor de clase A
+                              CALL                               ; Se invoca la unidad en el tope de la pila (dirección de comienzo de generación de código del constructor de la clase A) 
+                              STORE 4                            ; Se coloca el valor de la expresion del return en la locacion que fue reservada para el retorno del metodo
+                              STOREFP                            ; Nodo return, se actualiza el FP para que ahora apunte al RA llamador
+                              RET 1                              ; Se liberan 1 lugares de la pila
+                              FMEM 0
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+debugPrint_ClaseObject:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              IPRINT
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+Constructor_A:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+Constructor_String:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+Constructor_Object:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0
+read_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              READ
+                              STORE 3
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 0                              ; Retorna el retorno de la unidad y libera 0 lugares de la pila
+printBln_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              BPRINT
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printCln_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              CPRINT
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printI_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              IPRINT
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printIln_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              IPRINT
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printC_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              CPRINT
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+println_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 0                              ; Retorna el retorno de la unidad y libera 0 lugares de la pila
+printB_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              BPRINT
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printSln_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              SPRINT
+                              PRNLN
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+printS_ClaseSystem:
+                              LOADFP                             ; Se guarda el enlace dinámico del registro de activación del llamador
+                              LOADSP                             ; Se apila el comienzo del registro de activación de la unidad llamada
+                              STOREFP                            ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)
+                              LOAD 3
+                              SPRINT
+                              STOREFP                            ; Se actualiza el frame pointer
+                              RET 1                              ; Retorna el retorno de la unidad y libera 1 lugares de la pila
+Constructor_System:
+                              LOADFP
+                              LOADSP
+                              STOREFP
+                              STOREFP
+                              RET 0

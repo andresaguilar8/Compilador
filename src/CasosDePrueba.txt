@@ -1,9 +1,0 @@
-class A {
-
-    static void main() {
-        var x = System.read();
-        System.printIln(x);
-    }
-
-
-}

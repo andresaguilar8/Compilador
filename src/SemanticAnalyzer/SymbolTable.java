@@ -233,9 +233,9 @@ public class SymbolTable {
     public void consolidate() throws SemanticException, IOException {
         this.consolidateInterfaces();
         this.consolidateConcreteClasses();
-        this.generateMethodsOffsets();
         if (!this.mainMethodIsDeclared)
             SymbolTable.getInstance().getSemanticErrorsList().add(new SemanticError(this.EOFToken, "No se encontro el metodo estatico main sin parametros declarado dentro de ninguna clase"));
+        this.generateMethodsOffsets();
     }
 
     private void consolidateInterfaces() {
@@ -254,7 +254,7 @@ public class SymbolTable {
             concreteClass.generateClassMethodsOffsets();
         }
 
-        this.generateInterfaceMethodOffsets();
+        this.generateInterfacesMethodsOffsets();
 
         for (ConcreteClass concreteClass : this.concreteClassesTable.values())
             concreteClass.generateInterfaceMethodsOffsets();
@@ -263,7 +263,7 @@ public class SymbolTable {
             concreteClass.generateInheritedMethodsOffsetsForVt();
     }
 
-    private void generateInterfaceMethodOffsets() {
+    private void generateInterfacesMethodsOffsets() {
         this.interfaceMethodOffset = this.getGreatestVtSize();
 
         for (Interface interfaceWithoutAncestors: this.interfacesTable.values())

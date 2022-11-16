@@ -80,7 +80,7 @@ public class MethodAccess extends AccessNode {
             for (int index = this.expressionNodesList.size() - 1; index >= 0; index--) {
                 this.expressionNodesList.get(index).generateCode();  //genero codigo de cada parametro
                 if (!this.method.isStatic())
-                    InstructionGenerator.getInstance().generateInstruction("SWAP");
+                    InstructionGenerator.getInstance().generateInstruction("SWAP");  //para que el this quede en el tope
             }
     }
 

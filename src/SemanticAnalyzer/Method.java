@@ -179,9 +179,9 @@ public class Method {
 
     public void generateCode() throws IOException {
         InstructionGenerator.getInstance().generateInstruction(this.getMethodLabel() + ":");
-        InstructionGenerator.getInstance().generateInstruction("LOADFP");
-        InstructionGenerator.getInstance().generateInstruction("LOADSP");
-        InstructionGenerator.getInstance().generateInstruction("STOREFP");
+        InstructionGenerator.getInstance().generateInstruction("LOADFP ; Se guarda el enlace dinámico del registro de activación del llamador");
+        InstructionGenerator.getInstance().generateInstruction("LOADSP ; Se apila el comienzo del registro de activación de la unidad llamada");
+        InstructionGenerator.getInstance().generateInstruction("STOREFP ; Se actualiza el frame pointer para que indicar que el RA que estamos armando es el actual (llamado)");
 
         if (this.parametersList.size() > 0) {
             int parameterOffset;
@@ -195,18 +195,19 @@ public class Method {
             }
         }
 
+        //Si no tiene un bloque principal entonces se trata de un método predefinido
         if (this.principalBlock != null) {
             this.principalBlock.generateCode();
             this.codeIsGenerated = true;
         }
         else
-            generateCodeForPredefinedMethods();
+            generateCodeForPredefinedMethod();
 
-        InstructionGenerator.getInstance().generateInstruction("STOREFP");
-        InstructionGenerator.getInstance().generateInstruction("RET "+ this.getReturnOffset());
+        InstructionGenerator.getInstance().generateInstruction("STOREFP ; Se actualiza el frame pointer");
+        InstructionGenerator.getInstance().generateInstruction("RET "+ this.getReturnOffset() + " ; Retorna el retorno de la unidad y libera " + this.getReturnOffset() + " lugares de la pila");
     }
 
-    private void generateCodeForPredefinedMethods() throws IOException {
+    private void generateCodeForPredefinedMethod() throws IOException {
         if (this.getMethodName().equals("debugPrint")) {
             InstructionGenerator.getInstance().generateInstruction("LOAD 3");   //LOAD 3 porque tiene un solo parametro
             InstructionGenerator.getInstance().generateInstruction("IPRINT");
@@ -256,13 +257,6 @@ public class Method {
             InstructionGenerator.getInstance().generateInstruction("SPRINT");
             InstructionGenerator.getInstance().generateInstruction("PRNLN");
         }
-
-
-//        if (this.getMethodName().equals("debugPrint")) {
-//            Traductor.getInstance().gen("LOAD 3");
-//            Traductor.getInstance().gen("IPRINT");
-//            Traductor.getInstance().gen("PRNLN");
-//        }
     }
 
     public int getStoringValueInReturnOffset() {

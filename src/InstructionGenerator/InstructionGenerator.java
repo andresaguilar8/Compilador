@@ -78,9 +78,43 @@ public class InstructionGenerator {
             bufferedWriter.newLine();
         }
         else {
-            bufferedWriter.write("                              " + instruction);
-            bufferedWriter.newLine();
+            if (!instruction.contains(";")) {
+                bufferedWriter.write("                              " + instruction);
+                bufferedWriter.newLine();
+            }
+            else {
+                String instructionBeforeSemiColon = generateInstructionBeforeSemiColon(instruction);
+                String instructionFromTheSemiColon = instruction.substring(instructionBeforeSemiColon.length());
+                String instructionFromTheSemiColonWithWhiteSpaces = this.generateWhiteSpaces(instructionBeforeSemiColon.length(), instructionFromTheSemiColon); //instructionBeforeSemiColon.length());
+                bufferedWriter.write("                              " + instructionBeforeSemiColon);
+                bufferedWriter.write(instructionFromTheSemiColonWithWhiteSpaces);
+                bufferedWriter.newLine();
+            }
         }
+    }
+
+    private String generateWhiteSpaces(int instructionBeforSemiColonLength, String instruction) {
+        int indexWhereTheInstructionStarts = 35;
+        String stringWithWhiteSpaces = "";
+        while (instructionBeforSemiColonLength < indexWhereTheInstructionStarts) {
+            stringWithWhiteSpaces += " ";
+            instructionBeforSemiColonLength++;
+        }
+        return stringWithWhiteSpaces + instruction;
+    }
+
+    private String generateInstructionBeforeSemiColon(String instruction) {
+        boolean foundSemiColon = false;
+        int endStringIndex = 1;
+
+        while (!foundSemiColon) {
+            if (instruction.contains(";")) {
+                instruction = instruction.substring(0, instruction.length() - endStringIndex);
+            }
+            else
+                foundSemiColon = true;
+        }
+        return instruction;
     }
 
     public void setDataMode() throws IOException {

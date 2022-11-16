@@ -61,7 +61,7 @@ public class StaticMethodAccessNode extends AccessNode {
 
     public void generateCode() throws IOException {
         if (!this.staticMethod.getReturnType().getClassName().equals("void"))
-            InstructionGenerator.getInstance().generateInstruction("RMEM 1        ; Se reserva lugar para el retorno");
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva lugar para el retorno");
 
         this.generateParametersCode();
 

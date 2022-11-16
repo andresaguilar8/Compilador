@@ -7,7 +7,6 @@ import SemanticAnalyzer.SymbolTable;
 import SyntacticAnalyzer.SyntacticAnalyzer;
 import SyntacticAnalyzer.SyntacticException;
 import InstructionGenerator.InstructionGenerator;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,14 +18,13 @@ public class MainModule {
 
     public static void main (String [] args) {
 
-        String outputName = args[1];
-        //TODO - acomodar esto
-        File file = new File(args[0]);
-//        File file = new File(args[0] + "/prueba39.java");
+        File inputFile = new File(args[0]);
+        String outputFileName = args[1];
+
         FileHandler fileHandler = null;
 
         try {
-            fileHandler = new FileHandler(file);
+            fileHandler = new FileHandler(inputFile);
         } catch (FileNotFoundException fileNotFoundException) {
             fileNotFoundException.printStackTrace();
         } catch (IOException ioException) {
@@ -77,11 +75,13 @@ public class MainModule {
         }
 
         try {
+
             SymbolTable.getInstance().checkSentences();
-            InstructionGenerator.getInstance().setOutputFileName(outputName);
+            InstructionGenerator.getInstance().setOutputFileName(outputFileName);
             InstructionGenerator.getInstance().generateInstructions();
             System.out.println("Compilación Exitosa\n\n");
             System.out.println("[SinErrores]");
+
         } catch (SemanticExceptionSimple exceptionSimple) {
             System.out.println(exceptionSimple.getMessage());
         } catch (IOException e) {

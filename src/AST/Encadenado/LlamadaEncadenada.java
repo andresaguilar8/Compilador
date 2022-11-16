@@ -52,8 +52,9 @@ public class LlamadaEncadenada extends Encadenado {
     private void generateStaticMethodCode() throws IOException {
         //Se descarta la referencia en el tope de la pila ya que no se necesita para la llamada encadenada a un metodo estatico
         InstructionGenerator.getInstance().generateInstruction("POP");
+
         if (!this.method.getReturnType().getClassName().equals("void"))
-            InstructionGenerator.getInstance().generateInstruction("RMEM 1        ; Se reserva lugar para el retorno");
+            InstructionGenerator.getInstance().generateInstruction("RMEM 1 ; Se reserva lugar para el retorno");
 
         this.generateParametersCode();
 
@@ -71,7 +72,7 @@ public class LlamadaEncadenada extends Encadenado {
 
         InstructionGenerator.getInstance().generateInstruction("DUP ; Se duplica el this porque al hacer LOADREF se pierde");
         InstructionGenerator.getInstance().generateInstruction("LOADREF 0 ; Se carga la VT");
-        InstructionGenerator.getInstance().generateInstruction("LOADREF " + method.getOffset());
+        InstructionGenerator.getInstance().generateInstruction("LOADREF " + method.getOffset() + " ; Se carga la dirección del metodo en la VT");
         InstructionGenerator.getInstance().generateInstruction("CALL");
     }
 

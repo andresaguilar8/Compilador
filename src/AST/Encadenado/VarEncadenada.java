@@ -59,11 +59,11 @@ public class VarEncadenada extends Encadenado {
     @Override
     public void generateCode() throws IOException {
         if (!this.isLeftSide || this.encadenado != null) {
-            InstructionGenerator.getInstance().generateInstruction("LOADREF " + this.attribute.getOffset() + "       ; Se apila el valor del atributo de instancia " + this.attribute.getAttributeName());
+            InstructionGenerator.getInstance().generateInstruction("LOADREF " + this.attribute.getOffset() + " ; Se apila el valor del atributo de instancia " + this.attribute.getAttributeName());
         }
         else {
             InstructionGenerator.getInstance().generateInstruction("SWAP");
-            InstructionGenerator.getInstance().generateInstruction("STOREREF " + this.attribute.getOffset() + "      ; Se guarda el valor en el atributo");
+            InstructionGenerator.getInstance().generateInstruction("STOREREF " + this.attribute.getOffset() + "; Se guarda el valor en el atributo");
         }
 
         if (this.encadenado != null) {

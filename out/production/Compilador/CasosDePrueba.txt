@@ -1,9 +1,24 @@
 class A {
 
+    private int x;
+
     static void main() {
-        var x = System.read();
-        System.printIln(x);
+        var x = new A();
+        var y = x.m1().m2();
+        System.printIln(y);
+        new A().m3();
     }
 
+    A m1() {
+        return new A();
+    }
+
+    int m2() {
+        return 3;
+    }
+
+    static void m3() {
+        System.printSln("llegue");
+    }
 
 }
